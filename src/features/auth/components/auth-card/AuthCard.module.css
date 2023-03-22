@@ -1,0 +1,29 @@
+
+.btnGithub{
+  border: 1px solid var(--white);
+  width: 100%;
+  gap: 1rem;
+}
+
+.btnEmail{
+  border: 1px solid var(--white);
+  width: 100%;
+}
+
+.authCard{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+}
+
+.title{
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.subtitle{
+  color: var(--grey);
+}

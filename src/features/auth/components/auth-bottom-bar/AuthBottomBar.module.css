@@ -1,0 +1,43 @@
+.authBottomBar{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1.4fr;
+  background-color: var(--primary-color) ;
+  color: white;
+  padding: 0.8rem 0;
+}
+
+.title{
+  font-size: 1.7rem; 
+  font-weight: 500;
+}
+
+.subtitle{
+  font-size: 1rem;
+}
+
+.right{
+  justify-self: center;
+  align-self: center;
+}
+
+
+.right a{
+  padding: 0.5rem 1rem; 
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+
+.login{
+  border: 1px solid  rgba(255, 255, 255, 0.35);
+}
+
+.signup{
+  background-color: var(--white);
+  color: rgb(15, 20, 25);
+  margin-left: 1rem;
+}

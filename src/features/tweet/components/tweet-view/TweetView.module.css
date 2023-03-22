@@ -1,0 +1,88 @@
+
+.postCard{
+  display: flex;
+  gap:1rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+  color: var(--black);
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--white);
+}
+
+.postCard:hover{
+  background-color: var(--white);
+}
+
+.names{
+  font-size: 1.2rem;
+}
+.image{
+  width: 100%;
+  border-radius: 20px;
+}
+.postCard>div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.name{
+  font-weight: 700;
+  color: var(--black);
+}
+
+.actions{
+  color: var(--grey);
+  fill: var(--grey);
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+}
+
+.username{
+  color: var(--grey);
+}
+
+.commentIcon{
+  width: 1.2rem;
+  color: var(--white);
+  padding: 0.5rem;
+  border-radius: 50%;
+  box-sizing: content-box;
+}
+
+.likeIcon{
+  width: 1.2rem;
+  color: var(--white);
+  padding: 0.5rem;
+  border-radius: 50%;
+  box-sizing: content-box;
+}
+
+.actionButton{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: max-content;
+  cursor: pointer;
+  gap: 0.4rem;
+}
+
+.likeButton:hover{
+ color: var(--primary);
+}
+
+.commentButton:hover .commentIcon{
+ color: var(--primary);
+ fill: var(--primary);
+ background-color: var(--primary-alpha);
+}
+
+.likeButton:hover .likeIcon{
+ color: var(--primary);
+ fill: var(--primary);
+ background-color: var(--primary-alpha);
+}
+
+

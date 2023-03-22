@@ -1,0 +1,62 @@
+.createPost{
+  display: flex;
+  width: 100%;
+  padding:0.5rem 1rem;
+  border-bottom: 1px solid var(--white);
+}
+
+.audience{
+  width: max-content;
+  padding:0.2rem 1rem;
+  border-radius: 9999px;
+  border: 2px solid var(--white) ;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: transparent;
+  color: var(--primary-color);
+  font-size: 1rem;
+  margin-left: 1rem;
+}
+
+.audience:hover{
+ background-color: var(--primary-alpha);
+}
+
+
+.fields{
+  display: flex;
+  margin-top: 0.2rem;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+}
+.actions{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.image{
+  color: var(--primary);
+}
+
+.replyAudience{
+  width: max-content;
+  padding:0.2rem 1rem;
+  border-radius: 9999px;
+  border: 2px solid var(--white) ;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: transparent;
+  color: var(--primary-color);
+  font-size: 1rem;
+  border: none;
+}
+.replyAudience::-ms-expand {
+    display: none;
+}
+
+.textarea{
+  margin-left: 1rem;
+  margin-top: 1rem;
+}

@@ -1,0 +1,11 @@
+.header{
+ height: 4rem;
+ width: 100%;
+ display: flex;
+ justify-content: start;
+ align-items: center;
+
+}
+
+.header h1{
+}

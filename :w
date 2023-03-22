@@ -1,0 +1,38 @@
+import { Inter } from 'next/font/google'
+import styles from './main-layout.module.css'
+import localFont from 'next/font/local'
+import { Navbar } from '@/shared/components/navbar/Navbar'
+const inter = Inter({ subsets: ['latin'] })
+
+const chirp = localFont({
+  src:[
+    {
+      path:'../../../public/fonts/chirp-bold-web.woff',
+      weight:'bold'
+    },
+    {
+      path:'../../../public/fonts/chirp-heavy-web.woff',
+      weight:'700'
+    },
+    {
+      path:'../../../public/fonts/chirp-medium-web.woff',
+      weight:'500'
+    },
+    {
+      path:'../../../public/fonts/chirp-regular-web.woff',
+      weight:'normal'
+    },
+  ]
+})
+export function MainLayout({children}) {
+  return (
+    <main className={styles.main + " " + chirp.className}>
+      <aside className={styles.leftBar}>
+        <Navbar />
+      </aside>
+      <div className={styles.content}>
+        {children}
+      </div>
+    </main>
+  );
+}
