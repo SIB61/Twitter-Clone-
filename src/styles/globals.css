@@ -10,6 +10,7 @@
   --primary-hover: rgb(26, 140, 216);
   --white: rgb(239, 243, 244);
   --black: rgb(15, 20, 25);
+  --dark-white: rgb(207, 217, 222);
   --grey: rgb(83, 100, 113);
   --black-alpha: rgba(15, 20, 25, 0.2);
   --background-color: white;
@@ -22,6 +23,11 @@ body {
   background-color: var(--background-color);
 }
 
+input{
+  border: none;
+  outline: none;
+}
+
 li {
   list-style: none;
 }
@@ -31,7 +37,8 @@ body {
 
 a {
   text-decoration: none;
-  color: white;
+  color: currentColor;
+  display: inline-block;
 }
 
 button {
@@ -47,11 +54,18 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: currentColor;
+  gap: 0.8rem;
+}
+
+.btn-bordered {
+  border: 1px solid var(--dark-white);
 }
 
 .btn-ghost:hover {
   background-color: var(--white);
 }
+
 .text-primary {
   color: var(--primary-color);
 }
@@ -75,7 +89,8 @@ textarea {
 .h-divider {
   width: 100%;
   height: 1px;
-  background-color: var(--white);
+  margin: 0.5rem 0; 
+  background-color: var(--dark-white);
 }
 
 .btn-icon {
@@ -120,4 +135,25 @@ textarea {
   width: 100vw;
   z-index: 10;
   background-color: white;
+}
+
+.h-divider-or{
+  width: 100%;
+  height: 1px;
+  background-color: var(--dark-white);
+  position: relative;
+  font-size: 1.2rem;
+  color: var(--black);
+  margin: 1rem 0; 
+}
+
+.h-divider-or::before{
+  content: 'or';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: white;
+  padding: 0 1rem;
+  text-align: center;
 }

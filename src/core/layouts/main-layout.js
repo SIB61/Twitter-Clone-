@@ -7,6 +7,10 @@ import { Modal } from "@/shared/components/modal/Modal";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { createContext, useState } from "react";
 import { AuthBottomBar } from "@/features/auth/components/auth-bottom-bar/AuthBottomBar";
+import { useRouter } from "next/router";
+import { LoginCard } from "@/features/auth/components/login/LoginCard";
+import { SignupCard } from "@/features/auth/components/signup/SignupCard";
+import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
 const inter = Inter({ subsets: ["latin"] });
 
 const chirp = localFont({
@@ -31,9 +35,10 @@ const chirp = localFont({
 });
 
 export const ModalContext = createContext();
-
 export function MainLayout({ children }) {
   const [modal, setModal] = useState(null);
+  const router = useRouter();
+  const { page } = router.query;
   return (
     <ModalContext.Provider value={setModal}>
       <main className={styles.main + " " + chirp.className}>
@@ -50,7 +55,38 @@ export function MainLayout({ children }) {
             {modal}
           </Modal>
         )}
-        <AuthBottomBar/>
+
+        {page === "create-tweet" && (
+          <Modal onClose={() => router.push("/")}>
+            <CreateTweet expanded />
+          </Modal>
+        )}
+
+        {page === "create-account" && (
+          <Modal onClose={() => router.push("/")}>
+            <div style={{ padding: "0 20%" }}>
+              <SignupCard />
+            </div>
+          </Modal>
+        )}
+
+        {page === "login" && (
+          <Modal onClose={() => router.push("/")}>
+            <div style={{ padding: "0 20%" }}>
+              <LoginCard />
+            </div>
+          </Modal>
+        )}
+
+        {page === "signup" && (
+          <Modal onClose={() => router.push("/")}>
+            <div style={{ padding: "0 10%" }}>
+              <AuthCard />
+            </div>
+          </Modal>
+        )}
+
+        <AuthBottomBar />
       </main>
     </ModalContext.Provider>
   );

@@ -68,7 +68,13 @@ font-weight: bold;
   font-size: 1.2rem;
   color: white;
   width: 70%;
+  display: inline-block;
 }
+.tweetButton > a{
+  display: inline-block;
+  width: 100%;
+}
+
 
 .tweetButton:hover{
   background-color: var(--primary-hover);

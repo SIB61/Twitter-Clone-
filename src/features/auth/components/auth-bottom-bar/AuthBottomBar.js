@@ -12,11 +12,9 @@ export function AuthBottomBar(){
       <p className={styles.subtitle}>People on Twitter are the first to know.</p>
     </div>
     <div className={styles.right}>
-      <Link href="?page=login" as="/login" className={styles.login}
+      <Link href="?page=login" className={styles.login}
       >Log in</Link>
-      <Link href="?page=signup" as="/signup"
-        onClick={()=>setModal(<AuthCard/>)}
-        className={styles.signup}>Sign up</Link>
+      <Link href="?page=signup" className={styles.signup}>Sign up</Link>
     </div>
   </div>)
 }

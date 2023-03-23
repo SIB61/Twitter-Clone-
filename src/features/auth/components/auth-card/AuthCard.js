@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./AuthCard.module.css";
 import { BsGithub } from "react-icons/bs";
 export function AuthCard() {
@@ -11,9 +12,9 @@ export function AuthCard() {
         <BsGithub />
         Sign up with Github
       </button>
-      <button className={'btn btn-ghost ' + styles.btnEmail}>
+        <Link className={'btn btn-ghost ' + styles.btnEmail} href='?page=create-account'> 
         Create Account
-      </button>
+        </Link>
       <p className={styles.subtitle}>
         By signing up, you agree to the <span className="text-primary">Terms of Service </span> and <span className="text-primary"> Privacy Policy</span>,
         including <span className="text-primary"> Cookie Use</span>.

@@ -15,6 +15,7 @@ import { Modal } from "../modal/Modal";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { useContext } from "react";
 import { ModalContext } from "@/core/layouts/main-layout";
+import { useRouter } from "next/router";
 
 const options = [
   {
@@ -56,6 +57,8 @@ const options = [
 export function Navbar() {
   const [showModal, toggleModal] = useToggle();
   const setModal = useContext(ModalContext)
+  const router = useRouter()
+  const {page} = router.query
   return (
     <>
     <nav className={styles.navbar}>
@@ -64,7 +67,6 @@ export function Navbar() {
         <li className={styles.logoItem}>
           <Image src={TwitterLogo} className={styles.logo} />
         </li>
-
         {options.map((v, i) => (
           <li key={i} className={styles.navItem}>
             {<v.icon className={styles.navIcon} />}
@@ -72,9 +74,9 @@ export function Navbar() {
           </li>
         ))}
         <li>
-          <button className={styles.tweetButton} onClick={() => setModal(<CreateTweet expanded/>)}>
+          <Link className={styles.tweetButton} href='?page=create-tweet'>
             Tweet
-          </button>
+          </Link>
         </li>
         <li className={styles.profile}>
           <Avator src={Dp} size={"3rem"} />

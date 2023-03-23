@@ -10,6 +10,7 @@ import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTwee
 import { Modal } from "@/shared/components/modal/Modal";
 import { useToggle } from "@/shared/hooks/useToggle";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
+import { useRouter } from "next/router";
 const inter = Inter({ subsets: ["latin"] });
 
 const chirp = localFont({

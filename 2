@@ -1,0 +1,11 @@
+export function handleRequest({GET,POST,DELETE,PATCH,PUT}){
+  return (req,res) =>{
+    switch(req.method){
+      case 'GET': return GET(req,res)
+      case 'POST': return POST(req,res)
+      case 'DELETE': return DELETE(req,res)
+      case 'PATCH': return PATCH(req,res)
+      case 'PUT': return PUT(req,res)
+    }
+  }
+}
