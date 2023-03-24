@@ -2,9 +2,10 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
+import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
-import { getSession } from "next-auth/react";
-function Home({}) {
+
+function Home() {
   return (
     <>
       <Head>
@@ -15,32 +16,17 @@ function Home({}) {
       </Head>
       <div className={styles.home}>
         <div className="center-container">
-          <div className="appbar">Explore</div>
-          <TweetList />
+          <div className="appbar">Home</div>
+         <div className="content">
+          <CreateTweet />
+          <TweetList/>
+          </div> 
         </div>
         <div className={styles.rightBar}>
-          <AuthCard />
         </div>
       </div>
     </>
   );
 }
-
 Home.Layout = MainLayout;
 export default Home;
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context)
-  if (session) {
-    return {
-      redirect: {
-        destination: '/home',
-        permanent: false,
-      },
-    }
-  }
-
-  return {
-    props: {},
-  }
-}

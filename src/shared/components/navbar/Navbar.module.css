@@ -5,6 +5,13 @@
   font-size: 2rem;
   height: 100%;
 }
+
+.navOptions{
+ min-width: 244px;
+ width: 100%;
+}
+
+
 .navItem{
   cursor: pointer;
   display: flex;
@@ -18,8 +25,7 @@
 
 .profile{
   display: flex;
-  max-width: 100%;
-  justify-content: center;
+  width: 100%;
   align-items: center;
   font-size: 1rem;
   gap:1rem;
@@ -28,6 +34,11 @@
   margin-top: auto;
   cursor: pointer;
 }
+
+.profile > div{
+  width: 60%;
+}
+
 .profile:hover{
   background-color: var(--white);
 }
@@ -54,7 +65,7 @@ font-weight: bold;
   gap:0.5rem
 }
 
-.navItem:hover{
+ .navOptions:hover .navItem{
   background-color: var(--white);
 }
 

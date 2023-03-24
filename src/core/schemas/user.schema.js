@@ -6,10 +6,11 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
   name: { type: String, required: true },
-  dateOfBirth: { type: Date, required: true },
+  dateOfBirth: Date,
+  profileUrl:String,
   totalFollowers: { type: Number, default: 0 },
   totalFollowings: { type: Number, default: 0 },
-  passwordHash: { type: String, required: true },
+  passwordHash:String,
   createdAt:{type:Date,default:Date.now}
 });
 

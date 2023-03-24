@@ -16,78 +16,96 @@ import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTwee
 import { useContext } from "react";
 import { ModalContext } from "@/core/layouts/main-layout";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
-const options = [
+const authenticatedOptions = [
   {
     title: "Home",
-    route: "/search",
+    route: "/",
     icon: BiHomeCircle,
   },
   {
     title: "Explore",
-    route: "/search",
+    route: "/",
     icon: RiHashtag,
   },
 
   {
     title: "Notifications",
-    route: "/search",
+    route: "/",
     icon: GrNotification,
   },
 
   {
     title: "Messages",
-    route: "/search",
+    route: "/",
     icon: GrInbox,
   },
 
   {
     title: "Profile",
-    route: "/search",
+    route: "/",
     icon: FaRegUser,
   },
 
   {
     title: "More",
-    route: "/search",
+    route: "/",
     icon: CgMoreO,
   },
 ];
 
+const unAuthenticatedOptions = [
+  {
+    title: "Explore",
+    route: "/",
+    icon: RiHashtag,
+  },
+];
+
 export function Navbar() {
-  const [showModal, toggleModal] = useToggle();
-  const setModal = useContext(ModalContext)
-  const router = useRouter()
-  const {page} = router.query
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const options =
+    status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
   return (
     <>
-    <nav className={styles.navbar}>
-
-      <ul className={styles.navList}>
-        <li className={styles.logoItem}>
-          <Image src={TwitterLogo} className={styles.logo} />
-        </li>
-        {options.map((v, i) => (
-          <li key={i} className={styles.navItem}>
-            {<v.icon className={styles.navIcon} />}
-            <span className={styles.navText}>{v.title}</span>
+      <nav className={styles.navbar}>
+        <ul className={styles.navList}>
+          <li className={styles.logoItem}>
+            <Image src={TwitterLogo} className={styles.logo} />
           </li>
-        ))}
-        <li>
-          <Link className={styles.tweetButton} href='?page=create-tweet'>
-            Tweet
-          </Link>
-        </li>
-        <li className={styles.profile}>
-          <Avator src={Dp} size={"3rem"} />
-          <div>
-            <div className={styles.name}>Md Sabit Islam Bhuiya</div>
-            <div className={styles.username}>@sib_61</div>
-          </div>
-          <CgMore />
-        </li>
-      </ul>
-    </nav>
+
+          {options.map((v, i) => (
+            <li key={i}>
+              <Link href={v.route} className={styles.navOptions}>
+                <div className={styles.navItem} style={{ fontWeight: "500" }}>
+                  {<v.icon className={styles.navIcon} />}
+                  <span className={styles.navText}>{v.title}</span>
+                </div>
+              </Link>
+            </li>
+          ))}
+
+          {status === "authenticated" && (
+            <>
+              <li>
+                <Link className={styles.tweetButton} href="?page=create-tweet">
+                  Tweet
+                </Link>
+              </li>
+              <li className={styles.profile}>
+                <Avator src={Dp} size={"3rem"} />
+                <div>
+                  <div className={styles.name}>{session.user.name}</div>
+                  <div className={styles.username}>@{session.user.username}</div>
+                </div>
+                <CgMore />
+              </li>
+            </>
+          )}
+        </ul>
+      </nav>
     </>
   );
 }

@@ -73,7 +73,9 @@ button {
   background-color: var(--primary-color);
   color: var(--white);
 }
-
+.btn-disabled{
+  background-color: var(--dark-white);
+}
 .btn-primary:hover {
   background-color: var(--primary-hover);
 }

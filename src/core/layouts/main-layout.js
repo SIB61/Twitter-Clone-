@@ -9,8 +9,9 @@ import { createContext, useState } from "react";
 import { AuthBottomBar } from "@/features/auth/components/auth-bottom-bar/AuthBottomBar";
 import { useRouter } from "next/router";
 import { LoginCard } from "@/features/auth/components/login/LoginCard";
-import { SignupCard } from "@/features/auth/components/signup/SignupCard";
+import { SignupCard } from "@/features/user/components/signup/SignupCard";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
+import { useSession } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"] });
 
 const chirp = localFont({
@@ -39,6 +40,7 @@ export function MainLayout({ children }) {
   const [modal, setModal] = useState(null);
   const router = useRouter();
   const { page } = router.query;
+  const {status} = useSession()
   return (
     <ModalContext.Provider value={setModal}>
       <main className={styles.main + " " + chirp.className}>
@@ -55,13 +57,11 @@ export function MainLayout({ children }) {
             {modal}
           </Modal>
         )}
-
         {page === "create-tweet" && (
           <Modal onClose={() => router.push("/")}>
             <CreateTweet expanded />
           </Modal>
         )}
-
         {page === "create-account" && (
           <Modal onClose={() => router.push("/")}>
             <div style={{ padding: "0 20%" }}>
@@ -69,7 +69,6 @@ export function MainLayout({ children }) {
             </div>
           </Modal>
         )}
-
         {page === "login" && (
           <Modal onClose={() => router.push("/")}>
             <div style={{ padding: "0 20%" }}>
@@ -77,7 +76,6 @@ export function MainLayout({ children }) {
             </div>
           </Modal>
         )}
-
         {page === "signup" && (
           <Modal onClose={() => router.push("/")}>
             <div style={{ padding: "0 10%" }}>
@@ -85,8 +83,9 @@ export function MainLayout({ children }) {
             </div>
           </Modal>
         )}
-
-        <AuthBottomBar />
+        {
+          status==='unauthenticated' && <AuthBottomBar />
+        }
       </main>
     </ModalContext.Provider>
   );
