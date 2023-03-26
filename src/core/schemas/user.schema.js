@@ -1,19 +1,18 @@
+import { USER_SCHEMA } from "@/constants";
 import mongoose from "mongoose";
-
 export const userId = "userId";
-
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true },
-  email: { type: String, required: true },
-  name: { type: String, required: true },
+  username: String,
+  email: String,
+  name: String,
   dateOfBirth: Date,
-  profileUrl:String,
+  image:String,
   totalFollowers: { type: Number, default: 0 },
   totalFollowings: { type: Number, default: 0 },
   passwordHash:String,
   createdAt:{type:Date,default:Date.now}
 });
 
-const UserModel = mongoose.models["User"] || mongoose.model("User", UserSchema);
+const UserModel = mongoose.models[USER_SCHEMA] || mongoose.model(USER_SCHEMA, UserSchema);
 
 export default UserModel;

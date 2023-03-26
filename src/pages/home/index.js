@@ -3,9 +3,17 @@ import styles from "@/styles/Home.module.css";
 import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
-import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
+import { useSession } from "next-auth/react";
+import { getAllTweets } from "@/features/tweet/services/server/get-all-tweets";
+import { dbConnect } from "@/core/utils/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
+import LikeModel from "@/core/schemas/likes.schema";
+import { useRouter } from "next/router";
 
-function Home() {
+function Home({ tweets }) {
+  const { data, status } = useSession();
+  console.log(status, data);
   return (
     <>
       <Head>
@@ -17,16 +25,30 @@ function Home() {
       <div className={styles.home}>
         <div className="center-container">
           <div className="appbar">Home</div>
-         <div className="content">
-          <CreateTweet />
-          <TweetList/>
-          </div> 
+          <div className="content">
+            <CreateTweet />
+            <TweetList tweets={tweets} />
+          </div>
         </div>
-        <div className={styles.rightBar}>
-        </div>
+        <div className={styles.rightBar}></div>
       </div>
     </>
   );
 }
 Home.Layout = MainLayout;
 export default Home;
+export async function getServerSideProps(ctx) {
+  await dbConnect();
+  let tweets = await getAllTweets();
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
+  const likeIds = tweets.map((tweet) => tweet.tweetId + session.user.id);
+  const likes = await LikeModel.find({ likeId: { $in: likeIds } });
+  let likedTweetIds = likes.map((like) => like.tweet.toString());
+  likedTweetIds = new Set(likedTweetIds)
+  tweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.tweetId.toString())}));
+  return {
+    props: {
+      tweets: JSON.parse(JSON.stringify(tweets)),
+    },
+  };
+}

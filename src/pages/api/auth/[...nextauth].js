@@ -1,5 +1,6 @@
 import UserModel from "@/core/schemas/user.schema";
 import { dbConnect } from "@/core/utils/db";
+import { getUserByEmail } from "@/features/user/services/server/get-user";
 import { login } from "@/features/user/services/server/login";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -37,43 +38,49 @@ export const authOptions = {
   },
 
   callbacks: {
-    async session({ session, token, params }) {
-      session.user.userId = token.userId;
-      session.user.name = token.name;
-      session.user.username = token.username;
-      session.user.email = token.email;
-      session.user.accessToken = token.accessToken;
-      return session;
-    },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({token,user,account}) {
+      console.log(account,user,token)
       if (user) {
-        token.userId = user.userId;
+        console.log("user", user)
+        user = await getUserByEmail(token.email)
+        token.id = user.userId;
         token.name = user.name;
         token.username = user.username;
         token.email = user.email;
-        token.accessToken = user?.accessToken || "";
-      }
-      if (account) {
-        // token.accessToken = account.access_token;
+        token.image = user.image
       }
       return token;
     },
 
-    async signIn(user, account, profile) {
-      const { email, name, image } = user;
-      console.log('sign in middle')
-      // await dbConnect()
-      // const existingUser = UserModel.findOne({email:email})
-      // console.log("sign in next auth") 
-      // if (!existingUser) {
-      //   await UserModel.create({
-      //     username:email.slice("@")[0],
-      //     email:email,
-      //     name:name,
-      //     profileUrl: image,
-      //   });
-      // }
-      return true;
+    async session({ session, token, params }) {
+      session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.username = token.username;
+      session.user.email = token.email;
+      session.user.image = token.image
+      return session;
+    },
+
+    async signIn({ user, account}) {
+      if (account) {
+        try{
+        const { email, name, image } = user;
+        await dbConnect();
+        const existingUser = await getUserByEmail(email);
+        if (!existingUser) {
+           await UserModel.create({
+            username: email.split("@")[0],
+            email,
+            name,
+            image
+          });
+        }
+        }
+        catch(err){
+          return false
+        }
+      }
+      return true
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

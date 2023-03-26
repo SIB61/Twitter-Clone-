@@ -25,7 +25,6 @@ export function SignupCard(){
      <h4>Sign up to Twitter</h4>
       <form onSubmit={handleSubmit(onSubmit)}>
       <Input register={register('name',{minLength:3,required:'name is required'})} placeHolder='name'/>
-      <Input register={register('username',{minLength:3,required:'username is required'})} placeHolder='username'/>
       <Input register={register('email',{required:'email is required'})} placeHolder='email' />
       <Input register={register('dateOfBirth',{required:'date of birth is required'})} placeHolder='date of birth' type='date' />
       <Input register={register('password',{required:'password is required'})} placeHolder='password' />

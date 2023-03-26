@@ -24,6 +24,14 @@
   max-width: 350px;
 }
 
+
+@media only screen and (max-width: 966px) {
+  .rightBar{
+    display: none;
+  }
+}
+
+
 .rightBar>div{
  border-radius: 20px;
  border: 1px solid var(--white);

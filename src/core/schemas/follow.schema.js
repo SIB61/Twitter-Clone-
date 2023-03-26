@@ -1,17 +1,23 @@
+import { FOLLOW_SCHEMA, USER_SCHEMA } from "@/constants";
 import mongoose from "mongoose";
 
 export const followId = 'followId'
 const followSchema = new mongoose.Schema({
-  followedUserId:String,
-  follower:{
-    userId:String,
-    username: { type: String, required: true },
-    email: { type: String, required: true },
-    name: { type: String, required: true },
-    dateOfBirth: { type: Date,  required: true },
+  followed:{
+    type:mongoose.SchemaTypes.ObjectId,
+    required:true,
+    ref:USER_SCHEMA
   },
-  createdAt:{type:Date,default:Date.now}
-})
+  follower:{
+    id: mongoose.SchemaTypes.ObjectId,
+    username: String,
+    email: String,
+    name: String,
+    image:String
+  },
+},{
+    timestamps:true
+  })
 
-const FollowModel = mongoose.models['Follow'] || mongoose.model('Follow',followSchema)
+const FollowModel = mongoose.models[FOLLOW_SCHEMA] || mongoose.model(FOLLOW_SCHEMA,followSchema)
 export default FollowModel

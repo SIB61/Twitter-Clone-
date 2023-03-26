@@ -4,10 +4,10 @@
   gap: 0.5rem ; 
   font-size: 2rem;
   height: 100%;
+  max-width: 244px;
 }
 
 .navOptions{
- min-width: 244px;
  width: 100%;
 }
 
@@ -18,7 +18,6 @@
   gap: 1rem;
   width: max-content;
   padding: 1rem;
-  padding-right: 2rem;
   font-size: 1.5rem;
   border-radius: 9999px;
 }
@@ -52,10 +51,16 @@
 }
 
 .name{
-font-weight: bold;
+ font-weight: bold;
+ font-size: 1.2rem; 
+ max-width: 100%;
+ max-lines: 1;
+ text-overflow: ellipsis;
+overflow: hidden;
+  white-space: nowrap;
 }
 .username{
-  font-weight: normal;
+  font-weight: 500;
   opacity: 0.5;
 }
 
@@ -78,7 +83,7 @@ font-weight: bold;
   font-weight: 500;
   font-size: 1.2rem;
   color: white;
-  width: 70%;
+  width: 90%;
   display: inline-block;
 }
 .tweetButton > a{
@@ -97,7 +102,7 @@ font-weight: bold;
 }
 
 .logoItem{
- padding: 1rem;
+  padding: 1rem;
   width: max-content;
   border-radius: 50%;
   display: flex;
@@ -107,4 +112,34 @@ font-weight: bold;
 
 .logoItem:hover{
   background-color: var(--primary-alpha);
+}
+
+
+@media only screen and (max-width: 1266px) {
+  .profile > div,
+  .profile p,
+  .profile>svg,
+  .navText,
+  .tweetButton
+  {
+    display: none;
+  }
+
+  .natItem{
+    padding-right: 1rem;
+  }
+
+
+
+ .navOptions{
+  width: 100%;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+ }
+
+
+.logoItem{
+    width: 100%;
+  }
 }

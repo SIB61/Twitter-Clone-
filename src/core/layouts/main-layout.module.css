@@ -6,10 +6,16 @@
 }
 
 .content{
-   width: 990px;
+   width: 100%;
    max-width: 990px;
 }
 
+@media only screen and (max-width: 966px) {
+.content{
+   width: 100%;
+   max-width: 600px;
+}
+}
 
 .leftBar{
   position: sticky;

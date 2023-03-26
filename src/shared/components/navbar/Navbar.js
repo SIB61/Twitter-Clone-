@@ -64,7 +64,6 @@ const unAuthenticatedOptions = [
 ];
 
 export function Navbar() {
-  const router = useRouter();
   const { data: session, status } = useSession();
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
@@ -95,10 +94,10 @@ export function Navbar() {
                 </Link>
               </li>
               <li className={styles.profile}>
-                <Avator src={Dp} size={"3rem"} />
+                <Avator src={session.user.image} size="48" />
                 <div>
-                  <div className={styles.name}>{session.user.name}</div>
-                  <div className={styles.username}>@{session.user.username}</div>
+                  <p className={styles.name}>{session.user.name}</p>
+                  <p className={styles.username}>@{session.user.username}</p>
                 </div>
                 <CgMore />
               </li>

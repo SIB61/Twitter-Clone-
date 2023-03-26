@@ -1,12 +1,15 @@
-
 .postCard{
   display: flex;
   gap:1rem;
   padding: 1rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--black);
   letter-spacing: 0.4px;
   border-bottom: 1px solid var(--white);
+}
+
+.post{
+  font-size: 1.2rem;
 }
 
 .postCard:hover{
@@ -28,8 +31,9 @@
 }
 
 .name{
-  font-weight: 700;
+  font-weight: 500;
   color: var(--black);
+
 }
 
 .actions{
@@ -37,7 +41,7 @@
   fill: var(--grey);
   width: 100%;
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .username{
@@ -70,19 +74,21 @@
 }
 
 .likeButton:hover{
- color: var(--primary);
+ color: var(--pink);
+}
+
+.commentButton:hover{
+ color: var(--primary-color);
 }
 
 .commentButton:hover .commentIcon{
- color: var(--primary);
- fill: var(--primary);
+ color: var(--primary-color);
+ fill: var(--primary-color);
  background-color: var(--primary-alpha);
 }
 
 .likeButton:hover .likeIcon{
- color: var(--primary);
- fill: var(--primary);
- background-color: var(--primary-alpha);
+ color: var(--pink);
+ fill: var(--pink);
+ background-color: var(--pink-alpha);
 }
-
-

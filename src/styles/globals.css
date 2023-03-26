@@ -2,6 +2,10 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: currentColor;
 }
 
 :root {
@@ -14,6 +18,8 @@
   --grey: rgb(83, 100, 113);
   --black-alpha: rgba(15, 20, 25, 0.2);
   --background-color: white;
+  --pink:rgb(249, 24, 128);
+  --pink-alpha:rgb(249, 24, 128,0.1);
 }
 
 html,
@@ -21,37 +27,31 @@ body {
   width: 100vw;
   height: 100dvh;
   background-color: var(--background-color);
+  font-size: 15px;
 }
 
-input{
-  border: none;
-  outline: none;
+input[type='file']{
+  display: none;
 }
 
 li {
   list-style: none;
 }
 
-body {
-}
-
 a {
   text-decoration: none;
-  color: currentColor;
   display: inline-block;
 }
 
-button {
-  border: none;
-  background-color: transparent;
-}
 
 .btn {
+  padding: 1rem;
   border-radius: 9999px;
   cursor: pointer;
-  padding: 1rem;
-  font-weight: 500;
+  font-weight: bold;
   display: flex;
+  font-size: 1rem;
+  width: max-content;
   justify-content: center;
   align-items: center;
   color: currentColor;
@@ -69,10 +69,12 @@ button {
 .text-primary {
   color: var(--primary-color);
 }
+
 .btn-primary {
   background-color: var(--primary-color);
   color: var(--white);
 }
+
 .btn-disabled{
   background-color: var(--dark-white);
 }
@@ -118,6 +120,7 @@ textarea {
   font-size: 1.4rem;
   border-bottom: 0.8px solid var(--white);
   color: var(--black);
+  z-index: 2;
 }
 
 .center-container {
@@ -159,3 +162,15 @@ textarea {
   padding: 0 1rem;
   text-align: center;
 }
+
+.row {
+  display: flex;
+}
+
+.col{
+  display: flex;
+  flex-direction: column;
+}
+
+
+

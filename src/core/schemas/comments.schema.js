@@ -1,19 +1,26 @@
+import { COMMENT_SCHEMA, TWEET_SCHEMA, USER_SCHEMA } from "@/constants";
 import mongoose from "mongoose";
-
 export const commentId = "commentId";
-const commentSchema = new mongoose.Schema({
-  tweetId: String,
-  comment: String,
-  createdBy: {
-    username: { type: String, required: true },
-    email: { type: String, required: true },
-    name: { type: String, required: true },
-    dateOfBirth: { type: Date, required: true },
+const commentSchema = new mongoose.Schema(
+   {
+    comment: { type: String, required: true },
+    tweet: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: true,
+      ref: TWEET_SCHEMA,
+    },
+    user: {
+    id: mongoose.SchemaTypes.ObjectId,
+    username: String,
+    email: String,
+    name: String,
+    image:String
+    },
   },
-  createdAt: { type: Date, default: Date.now },
-});
-
+  {
+    timestamps: true,
+  }
+);
 const CommentModel =
-  mongoose.models["Comment"] || mongoose.model("Comment", commentSchema);
-
+  mongoose.models[COMMENT_SCHEMA] || mongoose.model(COMMENT_SCHEMA, commentSchema);
 export default CommentModel;
