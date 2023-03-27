@@ -41,9 +41,8 @@ export const authOptions = {
     async jwt({token,user,account}) {
       console.log(account,user,token)
       if (user) {
-        console.log("user", user)
         user = await getUserByEmail(token.email)
-        token.id = user.userId;
+        token.id = user.id;
         token.name = user.name;
         token.username = user.username;
         token.email = user.email;

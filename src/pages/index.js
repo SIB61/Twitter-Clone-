@@ -3,10 +3,28 @@ import styles from "@/styles/Home.module.css";
 import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
-import { getSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
-function Home({}) {
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+
+
+export async function getServerSideProps(context) {
+  const session = await getServerSession(context.req,context.res,authOptions)
+  if (session) {
+    return {
+      redirect: {
+        destination: '/home',
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: {},
+  }
+}
+
+function Page({}) {
   return (
     <>
       <Head>
@@ -28,20 +46,6 @@ function Home({}) {
   );
 }
 
-Home.Layout = MainLayout;
-export default Home;
+Page.Layout = MainLayout;
+export default Page;
 
-export async function getServerSideProps(context) {
-  const session = await getServerSession(context.req,context.res,authOptions)
-  if (session) {
-    return {
-      redirect: {
-        destination: '/home',
-        permanent: false,
-      },
-    }
-  }
-  return {
-    props: {},
-  }
-}

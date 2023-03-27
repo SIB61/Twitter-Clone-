@@ -7,7 +7,6 @@ export default handleRequest({
   async POST(req, res) {
     const { user } = await getServerSession(req, res, authOptions);
     const { tweetId } = req.query;
-    console.log(user)
     const likeId = tweetId + user.id;
     let like = await LikeModel.findOneAndRemove({ likeId: likeId });
     if(like){

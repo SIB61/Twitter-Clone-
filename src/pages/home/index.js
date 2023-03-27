@@ -9,9 +9,26 @@ import { dbConnect } from "@/core/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import LikeModel from "@/core/schemas/likes.schema";
-import { useRouter } from "next/router";
 
-function Home({ tweets }) {
+
+export async function getServerSideProps(ctx) {
+  await dbConnect();
+  let tweets = await getAllTweets();
+  const {user} = await getServerSession(ctx.req, ctx.res, authOptions);
+  const likeIds = tweets.map((tweet) => tweet.id + user.id);
+  const likes = await LikeModel.find({ likeId: { $in: likeIds } });
+  let likedTweetIds = likes.map((like) => like.tweet.toString());
+  likedTweetIds = new Set(likedTweetIds)
+  tweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.id.toString())}));
+  return {
+    props: {
+      tweets: JSON.parse(JSON.stringify(tweets)),
+    },
+  };
+}
+
+
+function Page({ tweets }) {
   const { data, status } = useSession();
   console.log(status, data);
   return (
@@ -35,20 +52,5 @@ function Home({ tweets }) {
     </>
   );
 }
-Home.Layout = MainLayout;
-export default Home;
-export async function getServerSideProps(ctx) {
-  await dbConnect();
-  let tweets = await getAllTweets();
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  const likeIds = tweets.map((tweet) => tweet.tweetId + session.user.id);
-  const likes = await LikeModel.find({ likeId: { $in: likeIds } });
-  let likedTweetIds = likes.map((like) => like.tweet.toString());
-  likedTweetIds = new Set(likedTweetIds)
-  tweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.tweetId.toString())}));
-  return {
-    props: {
-      tweets: JSON.parse(JSON.stringify(tweets)),
-    },
-  };
-}
+Page.Layout = MainLayout;
+export default Page;
