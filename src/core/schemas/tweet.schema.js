@@ -1,4 +1,4 @@
-import { TWEET_SCHEMA, USER_SCHEMA } from "@/constants";
+import { TWEET_SCHEMA } from "@/constants";
 import mongoose from "mongoose";
 export const tweetId = "tweetId";
 const TweetSchema = new mongoose.Schema({

@@ -14,19 +14,32 @@ export function CreateTweet({ expanded }) {
   const textAreaRef = useAutoResizeTextArea(post)
   const loading = useLoading()
   const [img,setImg] = useState()
+  const [imgFile,setImgFile] = useState()
   const router = useRouter()
   const twitPost = async () => {
-    if(post) {
+    if(post || img) {
+      const formData = new FormData()
+      if(post)
+      formData.append('post',post)
+      if(imgFile)
+      formData.append('image',imgFile)
       loading.start()
-      await axios.post('/api/tweet',{post:post,imgUrl:null})
+      try{
+      await fetch('/api/tweet/create',{method:'POST',body:formData})
+      }
+      catch(err){
+        console.log(err)
+      }
       setPost("")
-      loading.complete()
+      setImgFile(undefined)
+      setImg(undefined)
+      await loading.complete()
     }
   }
 
-
   const onImgSelect = (e) =>{
     const file = e.target.files[0] 
+    setImgFile(file)
     const fileReader = new FileReader()
     fileReader.onload = (e) => {
        setImg(e.target.result) 
@@ -57,7 +70,7 @@ export function CreateTweet({ expanded }) {
           onChange={e=>setPost(e.target.value)}
         ></textarea>
         {
-          img && (<img src={img} style={{borderRadius:'20px',marginBottom:'10px'}} />)
+          img && (<img src={img}/>)
         }
         {expand && (
           <>

@@ -4,7 +4,7 @@ import { BsGithub } from "react-icons/bs";
 import { signIn } from "next-auth/react";
 export function AuthCard() {
   const signUpWithGithub =async ()=>{
-    const user = await signIn('github',{callbackUrl:'/'})
+    const user = await signIn('github',{callbackUrl:'/home'})
     console.log(user)
   }
   return (

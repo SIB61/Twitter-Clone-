@@ -1,13 +1,10 @@
-
-.tweets{
-  max-width: 600px;
-  width: 100%;
-  height: max-content;
-  border-left: 0.8px solid var(--white);
-  border-right: 0.8px solid var(--white);
-  padding-top: 4rem;
-  position: relative;
-}
+/* .tweets{ */
+/*   max-width: 600px; */
+/*   width: 100%; */
+/*   height: max-content; */
+/*   padding-top: 4rem; */
+/*   position: relative; */
+/* } */
 
 .home{
   width: 100%;
