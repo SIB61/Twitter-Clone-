@@ -4,22 +4,13 @@ import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { useSession } from "next-auth/react";
-import { getAllTweets } from "@/features/tweet/services/server/get-all-tweets";
-import { dbConnect } from "@/core/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import LikeModel from "@/core/schemas/likes.schema";
-
+import { getUserFeed } from "@/features/tweet/services/server/get-feed";
 
 export async function getServerSideProps(ctx) {
-  await dbConnect();
-  let tweets = await getAllTweets();
   const {user} = await getServerSession(ctx.req, ctx.res, authOptions);
-  const likeIds = tweets.map((tweet) => tweet.id + user.id);
-  const likes = await LikeModel.find({ likeId: { $in: likeIds } });
-  let likedTweetIds = likes.map((like) => like.tweet.toString());
-  likedTweetIds = new Set(likedTweetIds)
-  tweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.id.toString())}));
+  const tweets = await getUserFeed(user)
   return {
     props: {
       tweets: JSON.parse(JSON.stringify(tweets)),

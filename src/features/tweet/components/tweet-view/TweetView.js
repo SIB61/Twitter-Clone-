@@ -7,10 +7,13 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { ModalContext } from "@/core/layouts/main-layout";
 import { Comment } from "@/features/comment/components/comment/Comment";
+import Link from "next/link";
+import { useRouter } from "next/router";
 export function TweetView({ tweet = {} }) {
   const [img,setImg] = useState() 
 
-  const like = async () => {
+  const like = async (e) => {
+    e.stopPropagation()
     try {
       isLiked
         ? setTotalLikes((likes) => likes - 1)
@@ -21,19 +24,24 @@ export function TweetView({ tweet = {} }) {
       console.log(err);
     }
   };
-
+    const router = useRouter()
   const setModal = useContext(ModalContext)
   const [totalComments,setTotalComments] = useState(tweet.totalComments)
 
-  const onCommentClick = ()=>{
+  const onCommentClick = (e)=>{
+     e.stopPropagation()
      setModal(<Comment tweet={tweet} onSuccess={()=>setTotalComments(count=>count+1)}/>) 
+  }
+
+  const onClick = () =>{
+    router.push(`/tweet/${tweet.id}`)
   }
 
   const [isLiked, toggleLiked] = useToggle(tweet.isLiked);
   const [totalLikes, setTotalLikes] = useState(tweet.totalLikes);
 
   return (
-    <div className={styles.postCard}>
+    <div onClick={onClick} className={styles.postCard}>
       <Avator src={tweet.user?.image} />
       <div>
         <div className={styles.names}>
