@@ -3,14 +3,15 @@ import mongoose from "mongoose";
 export const commentId = "commentId";
 const commentSchema = new mongoose.Schema(
    {
-    comment: { type: String, required: true },
+    content: { type: String, required: true },
     tweet: {
-      type: mongoose.SchemaTypes.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: TWEET_SCHEMA,
     },
+    totalReplies: { type: Number, default: 0 },
     user: {
-    id: mongoose.SchemaTypes.ObjectId,
+    id: mongoose.Schema.Types.ObjectId,
     username: String,
     email: String,
     name: String,
@@ -22,5 +23,5 @@ const commentSchema = new mongoose.Schema(
   }
 );
 const CommentModel =
-  mongoose.models[COMMENT_SCHEMA] || mongoose.model(COMMENT_SCHEMA, commentSchema);
+  mongoose?.models?.Comment || mongoose.model(COMMENT_SCHEMA, commentSchema);
 export default CommentModel;

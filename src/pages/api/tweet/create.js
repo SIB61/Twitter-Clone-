@@ -14,10 +14,11 @@ export default handleRequest({
   async POST(req, res) {
   try{
   const {fields,files} = await parseForm(req)
-  const image = files.image? 'uploads/' + files.image?.newFilename : undefined
-  const post = fields.post
+  const image = files.image? '/uploads/' + files.image?.newFilename : undefined
+  const content = fields.content
+  console.log(image,content)
   const {user} = await getServerSession(req,res,authOptions)
-  const tweet = createTweet({post,image,user})
+  const tweet = await createTweet({content,image,user})
   return res.json(tweet)
   }catch(err){
   console.log(err)

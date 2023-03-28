@@ -8,7 +8,6 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-
 export async function getServerSideProps(context) {
   const session = await getServerSession(context.req,context.res,authOptions)
   if (session) {

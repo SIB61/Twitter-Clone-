@@ -41,6 +41,7 @@ export function MainLayout({ children }) {
   const router = useRouter();
   const { page } = router.query;
   const {status} = useSession()
+  const onClose=() => router.push("/",'',{shallow:true})
   return (
     <ModalContext.Provider value={setModal}>
       <main className={styles.main + " " + chirp.className}>
@@ -48,36 +49,28 @@ export function MainLayout({ children }) {
           <Navbar />
         </aside>
         <div className={styles.content}>{children}</div>
-        {modal && (
-          <Modal
-            onClose={() => {
-              setModal(null);
-            }}
-          >
-            {modal}
-          </Modal>
-        )}
+        {modal}
         {page === "create-tweet" && (
-          <Modal onClose={() => router.push("/")}>
+          <Modal onClose={onClose}>
             <CreateTweet expanded />
           </Modal>
         )}
         {page === "create-account" && (
-          <Modal onClose={() => router.push("/")}>
+          <Modal onClose={onClose}>
             <div style={{ padding: "0 20%" }}>
               <SignupCard />
             </div>
           </Modal>
         )}
         {page === "login" && (
-          <Modal onClose={() => router.push("/")}>
+          <Modal onClose={onClose}>
             <div style={{ padding: "0 20%" }}>
               <LoginCard />
             </div>
           </Modal>
         )}
         {page === "signup" && (
-          <Modal onClose={() => router.push("/")}>
+          <Modal onClose={onClose}>
             <div style={{ padding: "0 10%" }}>
               <AuthCard />
             </div>

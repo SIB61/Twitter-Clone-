@@ -1,9 +1,9 @@
 import CommentModel from "@/core/schemas/comments.schema";
 import TweetModel from "@/core/schemas/tweet.schema";
 import { mapId } from "@/shared/utils/mapId";
-export async function createComment({comment,tweetId,user}){
+export async function createComment({content,tweetId,user}){
   try{
-      const commentModel = await CommentModel.create({comment,tweet:tweetId,user}) 
+      const commentModel = await CommentModel.create({tweet:tweetId,user,content}) 
       await TweetModel.updateOne({_id:tweetId},{$inc:{totalComments:1}})
       return mapId(commentModel)
   }catch{

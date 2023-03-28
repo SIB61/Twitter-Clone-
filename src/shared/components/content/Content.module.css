@@ -1,0 +1,15 @@
+
+.content{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  font-size: 1.2rem;
+}
+
+.content img{
+  width: 100%;
+  border-radius: 20px;
+}
+
+

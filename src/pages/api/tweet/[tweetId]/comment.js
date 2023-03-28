@@ -5,13 +5,14 @@ import { authOptions } from "../../auth/[...nextauth]";
 export default handleRequest({
     async POST(req,res){
     const {tweetId} = req.query
-    let {comment} = req.body
+    let {content} = req.body
+    console.log(content,tweetId)
     try{
     const {user} = await getServerSession(req,res,authOptions)
-    comment = await createComment({comment,tweetId,user})   
-    return res.json(comment)
+    const newComment = await createComment({content:content,tweetId,user})   
+    return res.json(newComment)
     }catch(err){
-    throw res.status(err.status || 500).send(err.error || 'Internal server error')
+    return res.status(err.status || 500).send(err.error || 'Internal server error')
     }
    }
 })

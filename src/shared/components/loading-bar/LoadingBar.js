@@ -3,8 +3,8 @@ export function LoadingBar({loading}) {
   return (
     <div
       className={
-        loading.isStarted &&
-        `${styles.loadingBar} ${loading.isCompleted ? styles.completed : styles.loading}`
+        loading.started &&
+        `${styles.loadingBar} ${loading.completed ? styles.completed : styles.loading}`
       }
     ></div>
   );

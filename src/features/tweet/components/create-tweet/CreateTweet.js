@@ -7,7 +7,6 @@ import axios from "axios";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
-import { useRouter } from "next/router";
 export function CreateTweet({ expanded }) {
   const [expand,setExpand] = useState(expanded)
   const [post,setPost] = useState() 
@@ -15,12 +14,11 @@ export function CreateTweet({ expanded }) {
   const loading = useLoading()
   const [img,setImg] = useState()
   const [imgFile,setImgFile] = useState()
-  const router = useRouter()
   const twitPost = async () => {
     if(post || img) {
       const formData = new FormData()
       if(post)
-      formData.append('post',post)
+      formData.append('content',post)
       if(imgFile)
       formData.append('image',imgFile)
       loading.start()
@@ -33,7 +31,7 @@ export function CreateTweet({ expanded }) {
       setPost("")
       setImgFile(undefined)
       setImg(undefined)
-      await loading.complete()
+      loading.complete()
     }
   }
 
@@ -49,7 +47,7 @@ export function CreateTweet({ expanded }) {
 
   return (
     <div className={styles.createPost}>
-      <LoadingBar loading={loading}/>
+      <LoadingBar loading={loading.loading}/>
       <Avator src={Dp} size="48" />
       <div className={styles.fields}>
         {expand && (

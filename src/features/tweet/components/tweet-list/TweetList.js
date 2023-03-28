@@ -1,9 +1,9 @@
-import { TweetView } from "../tweet-view/TweetView"
 import { tweets as tweetList } from "@/db.mock"
+import { TweetView } from "../tweet-view/TweetView"
 
 export function TweetList({tweets=tweetList}){
   return tweets.map((tweet,index)=>(
-    <TweetView key={index} tweet={tweet}/> 
+    <TweetView  key={index} tweet={tweet}/> 
   ))
 }
 

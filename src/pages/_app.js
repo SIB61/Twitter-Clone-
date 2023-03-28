@@ -22,7 +22,7 @@ export default function App({ Component, pageProps:{session,...pageProps}}) {
   }, [Router])
 
   return <SessionProvider session={session}>
-      <LoadingBar loading={loading}/>
+      <LoadingBar loading={loading.loading}/>
     {
       Component.Layout ? <Component.Layout>
         <Component {...pageProps}/>

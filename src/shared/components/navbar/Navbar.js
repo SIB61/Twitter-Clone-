@@ -89,7 +89,7 @@ export function Navbar() {
           {status === "authenticated" && (
             <>
               <li>
-                <Link className={styles.tweetButton} href="?page=create-tweet">
+                <Link className={styles.tweetButton} href="?page=create-tweet" shallow>
                   Tweet
                 </Link>
               </li>

@@ -13,6 +13,6 @@ const UserSchema = new mongoose.Schema({
   createdAt:{type:Date,default:Date.now}
 });
 
-const UserModel = mongoose.models[USER_SCHEMA] || mongoose.model(USER_SCHEMA, UserSchema);
+const UserModel = mongoose?.models?.User || mongoose?.model(USER_SCHEMA, UserSchema);
 
 export default UserModel;

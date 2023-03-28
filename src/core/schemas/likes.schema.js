@@ -4,12 +4,12 @@ export const likeId = "likeId";
 const likeSchema = new mongoose.Schema({
   likeId:{type:String,index:true,required:true},
   tweet:{
-    type:mongoose.SchemaTypes.ObjectId,
+    type:mongoose.Schema.Types.ObjectId,
     ref:TWEET_SCHEMA,
     required:true
   },
   user:{
-    id: mongoose.SchemaTypes.ObjectId,
+    id: mongoose.Schema.Types.ObjectId,
     username: String,
     email: String,
     name: String,
@@ -22,6 +22,6 @@ const likeSchema = new mongoose.Schema({
 
 );
 
-const LikeModel = mongoose.models[LIKE_SCHEMA] || mongoose.model(LIKE_SCHEMA, likeSchema);
+const LikeModel = mongoose?.models?.Like || mongoose.model(LIKE_SCHEMA, likeSchema);
 export default LikeModel;
 
