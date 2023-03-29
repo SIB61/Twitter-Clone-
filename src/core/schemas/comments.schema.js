@@ -9,7 +9,12 @@ const commentSchema = new mongoose.Schema(
       required: true,
       ref: TWEET_SCHEMA,
     },
+    parent: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: COMMENT_SCHEMA
+    },
     totalReplies: { type: Number, default: 0 },
+    totalLikes:{type:Number,default:0},
     user: {
     id: mongoose.Schema.Types.ObjectId,
     username: String,

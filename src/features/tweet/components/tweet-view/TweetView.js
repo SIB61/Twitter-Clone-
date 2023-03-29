@@ -29,7 +29,6 @@ export function TweetView({ tweet = {}, detailed }) {
             totalLikes: state.totalLikes + 1,
             isLiked: true,
           }));
-      toggleLiked();
       await axios.post(`/api/tweet/${tweet.id}/like`);
     } catch (err) {
       console.log(err);

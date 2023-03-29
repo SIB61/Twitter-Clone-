@@ -7,9 +7,6 @@
   cursor: pointer;
 }
 
-.profile > div{
-  width: 100%;
-}
 
 
 .profilePic{
@@ -35,9 +32,9 @@
 }
 
 .profile>div{
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap:0.5rem
 }
 
 @container (max-width: 1266px) {

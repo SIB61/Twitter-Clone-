@@ -34,7 +34,7 @@ function Page({tweet}){
     <div className="center-container" >
     <div className="appbar">Tweet</div>
       <div style={{padding:'1rem'}}>
-         <TweetView detailed tweet={tweet}/>    
+        <TweetView detailed tweet={tweet}/>    
         <CommentList comments={tweet.comments}/>
       </div>
     </div>

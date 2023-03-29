@@ -1,4 +1,3 @@
-import { createComment } from "@/features/comment/services/server/create-comment";
 import { createReply } from "@/features/comment/services/server/create-reply";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { handleRequest } from "@/shared/middlewares/request-handler";
@@ -9,7 +8,7 @@ export default handleRequest({
     let {content} = req.body
     try{
     const {user} = await getServerSession(req,res,authOptions)
-    const reply = await createReply({content,commentId,user})   
+    const reply = await createReply({content,commentId,user,tweetId})   
     return res.json(reply)
     }catch(err){
     throw res.status(err.status || 500).send(err.error || 'Internal server error')

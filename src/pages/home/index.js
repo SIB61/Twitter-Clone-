@@ -7,18 +7,22 @@ import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { getUserFeed } from "@/features/tweet/services/server/get-feed";
+import { YouMayKnow } from "@/features/user/components/you-may-know/YouMayKnow";
+import { getUsers } from "@/features/user/services/server/get-user";
 
 export async function getServerSideProps(ctx) {
   const {user} = await getServerSession(ctx.req, ctx.res, authOptions);
   const tweets = await getUserFeed(user)
+  const users = await getUsers()
   return {
     props: {
       tweets: JSON.parse(JSON.stringify(tweets)),
+      users: JSON.parse(JSON.stringify(users)),
     },
   };
 }
 
-function Page({ tweets }) {
+function Page({ tweets, users }) {
   const { data, status } = useSession();
   console.log(status, data);
   return (
@@ -37,7 +41,9 @@ function Page({ tweets }) {
             <TweetList tweets={tweets} />
           </div>
         </div>
-        <div className={styles.rightBar}></div>
+        <div className={styles.rightBar}>
+          <YouMayKnow users={users}/>   
+        </div>
       </div>
     </>
   );

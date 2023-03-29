@@ -32,9 +32,8 @@
 }
 
 .name{
-  font-weight: 500;
+  font-weight: 700;
   color: var(--black);
-
 }
 
 .actions{
@@ -47,6 +46,7 @@
 
 .username{
   color: var(--grey);
+  font-weight:400;
 }
 
 .commentIcon{

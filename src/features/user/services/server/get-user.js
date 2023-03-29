@@ -22,3 +22,13 @@ export async function getUser(queryObject){
  if(user)
  return mapId(user)
 }
+
+export async function getUsers(){
+ try{
+    const users = await UserModel.find().lean()
+    return users.map(user=>mapId(user))
+  }catch(err){
+   console.log("err in getUser",err)
+    throw err
+  }
+}
