@@ -176,3 +176,30 @@ textarea {
 
 }
 
+.tabbar{
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ border-bottom: 1px solid var(--white) ;
+}
+
+.tabbar .tab{
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  transition: all 200ms ease-in-out;
+  width: 700;
+}
+
+.tabbar .tab:hover{
+  background-color: var(--white);
+  
+}
+
+.tabbar .selected{
+  border-bottom: 3px solid var(--primary-color);
+  color: var(--black);
+}

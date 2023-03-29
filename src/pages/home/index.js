@@ -18,7 +18,6 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-
 function Page({ tweets }) {
   const { data, status } = useSession();
   console.log(status, data);

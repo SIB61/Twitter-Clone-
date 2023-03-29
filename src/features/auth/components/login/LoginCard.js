@@ -26,7 +26,7 @@ export function LoginCard(){
   <div className={styles.loginCard}>
      <Image src={tweeterLogo} alt='tweeter' className={styles.tweeterLogo}/>
      <h4>Sign in to Twitter</h4>
-     <button onClick={loginWithGithub()} className='btn btn-bordered btn-ghost' style={{width:'100%'}}> <BsGithub height='2rem' width='2rem'/>Sign in with github</button>
+     <button onClick={loginWithGithub} className='btn btn-bordered btn-ghost' style={{width:'100%'}}> <BsGithub height='2rem' width='2rem'/>Sign in with github</button>
      <div className='h-divider-or'></div>
       <form onSubmit={handleSubmit(onSubmit)}>
       <Input register={register("email",{minLength:3,required:'email is required'})} placeHolder='email' style={{width:'100%'}}/>

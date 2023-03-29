@@ -5,12 +5,15 @@ import { MiniProfile } from "../mini-profile/MiniProfile";
 import { LikeIcon } from "../icons/LikeIcon";
 import { CommentIcon } from "../icons/CommentIcon";
 import { Content } from "../content/Content";
+import Link from "next/link";
 
 export function PostDetailedItem({post,onActionClick,onClick}){
   const createdAt = (new Date(post.createdAt)).toDateString();
   return (
     <div className={styles.post} onClick={onClick}>
-      <MiniProfile user={post?.user} />
+      <Link href={`/profile/${post?.user?.id}`}>
+      <MiniProfile user={post?.user}  />
+      </Link>
       <div className={styles.content}>
       <Content image={post?.image} content={post?.content} />
       </div>

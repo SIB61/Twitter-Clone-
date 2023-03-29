@@ -6,14 +6,17 @@ import { Avator } from "@/features/user/components/avatar/Avatar";
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 import { useEffect } from "react";
+import Link from "next/link";
 TimeAgo.addDefaultLocale(en)
 export function PostListItem({ post = {}, onClick , onActionClick }) {
   const timeAgo = new TimeAgo('en-US')
   useEffect(()=>{console.log(post)},[])
-  const createdAt = timeAgo.format(new Date(post.createdAt))
+  const createdAt = timeAgo.format(new Date() )
   return (
     <div className={styles.postCard} onClick={onClick}>
-      <Avator/>
+      <Link href={`/profile/${post.user?.id}`}>
+      <Avator src={post.user.image}/>
+      </Link>
       <div>
         <div className={styles.name}>
         <div>{post.user.name}</div>

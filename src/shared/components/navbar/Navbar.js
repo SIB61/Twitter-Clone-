@@ -21,36 +21,36 @@ import { useSession } from "next-auth/react";
 const authenticatedOptions = [
   {
     title: "Home",
-    route: "/",
+    route: (...params) => "/",
     icon: BiHomeCircle,
   },
   {
     title: "Explore",
-    route: "/",
+    route: (...params) => "/",
     icon: RiHashtag,
   },
 
   {
     title: "Notifications",
-    route: "/",
+    route: (...params) => "/",
     icon: GrNotification,
   },
 
   {
     title: "Messages",
-    route: "/",
+    route: (...params) => "/",
     icon: GrInbox,
   },
 
   {
     title: "Profile",
-    route: "/",
+    route: (...params) => "/profile/"+params[0],
     icon: FaRegUser,
   },
 
   {
     title: "More",
-    route: "/",
+    route: (...params) => "/",
     icon: CgMoreO,
   },
 ];
@@ -58,7 +58,7 @@ const authenticatedOptions = [
 const unAuthenticatedOptions = [
   {
     title: "Explore",
-    route: "/",
+    route: (...params)=> "/",
     icon: RiHashtag,
   },
 ];
@@ -77,7 +77,7 @@ export function Navbar() {
 
           {options.map((v, i) => (
             <li key={i}>
-              <Link href={v.route} className={styles.navOptions}>
+              <Link href={v.route(session?.user?.id)} className={styles.navOptions}>
                 <div className={styles.navItem} style={{ fontWeight: "500" }}>
                   {<v.icon className={styles.navIcon} />}
                   <span className={styles.navText}>{v.title}</span>

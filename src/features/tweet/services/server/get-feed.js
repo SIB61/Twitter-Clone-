@@ -6,7 +6,7 @@ export async function getUserFeed(user){
   await dbConnect()
   let tweets = await getAllTweets();
   const likeIds = tweets.map((tweet) => tweet.id + user.id);
-  const likes = await LikeModel.find({ likeId: { $in: likeIds } });
+  const likes = await LikeModel.find({ likeId: { $in: likeIds } }).lean();
   let likedTweetIds = likes.map((like) => like.tweet.toString());
   likedTweetIds = new Set(likedTweetIds)
   tweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.id.toString())}));

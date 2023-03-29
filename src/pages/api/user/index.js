@@ -7,7 +7,7 @@ export default handleRequest({
     const { name, email, password, dateOfBirth } = req.body;
     const passwordHash = bcrypt.hashSync(password);
     const username = email.split("@")[0];
-    const user = await getUserByEmail(email);
+    let user = await getUserByEmail(email);
     if (user) res.status(409).send("user exists");
     else
       try {

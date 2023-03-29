@@ -48,7 +48,7 @@ export function CreateTweet({ expanded }) {
   return (
     <div className={styles.createPost}>
       <LoadingBar loading={loading.loading}/>
-      <Avator src={Dp} size="48" />
+      <Avator size="48" />
       <div className={styles.fields}>
         {expand && (
           <select defaultValue="everyone" className={styles.audience}>

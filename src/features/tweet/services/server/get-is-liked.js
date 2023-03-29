@@ -6,7 +6,17 @@ export async function getIsLiked({userId,tweetId}){
        return true
     } else return false 
   }
-  catch{
+  catch(err){
     throw {status:500,error:'something went wrong in getIsLiked'}
   }
+}
+
+export async function getIsLikedMany({userId,tweets}){
+  const likeIds = tweets.map((tweet) => tweet.id + userId);
+  const likes = await LikeModel.find({ likeId: { $in: likeIds } });
+  let likedTweetIds = likes.map((like) => like.tweet.toString());
+  likedTweetIds = new Set(likedTweetIds)
+  const newTweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.id)}));
+  console.log(newTweets)
+  return newTweets
 }

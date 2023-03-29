@@ -1,8 +1,8 @@
 import { FOLLOW_SCHEMA, USER_SCHEMA } from "@/constants";
 import mongoose from "mongoose";
-
 export const followId = 'followId'
 const followSchema = new mongoose.Schema({
+  followId:{type:String,index:true,required:true},
   followed:{
     type:mongoose.Schema.Types.ObjectId,
     required:true,

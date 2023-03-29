@@ -7,12 +7,15 @@ import { Input } from '@/shared/components/input/Input'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 export function SignupCard(){
   const {register,handleSubmit,formState:{isValid}} = useForm() 
+  const router = useRouter()
 
   const onSubmit = async (data)=>{
     try{
     const user = await axios.post("/api/user",data)
+    router.push('?page=login','',{shallow:true})
     console.log(user)
     }catch(err){
     console.log(err)
