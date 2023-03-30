@@ -30,6 +30,7 @@ export function TweetView({ tweet = {}, detailed }) {
             isLiked: true,
           }));
       await axios.post(`/api/tweet/${tweet.id}/like`);
+
     } catch (err) {
       console.log(err);
     }
@@ -46,6 +47,9 @@ export function TweetView({ tweet = {}, detailed }) {
       }
       await loading.complete()
       setModal(undefined)
+      if(detailed){
+        router.replace(router.asPath)
+      }
     }
   };
 

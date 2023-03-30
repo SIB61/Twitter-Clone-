@@ -72,7 +72,7 @@ export function Navbar() {
       <nav className={styles.navbar}>
         <ul className={styles.navList}>
           <li className={styles.logoItem}>
-            <Image src={TwitterLogo} className={styles.logo} />
+            <Image alt="jhi" src={TwitterLogo} className={styles.logo} />
           </li>
 
           {options.map((v, i) => (
@@ -94,7 +94,7 @@ export function Navbar() {
                 </Link>
               </li>
               <li className={styles.profile}>
-                <Avator src={session.user.image} size="48" />
+                <Avator alt="avatar" src={session.user.image} size="48" />
                 <div>
                   <p className={styles.name}>{session.user.name}</p>
                   <p className={styles.username}>@{session.user.username}</p>

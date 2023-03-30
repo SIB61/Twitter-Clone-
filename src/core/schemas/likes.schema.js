@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 export const likeId = "likeId";
 const likeSchema = new mongoose.Schema({
   likeId:{type:String,index:true,required:true},
-  tweet:{
+  post:{
     type:mongoose.Schema.Types.ObjectId,
     ref:TWEET_SCHEMA,
     required:true

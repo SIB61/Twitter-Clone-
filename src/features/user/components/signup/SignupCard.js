@@ -1,8 +1,6 @@
 import styles from './SignupCard.module.css'
 import tweeterLogo from '../../../../../public/images/Twitter-logo.png'
 import Image from 'next/image'
-import { Button } from '@/shared/components/buttons/Button'
-import {BsGithub} from 'react-icons/bs'
 import { Input } from '@/shared/components/input/Input'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'

@@ -12,13 +12,16 @@ import { getUsers } from "@/features/user/services/server/get-user";
 
 export async function getServerSideProps(ctx) {
   const {user} = await getServerSession(ctx.req, ctx.res, authOptions);
-  const tweets = await getUserFeed(user)
-  const users = await getUsers()
+  const tweetsPromise =  getUserFeed(user)
+  const usersPromise =  getUsers()
+  const [tweets,users] =await Promise.all([tweetsPromise,usersPromise])
   return {
-    props: {
-      tweets: JSON.parse(JSON.stringify(tweets)),
-      users: JSON.parse(JSON.stringify(users)),
+    props:JSON.parse(JSON.stringify(
+    {
+      tweets:tweets,
+      users: users,
     },
+    ))
   };
 }
 

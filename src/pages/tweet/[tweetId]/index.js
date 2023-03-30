@@ -1,17 +1,17 @@
 import { MainLayout } from "@/core/layouts/main-layout"
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView"
 import { getServerSession } from "next-auth"
-import { authOptions } from "../api/auth/[...nextauth]"
 import { getIsLiked } from "@/features/tweet/services/server/get-is-liked"
 import { getTweetById } from "@/features/tweet/services/server/get-tweet-by-id"
 import { CommentList } from "@/features/comment/components/comment-list/CommentList"
-import comment from "../api/tweet/[tweetId]/comment"
+import { authOptions } from "@/pages/api/auth/[...nextauth]"
 export async function getServerSideProps(ctx){
   const {tweetId} = ctx.params    
   try{
-    const tweet = await getTweetById(tweetId)
     const {user} = await getServerSession(ctx.req,ctx.res,authOptions)
-    const isLiked = await getIsLiked({tweetId,userId:user.id})
+    const tweetPromise =  getTweetById(tweetId)
+    const isLikedPromise =  getIsLiked({tweetId,userId:user.id})
+    const [tweet,isLiked] = await Promise.all([tweetPromise,isLikedPromise])
     tweet.isLiked = isLiked
     return {
      props:{

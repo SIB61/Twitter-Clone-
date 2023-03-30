@@ -4,17 +4,20 @@ import { useToggle } from "@/shared/hooks/useToggle";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { PostFollow } from "../../services/client/post-follow";
 import { Avator } from "../avatar/Avatar";
-
 import styles from "./ProfileLayout.module.css";
-
+import { ModalContext } from "@/core/layouts/main-layout";
+import { Modal } from "@/shared/components/modal/Modal";
+import { EditProfile } from "../edit-profile/EditProfile";
 export function ProfileLayout({ children }) {
   const user = children.props.user;
+  user.isFollowing = children.props.isFollowing
   const [isFollowingState ,toggleIsFollowingState]= useToggle(user.isFollowing)
   const { data: session, status } = useSession();
   const [selected,setSelected] = useState(1)
+  const setModal = useContext(ModalContext)
   const router = useRouter()
   useEffect(()=>{
     switch(router.pathname){
@@ -43,6 +46,15 @@ export function ProfileLayout({ children }) {
     }
     loading.complete()
   }
+
+  const editProfile = async()=>{
+    setModal(
+      <Modal>
+         <EditProfile/>  
+      </Modal>
+    ) 
+  }
+
   return (
     <div>
       <div className="center-container">
@@ -59,7 +71,7 @@ export function ProfileLayout({ children }) {
             </div>
             {status === "authenticated" &&
               (user.id === session.user.id ? (
-                <button className="btn btn-ghost btn-bordered">
+                <button onClick={editProfile} className="btn btn-ghost btn-bordered">
                   edit profile
                 </button>
               ) : (
@@ -73,8 +85,8 @@ export function ProfileLayout({ children }) {
             <div>@{user?.username}</div>
             <div>joined 21 december 2022</div>
             <div className="row" style={{ gap: "1rem" }}>
-              <div>{user?.totalFollowers | 0} followings</div>
-              <div>{user?.totalFollowings | 0} followers</div>
+              <div>{user?.totalFollowers | 0} followers</div>
+              <div>{user?.totalFollowings | 0} followings</div>
               <div></div>
             </div>
             <div className="tabbar" style={{ height: "3rem" }}>

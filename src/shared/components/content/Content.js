@@ -5,7 +5,7 @@ export function Content({ content, image }) {
       {content && <div>{content}</div>}
       {image && (
         <div>
-          <img src={image}/>
+          <img alt='a' src={image}/>
         </div>
       )}
     </div>

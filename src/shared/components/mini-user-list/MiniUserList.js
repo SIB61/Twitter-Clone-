@@ -10,7 +10,7 @@ export function MiniUserList({
       <div>{title}</div>
       <div className="h-divider"></div>
       {users.map((user) => (
-        <div className={styles.user}>
+        <div key={user.id} className={styles.user}>
           <MiniProfile user={user} onClick={() => onItemClick(user)} />
         </div>
       ))}

@@ -7,6 +7,7 @@ import axios from "axios";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
+import { useRouter } from "next/router";
 export function CreateTweet({ expanded }) {
   const [expand,setExpand] = useState(expanded)
   const [post,setPost] = useState() 
@@ -14,6 +15,7 @@ export function CreateTweet({ expanded }) {
   const loading = useLoading()
   const [img,setImg] = useState()
   const [imgFile,setImgFile] = useState()
+  const router = useRouter()
   const twitPost = async () => {
     if(post || img) {
       const formData = new FormData()
@@ -24,6 +26,7 @@ export function CreateTweet({ expanded }) {
       loading.start()
       try{
       await fetch('/api/tweet/create',{method:'POST',body:formData})
+      router.replace(router.asPath)
       }
       catch(err){
         console.log(err)
@@ -68,7 +71,7 @@ export function CreateTweet({ expanded }) {
           onChange={e=>setPost(e.target.value)}
         ></textarea>
         {
-          img && (<img src={img}/>)
+          img && (<img src={img} alt="img"/>)
         }
         {expand && (
           <>
@@ -80,8 +83,8 @@ export function CreateTweet({ expanded }) {
         )}
         <div className={styles.actions}>
           <div className={styles.attachment}>
-            <label for="img" className="btn btn-icon" style={{padding:'0.5rem'}}>
-              <ImgIcon color="rgb(29, 155, 240)" width="1.4rem" />
+            <label htmlFor="img" className="btn btn-icon" style={{padding:'0.5rem'}}>
+              <ImgIcon color="rgb(29, 155, 240)" width="22" />
             </label>
             <input id="img" accept="image/*" onChange={onImgSelect} type="file"/>
           </div>

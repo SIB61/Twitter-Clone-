@@ -7,17 +7,16 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { postReply } from "../../services/client/post-reply";
 import { useLoading } from "@/shared/hooks/useLoading";
+import { commentId } from "@/core/schemas/comments.schema";
 
-export function CommentView({comment}){
+export function CommentView({comment,onClick}){
 
   const { data: session, status } = useSession();
   const loading = useLoading();
   const setModal = useContext(ModalContext);
   const router = useRouter()
   const [commentState,setCommentState] = useState(comment)
-
   useEffect(()=>{console.log(loading.loading)},[loading.loading])
-
   const sendReply = async (value) => {
     if (value)
     {
@@ -30,6 +29,7 @@ export function CommentView({comment}){
       }
       await loading.complete()
       setModal(undefined)
+      router.replace(router.asPath)
     }
   };
 
@@ -48,13 +48,20 @@ export function CommentView({comment}){
   const onActionClick = (event) => {
     if(event === 'comment'){
        reply()  
-    } 
+    } else if(event === 'like'){
+    }
   }
 
 
+  if(!onClick){
+  onClick=(comment)=>{
+    router.push(`/comments/${comment.id}`)
+  }
+  }
+
 
   return <div>
-    <PostListItem post={commentState} onActionClick={onActionClick}/>
+    <PostListItem onClick={()=>onClick(comment)} post={commentState} onActionClick={onActionClick}/>
   </div>
 
 }

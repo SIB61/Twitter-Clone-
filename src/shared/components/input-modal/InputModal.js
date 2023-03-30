@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Avator } from "../avatar/Avatar";
 import styles from './InputModal.module.css'
 import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
+import { Avator } from "@/features/user/components/avatar/Avatar";
 
 export function InputModal({placeholder,onSubmit,user}){
   const [value,setValue] = useState('')
