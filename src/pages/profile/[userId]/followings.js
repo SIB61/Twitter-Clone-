@@ -18,15 +18,19 @@ export async function getServerSideProps(ctx) {
   await dbConnect()
   const {userId} = ctx.params
   const {user:myUser} = await getServerSession(ctx.req,ctx.res,authOptions)
-  const user = await getUserById(userId)
-  const isFollowing = await getIsFollowing({followerId:myUser.id,followedId:user.id})
-  user.isFollowing = isFollowing
-  const followings = await getFollowings(userId)
+  const user =  getUserById(userId)
+  const isFollowing =  getIsFollowing({followerId:myUser.id,followedId:userId})
+  const followings =  getFollowings(userId)
+  const [userRes,isFollowingRes,followingsRes] = await Promise.all([user,isFollowing,followings]) 
   return {
-    props: {
-      user:JSON.parse(JSON.stringify(user)),
-      followings:JSON.parse(JSON.stringify(followings))
-    },
+    props:
+      JSON.parse(JSON.stringify(
+      {
+      user:userRes,
+      followings: followingsRes,
+      isFollowing:isFollowingRes 
+     },
+    ))
   };
   }
   catch(err){
@@ -39,7 +43,7 @@ export async function getServerSideProps(ctx) {
   }
 }
 
-function Page({ user,followings }) {
+function Page({ followings }) {
   return <div>
     <UserList users={followings}/>
   </div>;

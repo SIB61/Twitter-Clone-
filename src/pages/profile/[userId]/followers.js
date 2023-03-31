@@ -15,21 +15,26 @@ import { UserList } from "@/shared/components/user-list/UserList";
 import { getNestedLayout } from "@/shared/utils/getNestedLayout";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { use } from "react";
 
 export async function getServerSideProps(ctx) {
   try{
   await dbConnect()
   const {userId} = ctx.params
   const {user:myUser} = await getServerSession(ctx.req,ctx.res,authOptions)
-  const user = await getUserById(userId)
-  const isFollowing = await getIsFollowing({followerId:myUser.id,followedId:user.id})
-  user.isFollowing = isFollowing
-  const followers = await getFollowers(userId)
+  const user =  getUserById(userId)
+  const isFollowing =  getIsFollowing({followerId:myUser.id,followedId:userId})
+  const followers =  getFollowers(userId)
+  const [userRes,isFollowingRes,followersRes] = await Promise.all([user,isFollowing,followers]) 
   return {
-    props: {
-      user:JSON.parse(JSON.stringify(user)),
-      followers:JSON.parse(JSON.stringify(followers))
-    },
+    props:
+      JSON.parse(JSON.stringify(
+      {
+      user:userRes,
+      followers: followersRes,
+      isFollowing:isFollowingRes 
+     },
+    ))
   };
   }
   catch(err){
@@ -42,7 +47,7 @@ export async function getServerSideProps(ctx) {
   }
 }
 
-function Page({ user,followers }) {
+function Page({ followers }) {
   return <div style={{padding:'1rem'}}>
     <UserList users={followers}/>
   </div>

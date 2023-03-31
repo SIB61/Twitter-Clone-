@@ -9,39 +9,79 @@ import { useRouter } from "next/router";
 import { FileInput } from "@/shared/components/file-reader/FileReader";
 import { Avator } from "../avatar/Avatar";
 import { useState } from "react";
-export function EditProfile() {
+import user from "@/pages/api/user";
+import { useSession } from "next-auth/react";
+import { useLoading } from "@/shared/hooks/useLoading";
+import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
+export function EditProfile({ user,onComplete }) {
+
   const {
     register,
     handleSubmit,
-    formState: { isValid },
-  } = useForm();
+    formState: { isValid ,errors},
+  } = useForm({
+    defaultValues: {
+      name: user?.name,
+      email: user?.email,
+      dateOfBirth: new Date(user?.dateOfBirth),
+    },
+  });
+
   const router = useRouter();
-
-  const [profile,setProfile] = useState()
-  const [cover,setCover] = useState()
-
-
-
+  const loading = useLoading()
+  const [profile, setProfile] = useState(user?.image);
+  const [cover, setCover] = useState(user?.cover);
   const onSubmit = async (data) => {
     try {
-      const user = await axios.post("/api/user", data);
-      router.push("?page=login", "", { shallow: true });
-      console.log(user);
+      loading.start()
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("dateOfBirth", data.dateOfBirth);
+      formData.append("email", data.email);
+      if (profile){
+        formData.append("image", profile.file);
+      } 
+      if (cover) formData.append("cover", cover.file);
+      const newUserRes = await fetch("/api/user/"+user?.id+"/update", {method:'PATCH',body:formData});
+      const newUser = await newUserRes.json()
+      loading.complete()
+      console.log(newUser)
+      onComplete(newUser)
     } catch (err) {
+      loading.complete()
+      onComplete(user)
       console.log(err);
     }
   };
 
-
   return (
-    <div className={styles.signupCard}>
+    <div className={styles.editCard}>
+      <LoadingBar loading={loading.loading}/>
       <Image src={tweeterLogo} alt="tweeter" className={styles.tweeterLogo} />
       <h4>Edit Your Profile</h4>
-      <img src={profile}/>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <FileInput onSelect={({file,src})=>{setProfile(src)}}>
-          <Avator src={profile}/>
+        <FileInput
+          id="cover"
+          className={styles.cover}
+          onSelect={(e) => {
+            setCover(e);
+          }}
+        >
+          <img src={cover?.src? cover.src : cover} alt="cover" />
         </FileInput>
+
+        <FileInput
+          id="profile"
+          className={styles.profile}
+          onSelect={(e) => {
+            setProfile(e);
+          }}
+        >
+          <div>
+            <Avator src={profile?.src? profile.src : profile} size={70} />
+          </div>
+        </FileInput>
+
         <Input
           register={register("name", {
             minLength: 3,
@@ -49,10 +89,12 @@ export function EditProfile() {
           })}
           placeHolder="name"
         />
+
         <Input
           register={register("email", { required: "email is required" })}
           placeHolder="email"
         />
+
         <Input
           register={register("dateOfBirth", {
             required: "date of birth is required",
@@ -60,16 +102,13 @@ export function EditProfile() {
           placeHolder="date of birth"
           type="date"
         />
-        <Input
-          register={register("password", { required: "password is required" })}
-          placeHolder="password"
-        />
+
         <button
           disabled={!isValid}
           className={`btn  ${isValid ? "btn-primary" : "btn-disabled"}`}
           type="submit"
         >
-          Sign up
+          save
         </button>
       </form>
     </div>

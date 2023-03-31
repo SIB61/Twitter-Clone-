@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   name: String,
   dateOfBirth: Date,
   image:String,
+  cover:String,
   totalFollowers: { type: Number, default: 0 },
   totalFollowings: { type: Number, default: 0 },
   passwordHash:String,

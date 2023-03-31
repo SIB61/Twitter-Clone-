@@ -3,7 +3,8 @@ import { getUserByEmail } from "@/features/user/services/server/get-user";
 import { handleRequest } from "@/shared/middlewares/request-handler";
 import * as bcrypt from "bcryptjs";
 export default handleRequest({
-  async POST(req, res) {
+
+  POST:async(req, res)=> {
     const { name, email, password, dateOfBirth } = req.body;
     const passwordHash = bcrypt.hashSync(password);
     const username = email.split("@")[0];
@@ -23,4 +24,11 @@ export default handleRequest({
         res.status(err.status).send(err.message);
       }
   },
+
+
+  PATCH:async(req,res)=>{
+
+  }
+
+
 });

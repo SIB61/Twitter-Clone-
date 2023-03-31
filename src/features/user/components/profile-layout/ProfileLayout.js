@@ -12,7 +12,7 @@ import { ModalContext } from "@/core/layouts/main-layout";
 import { Modal } from "@/shared/components/modal/Modal";
 import { EditProfile } from "../edit-profile/EditProfile";
 export function ProfileLayout({ children }) {
-  const user = children.props.user;
+  const [user,setUser] = useState(children.props.user);
   user.isFollowing = children.props.isFollowing
   const [isFollowingState ,toggleIsFollowingState]= useToggle(user.isFollowing)
   const { data: session, status } = useSession();
@@ -50,7 +50,10 @@ export function ProfileLayout({ children }) {
   const editProfile = async()=>{
     setModal(
       <Modal>
-         <EditProfile/>  
+         <EditProfile user={user} onComplete={(newUser)=>{
+          setModal(undefined)
+          setUser(newUser)
+        }}/>  
       </Modal>
     ) 
   }
@@ -64,7 +67,9 @@ export function ProfileLayout({ children }) {
         <LoadingBar loading={loading.loading}/>
         </div>
         <div className="col">
-          <div className={styles.cover}></div>
+          <div className={styles.cover}>
+            <img src={user.cover}/>
+          </div>
           <div className={styles.profilePic}>
             <div>
               <Avator src={user?.image} size="120" />
@@ -79,6 +84,7 @@ export function ProfileLayout({ children }) {
                   {isFollowingState? 'unfollow' : 'follow' }
                 </button>
               ))}
+            </div>
           </div>
           <div className={styles.info}>
             <div>{user?.name}</div>
@@ -95,9 +101,8 @@ export function ProfileLayout({ children }) {
               <Link scroll={false} href={`/profile/${user.id}/followings`} className={`tab ${selected === 3? 'selected':'' }`}>Followings</Link>
             </div>
           </div>
-        </div>
         {children}
+        </div>
       </div>
-    </div>
   );
 }

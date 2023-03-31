@@ -14,7 +14,7 @@ export default handleRequest({
   async POST(req, res) {
   try{
   const {fields,files} = await parseForm(req)
-  const image = files.image? '/uploads/' + files.image?.newFilename : undefined
+  const image = files.image? 'http://localhost:3000/uploads/' + files.image?.newFilename : undefined
   const content = fields.content
   console.log(image,content)
   const {user} = await getServerSession(req,res,authOptions)

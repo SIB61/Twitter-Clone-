@@ -16,7 +16,7 @@ import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTwee
 import { useContext } from "react";
 import { ModalContext } from "@/core/layouts/main-layout";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const authenticatedOptions = [
   {
@@ -88,6 +88,13 @@ export function Navbar() {
 
           {status === "authenticated" && (
             <>
+
+              <li>
+                <button className={'btn btn-bordered brn-ghost'}  onClick={()=>signOut()}>
+                  Sign out
+                </button>
+              </li>
+
               <li>
                 <Link className={styles.tweetButton} href="?page=create-tweet" shallow>
                   Tweet
