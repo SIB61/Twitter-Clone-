@@ -4,6 +4,7 @@ export async function getUserByEmail(email){
   const user = await UserModel.findOne({email}).lean()
   if(user)
   return mapId(user)
+  else throw {status:404,error:'user not found'}
 }
 
 export async function getUserById(id){
@@ -11,6 +12,7 @@ export async function getUserById(id){
   const user = await UserModel.findById(id).lean()
   if(user)
   return mapId(user)
+  else throw {status:404,error:'user not found'}
   }catch(err){
     console.log('something went wrong in getUserById')
     return {status:500,error:'something went wrong'}

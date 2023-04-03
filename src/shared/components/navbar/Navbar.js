@@ -1,50 +1,44 @@
-import { FaHashtag, FaRegUser, FaSearch } from "react-icons/fa";
-import { CgFeed, CgMore, CgMoreO, CgProfile } from "react-icons/cg";
+import {  FaRegUser  } from "react-icons/fa";
+import {  CgMore, CgMoreO } from "react-icons/cg";
 import styles from "./Navbar.module.css";
-import { RiHashtag, RiHome7Fill, RiHomeLine } from "react-icons/ri";
+import { RiHashtag,   } from "react-icons/ri";
 import { GrInbox, GrNotification } from "react-icons/gr";
-import { BiHash, BiHomeCircle } from "react-icons/bi";
-import { CiCircleMore, CiCircleRemove } from "react-icons/ci";
+import { BiHomeCircle } from "react-icons/bi";
 import Link from "next/link";
 import TwitterLogo from "public/images/Twitter-logo.png";
-import Dp from "public/images/dp.jpg";
 import Image from "next/image";
 import { Avator } from "@/features/user/components/avatar/Avatar";
-import { useToggle } from "@/shared/hooks/useToggle";
-import { Modal } from "../modal/Modal";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
-import { useContext } from "react";
-import { ModalContext } from "@/core/layouts/main-layout";
-import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
+import { useModal } from "@/shared/hooks/useModal";
 
 const authenticatedOptions = [
   {
     title: "Home",
-    route: (...params) => "/",
+    route: (...params) => "/home",
     icon: BiHomeCircle,
   },
   {
     title: "Explore",
-    route: (...params) => "/",
+    route: (...params) => "/home",
     icon: RiHashtag,
   },
 
   {
     title: "Notifications",
-    route: (...params) => "/",
+    route: (...params) => "/home",
     icon: GrNotification,
   },
 
   {
     title: "Messages",
-    route: (...params) => "/",
+    route: (...params) => "/home",
     icon: GrInbox,
   },
 
   {
     title: "Profile",
-    route: (...params) => "/profile/"+params[0],
+    route: (...params) => "/profile/" + params[0],
     icon: FaRegUser,
   },
 
@@ -58,7 +52,7 @@ const authenticatedOptions = [
 const unAuthenticatedOptions = [
   {
     title: "Explore",
-    route: (...params)=> "/",
+    route: (...params) => "/",
     icon: RiHashtag,
   },
 ];
@@ -67,6 +61,12 @@ export function Navbar() {
   const { data: session, status } = useSession();
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
+  const modal = useModal()
+  const showCreateTweet = () => {
+    modal.open(
+        <CreateTweet expanded onComplete={modal.close} />
+    )
+  };
   return (
     <>
       <nav className={styles.navbar}>
@@ -77,7 +77,10 @@ export function Navbar() {
 
           {options.map((v, i) => (
             <li key={i}>
-              <Link href={v.route(session?.user?.id)} className={styles.navOptions}>
+              <Link
+                href={v.route(session?.user?.id)}
+                className={styles.navOptions}
+              >
                 <div className={styles.navItem} style={{ fontWeight: "500" }}>
                   {<v.icon className={styles.navIcon} />}
                   <span className={styles.navText}>{v.title}</span>
@@ -88,17 +91,21 @@ export function Navbar() {
 
           {status === "authenticated" && (
             <>
-
               <li>
-                <button className={'btn btn-bordered brn-ghost'}  onClick={()=>signOut()}>
+                <button
+                  className={"btn btn-bordered brn-ghost"}
+                  onClick={() => signOut()}
+                >
                   Sign out
                 </button>
               </li>
-
               <li>
-                <Link className={styles.tweetButton} href="?page=create-tweet" shallow>
+                <button
+                  className={styles.tweetButton}
+                  onClick={showCreateTweet}
+                >
                   Tweet
-                </Link>
+                </button>
               </li>
               <li className={styles.profile}>
                 <Avator alt="avatar" src={session.user.image} size="48" />

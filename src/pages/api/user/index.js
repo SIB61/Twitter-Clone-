@@ -3,15 +3,15 @@ import { getUserByEmail } from "@/features/user/services/server/get-user";
 import { handleRequest } from "@/shared/middlewares/request-handler";
 import * as bcrypt from "bcryptjs";
 export default handleRequest({
-
-  POST:async(req, res)=> {
-    const { name, email, password, dateOfBirth } = req.body;
-    const passwordHash = bcrypt.hashSync(password);
-    const username = email.split("@")[0];
-    let user = await getUserByEmail(email);
-    if (user) res.status(409).send("user exists");
-    else
-      try {
+  POST: async (req, res) => {
+    try {
+      const { name, email, password, dateOfBirth } = req.body;
+      console.log(name,email,password,dateOfBirth)
+      const passwordHash = bcrypt.hashSync(password);
+      const username = email.split("@")[0];
+      let user = await getUserByEmail(email);
+      if (user) res.status(409).send("user exists");
+      else {
         user = await createUser({
           name,
           username,
@@ -19,16 +19,11 @@ export default handleRequest({
           dateOfBirth,
           passwordHash,
         });
-        res.json(user);
-      } catch (err) {
-        res.status(err.status).send(err.message);
+       return res.json(user);
       }
+    } catch (err) {
+      console.log(err)
+      return res.status(err.status).send(err.message);
+    }
   },
-
-
-  PATCH:async(req,res)=>{
-
-  }
-
-
 });

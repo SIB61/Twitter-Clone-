@@ -13,15 +13,17 @@ export const authOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
-      name: "Credentials",
+      name: "credentials",
       credentials: {},
       async authorize(credentials, req) {
         await dbConnect();
         const { email, password } = credentials;
         try {
+          console.log(email,password)
           const user = await login({ email, password });
           return user;
         } catch (err) {
+          console.log(err) 
           throw err;
         }
       },
@@ -82,6 +84,7 @@ export const authOptions = {
       return true
     },
   },
+  
   secret: process.env.NEXTAUTH_SECRET,
 };
 

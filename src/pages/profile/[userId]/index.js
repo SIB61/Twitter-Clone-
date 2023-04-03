@@ -2,6 +2,7 @@
 import { MainLayout } from "@/core/layouts/main-layout";
 import { dbConnect } from "@/core/utils/db";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
+import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { getTweetById } from "@/features/tweet/services/server/get-tweet-by-id";
 import { getUserTweets } from "@/features/tweet/services/server/get-user-tweets";
 import { ProfileLayout } from "@/features/user/components/profile-layout/ProfileLayout";
@@ -9,8 +10,11 @@ import { getIsFollowing } from "@/features/user/services/server/get-is-following
 import { getUserById } from "@/features/user/services/server/get-user";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import tweet from "@/pages/api/tweet";
+import { useListState } from "@/shared/hooks/useListState";
 import { getNestedLayout } from "@/shared/utils/getNestedLayout";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getServerSession } from "next-auth";
+import { useState } from "react";
 
 export async function getServerSideProps(ctx) {
   try{
@@ -38,10 +42,13 @@ export async function getServerSideProps(ctx) {
   }
 }
 
-function Page({ tweets}) {
-  console.log(tweets)
-  return <div>
-    <TweetList tweets={tweets}/>
+function Page({ tweets,user}) {
+  const tweetList = useListState(tweets)
+  const [parent,_] = useAutoAnimate() 
+  return <div ref={parent}>
+    {
+      tweetList.value.map(tweet=><TweetView key={tweet.id} tweet={tweet} onDelete={tweetList.remove}/>)
+    }
   </div>;
 }
 

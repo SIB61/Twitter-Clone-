@@ -7,13 +7,13 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { postReply } from "../../services/client/post-reply";
 import { useLoading } from "@/shared/hooks/useLoading";
-import { commentId } from "@/core/schemas/comments.schema";
+import { useModal } from "@/shared/hooks/useModal";
 
 export function CommentView({comment,onClick}){
 
   const { data: session, status } = useSession();
   const loading = useLoading();
-  const setModal = useContext(ModalContext);
+  const modal = useModal()
   const router = useRouter()
   const [commentState,setCommentState] = useState(comment)
   useEffect(()=>{console.log(loading.loading)},[loading.loading])
@@ -28,21 +28,19 @@ export function CommentView({comment,onClick}){
         console.log(err)
       }
       await loading.complete()
-      setModal(undefined)
+      modal.close()
       router.replace(router.asPath)
     }
   };
 
   async function reply(){
-    setModal(
-      <Modal loading={loading.loading}>
+    modal.open(
         <InputModal
           onSubmit={sendReply}
           placeholder="Write your reply"
           user={session.user}
         />
-      </Modal>
-    );
+    )
   };
 
   const onActionClick = (event) => {

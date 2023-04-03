@@ -1,3 +1,4 @@
+import { BiCross } from 'react-icons/bi';
 import styles from './Content.module.css'
 export function Content({ content, image }) {
   return (

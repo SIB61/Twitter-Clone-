@@ -35,21 +35,17 @@ const chirp = localFont({
   ],
 });
 
-export const ModalContext = createContext();
 export function MainLayout({ children }) {
-  const [modal, setModal] = useState(null);
   const router = useRouter();
   const { page } = router.query;
   const {status} = useSession()
   const onClose=() => router.push("/",'',{shallow:true})
   return (
-    <ModalContext.Provider value={setModal}>
       <main className={styles.main + " " + chirp.className}>
         <aside className={styles.leftBar}>
           <Navbar />
         </aside>
         <div className={styles.content}>{children}</div>
-        {modal}
         {page === "create-tweet" && (
           <Modal onClose={onClose}>
             <CreateTweet expanded />
@@ -80,6 +76,5 @@ export function MainLayout({ children }) {
           status==='unauthenticated' && <AuthBottomBar />
         }
       </main>
-    </ModalContext.Provider>
   );
 }

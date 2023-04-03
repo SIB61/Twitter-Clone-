@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form'
 
 
 export function LoginCard(){
-  const {register,handleSubmit,formState:{isValid}} = useForm() 
+   const {register,handleSubmit,formState:{isValid}} = useForm() 
    const onSubmit = async(data) => {
    console.log(data)
    const res = await signIn("credentials",{...data,redirect:true,callbackUrl:'/home'})

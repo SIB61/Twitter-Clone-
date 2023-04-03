@@ -3,13 +3,11 @@ import { handleRequest } from "@/shared/middlewares/request-handler";
 import { parseForm } from "@/shared/utils/parse-form";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-
 export const config = {
   api:{
     bodyParser:false
   }
 }
-
 export default handleRequest({
   async POST(req, res) {
   try{
@@ -19,7 +17,7 @@ export default handleRequest({
   console.log(image,content)
   const {user} = await getServerSession(req,res,authOptions)
   const tweet = await createTweet({content,image,user})
-  return res.json(tweet)
+  return res.send(JSON.stringify(tweet))
   }catch(err){
   console.log(err)
   return res.status(500).send('error') 

@@ -8,17 +8,18 @@ import { useContext, useEffect, useState } from "react";
 import { PostFollow } from "../../services/client/post-follow";
 import { Avator } from "../avatar/Avatar";
 import styles from "./ProfileLayout.module.css";
-import { ModalContext } from "@/core/layouts/main-layout";
 import { Modal } from "@/shared/components/modal/Modal";
 import { EditProfile } from "../edit-profile/EditProfile";
+import { useModal } from "@/shared/hooks/useModal";
 export function ProfileLayout({ children }) {
   const [user,setUser] = useState(children.props.user);
   user.isFollowing = children.props.isFollowing
   const [isFollowingState ,toggleIsFollowingState]= useToggle(user.isFollowing)
   const { data: session, status } = useSession();
   const [selected,setSelected] = useState(1)
-  const setModal = useContext(ModalContext)
+  const modal = useModal()
   const router = useRouter()
+
   useEffect(()=>{
     switch(router.pathname){
       case '/profile/[userId]' : 
@@ -35,6 +36,7 @@ export function ProfileLayout({ children }) {
 
     }
   },[router.pathname])
+
   const loading = useLoading()
   const follow = async() => {
     loading.start()
@@ -48,14 +50,12 @@ export function ProfileLayout({ children }) {
   }
 
   const editProfile = async()=>{
-    setModal(
-      <Modal>
+    modal.open(
          <EditProfile user={user} onComplete={(newUser)=>{
-          setModal(undefined)
+          modal.close()
           setUser(newUser)
         }}/>  
-      </Modal>
-    ) 
+    )
   }
 
   return (

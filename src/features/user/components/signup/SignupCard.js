@@ -13,6 +13,7 @@ export function SignupCard(){
   const onSubmit = async (data)=>{
     try{
     const user = await axios.post("/api/user",data)
+    console.log(user)
     router.push('?page=login','',{shallow:true})
     console.log(user)
     }catch(err){

@@ -13,6 +13,8 @@ import user from "@/pages/api/user";
 import { useSession } from "next-auth/react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
+import { date } from "joi";
+import {u} from 'next-auth/utils'
 export function EditProfile({ user,onComplete }) {
 
   const {
@@ -23,11 +25,12 @@ export function EditProfile({ user,onComplete }) {
     defaultValues: {
       name: user?.name,
       email: user?.email,
-      dateOfBirth: new Date(user?.dateOfBirth),
+      dateOfBirth: '11-11-2022',
     },
   });
 
-  const router = useRouter();
+  console.log("edit profile", user)
+
   const loading = useLoading()
   const [profile, setProfile] = useState(user?.image);
   const [cover, setCover] = useState(user?.cover);
@@ -44,8 +47,10 @@ export function EditProfile({ user,onComplete }) {
       if (cover) formData.append("cover", cover.file);
       const newUserRes = await fetch("/api/user/"+user?.id+"/update", {method:'PATCH',body:formData});
       const newUser = await newUserRes.json()
+      console.log(newUser)
       loading.complete()
       console.log(newUser)
+  
       onComplete(newUser)
     } catch (err) {
       loading.complete()

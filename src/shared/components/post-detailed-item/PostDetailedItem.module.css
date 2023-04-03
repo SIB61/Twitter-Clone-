@@ -10,8 +10,14 @@
 
 .post{
   font-size: 1.2rem;
+  position: relative;
 }
 
+.dropdown{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 .postCard:hover{
   background-color: var(--white);
 }

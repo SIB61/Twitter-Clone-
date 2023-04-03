@@ -3,11 +3,12 @@ import { LoadingBar } from "../loading-bar/LoadingBar";
 import styles from "./Modal.module.css";
 import { RxCross1 } from "react-icons/rx";
 import { ModalContext } from "@/core/layouts/main-layout";
+import { useModal } from "@/shared/hooks/useModal";
 export function Modal({ children, onClose, loading }) {
 
-  const setModal = useContext(ModalContext)
+  const modal =  useModal()
   if(!onClose){
-    onClose = () => setModal(null)
+    onClose =()=> modal.close()
   }
 
   return (

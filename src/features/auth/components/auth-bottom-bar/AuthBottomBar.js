@@ -1,10 +1,6 @@
 import Link from "next/link";
 import styles from "./AuthBottomBar.module.css"
-import { useContext } from "react";
-import { ModalContext } from "@/core/layouts/main-layout";
-import { AuthCard } from "../auth-card/AuthCard";
 export function AuthBottomBar(){
-  const setModal = useContext(ModalContext)
   return (<div className={styles.authBottomBar}>
     <div className={styles.left}></div>
     <div className={styles.center}>

@@ -9,6 +9,11 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getUserFeed } from "@/features/tweet/services/server/get-feed";
 import { YouMayKnow } from "@/features/user/components/you-may-know/YouMayKnow";
 import { getUsers } from "@/features/user/services/server/get-user";
+import { useState } from "react";
+import tweet from "../api/tweet";
+import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
+import {useAutoAnimate} from '@formkit/auto-animate/react'
+import { useListState } from "@/shared/hooks/useListState";
 
 export async function getServerSideProps(ctx) {
   const {user} = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -25,8 +30,12 @@ export async function getServerSideProps(ctx) {
   };
 }
 
+
 function Page({ tweets, users }) {
   const { data, status } = useSession();
+  const tweetList = useListState(tweets)
+  const [parent,_] = useAutoAnimate()
+
   console.log(status, data);
   return (
     <>
@@ -40,8 +49,14 @@ function Page({ tweets, users }) {
         <div className="center-container">
           <div className="appbar">Home</div>
           <div className="content">
-            <CreateTweet />
-            <TweetList tweets={tweets} />
+            <CreateTweet onComplete={(tweet)=>{
+              if(tweet) tweetList.add(tweet) 
+            }}/>
+            <div ref={parent}>
+              {
+                tweetList.value.map(tweet=><TweetView tweet={tweet} key={tweet.id} onDelete={tweetList.remove}/>)
+              }
+            </div> 
           </div>
         </div>
         <div className={styles.rightBar}>
