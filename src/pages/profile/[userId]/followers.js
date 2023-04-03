@@ -49,7 +49,7 @@ export async function getServerSideProps(ctx) {
 
 function Page({ followers }) {
   return <div style={{padding:'1rem'}}>
-    <UserList users={followers}/>
+    {followers.map(follower=><MiniProfile user={follower} key={follower.id} action={<button className="btn btn-primary">unfollow</button>} />)}
   </div>
 }
 

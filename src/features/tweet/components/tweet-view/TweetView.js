@@ -11,10 +11,9 @@ import { useModal } from "@/shared/hooks/useModal";
 import { CreatePost } from "@/shared/components/create-post/CreatePost";
 import { Confirmation } from "@/shared/components/confirmation/Confirmation";
 import { deleteTweet } from "../../services/client/delete-tweet";
-export function TweetView({ tweet = {}, detailed , onDelete }) {
+export function TweetView({ tweet = {}, detailed , onDelete=()=>{}, onComment=()=>{} }) {
   const [tweetState, setTweetState] = useState(tweet);
   const { data: session, status } = useSession();
-  const loading = useLoading();
   const router = useRouter()
   const modal = useModal()
 
@@ -41,18 +40,21 @@ export function TweetView({ tweet = {}, detailed , onDelete }) {
   const sendComment = async (value) => {
     if (value)
     {
-      loading.start()
+
+      modal.startLoading()
       try {
-        await postComment({ content: value, tweetId: tweet.id });
+        const newComment = await postComment({ content: value, tweetId: tweet.id });
+        onComment(newComment) 
         setTweetState(state=>({...state,totalComments:state.totalComments+1}))
         } catch (err) {
       }
-      await loading.complete()
       modal.close()
     }
   };
 
   const editTweet = async(content,image)=>{
+
+    modal.startLoading()
     const formData = new FormData()
     formData.append("content",content)
     formData.append("image",image)
@@ -86,6 +88,7 @@ export function TweetView({ tweet = {}, detailed , onDelete }) {
   const remove=()=>{
     modal.open(
       <Confirmation subtitle="Do you really want to delete it?" onConfirm={async()=>{
+           modal.startLoading()
            await deleteTweet(tweetState.id)          
            modal.close()
            onDelete(tweet) 

@@ -12,4 +12,3 @@ export async function getUserFeed(user){
   tweets = tweets.map((tweet) =>({...tweet,isLiked:likedTweetIds.has(tweet.id.toString())}));
   return tweets
 }
-

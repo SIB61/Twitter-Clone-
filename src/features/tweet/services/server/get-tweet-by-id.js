@@ -7,7 +7,7 @@ export async function getTweetById(id){
   try{
   await dbConnect()
   const tweetPromise =  TweetModel.findById(id).lean();
-  const commentsPromise =  CommentModel.find({tweet:id,parent:null}).lean();
+  const commentsPromise =  CommentModel.find({tweet:id,parent:null}).sort({createdAt:-1}).lean();
   const [tweet,comments] = await Promise.all([tweetPromise,commentsPromise])
   tweet.comments = comments.map(comment=>mapId(comment))
   if(tweet) return mapId(tweet)

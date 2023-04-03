@@ -5,6 +5,7 @@
   font-size: 1rem;
   gap:1rem;
   cursor: pointer;
+  position: relative;
 }
 
 
@@ -20,21 +21,26 @@
 .name{
  font-weight: bold;
  font-size: 1.2rem; 
- max-width: 80%;
  max-lines: 1;
  text-overflow: ellipsis;
  overflow: hidden;
  white-space: nowrap;
+  width: 100%;
 }
 .username{
   font-weight: 500;
   opacity: 0.5;
+  width: 100%;
 }
 
-.profile>div{
+.profile>div:nth-child(1){
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.action{
+ margin-left: auto;
 }
 
 @container (max-width: 1266px) {

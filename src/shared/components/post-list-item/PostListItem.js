@@ -10,7 +10,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
   const createdAt = "1 hr ago";
   const { data: session } = useSession();
 
-  const isMyPost = session?.user?.id === post.user.id;
+  const isMyPost = session && session?.user?.id === post?.user?.id;
 
   return (
     <div className={styles.postCard} onClick={onClick}>

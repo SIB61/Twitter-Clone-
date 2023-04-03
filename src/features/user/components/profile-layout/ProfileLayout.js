@@ -8,7 +8,6 @@ import { useContext, useEffect, useState } from "react";
 import { PostFollow } from "../../services/client/post-follow";
 import { Avator } from "../avatar/Avatar";
 import styles from "./ProfileLayout.module.css";
-import { Modal } from "@/shared/components/modal/Modal";
 import { EditProfile } from "../edit-profile/EditProfile";
 import { useModal } from "@/shared/hooks/useModal";
 export function ProfileLayout({ children }) {

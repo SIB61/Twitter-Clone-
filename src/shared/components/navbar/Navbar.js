@@ -2,7 +2,7 @@ import {  FaRegUser  } from "react-icons/fa";
 import {  CgMore, CgMoreO } from "react-icons/cg";
 import styles from "./Navbar.module.css";
 import { RiHashtag,   } from "react-icons/ri";
-import { GrInbox, GrNotification } from "react-icons/gr";
+import { GrInbox, GrLogout, GrNotification } from "react-icons/gr";
 import { BiHomeCircle } from "react-icons/bi";
 import Link from "next/link";
 import TwitterLogo from "public/images/Twitter-logo.png";
@@ -11,6 +11,7 @@ import { Avator } from "@/features/user/components/avatar/Avatar";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { signOut, useSession } from "next-auth/react";
 import { useModal } from "@/shared/hooks/useModal";
+import { Confirmation } from "../confirmation/Confirmation";
 
 const authenticatedOptions = [
   {
@@ -94,9 +95,10 @@ export function Navbar() {
               <li>
                 <button
                   className={"btn btn-bordered brn-ghost"}
-                  onClick={() => signOut()}
+                  style={{marginBottom:'8px'}}
+                  onClick={() => modal.open(<Confirmation subtitle={'You want to log out'} onConfirm={signOut}/>)}
                 >
-                  Sign out
+                  <GrLogout/> Sign out
                 </button>
               </li>
               <li>

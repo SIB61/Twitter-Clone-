@@ -8,20 +8,19 @@ import { Content } from "../content/Content";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Dropdown } from "../dropdown/Dropdown";
+import { useRouter } from "next/router";
 
 export function PostDetailedItem({post,onActionClick,onClick}){
   const createdAt = (new Date(post.createdAt)).toDateString();
   const {data:session,status} = useSession()
+  const router = useRouter()
   const isMyPost = session?.user?.id === post.user.id 
   return (
     <div className={styles.post} onClick={onClick}>
-      <Link href={`/profile/${post?.user?.id}`}>
-      <MiniProfile user={post?.user}  />
-      </Link>
-      {
+      <MiniProfile onClick={()=>router.push('/profile/'+post?.user?.id)} user={post?.user} action={
             isMyPost &&
-            <Dropdown className={`${styles.dropdown}`} options={['edit','delete']} onOptionClick={onActionClick}/>
-      }
+            <Dropdown options={['edit','delete']} onOptionClick={onActionClick}/>
+        }/>
       <div className={styles.content}>
       <Content image={post?.image} content={post?.content} />
       </div>

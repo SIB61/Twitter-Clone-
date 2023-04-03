@@ -22,20 +22,24 @@ export function CreateTweet({ expanded, onComplete = () => {} }) {
       try {
         const tweetRes = await fetch("/api/tweet/create", { method: "POST", body: formData });
         const tweet = await tweetRes.json()
+        await loading.complete()
         onComplete(tweet)
       } catch (err) {
+        await loading.complete()
         onComplete()
         console.log(err);
       }
+
       setPost("");
       setImage(undefined);
-      loading.complete();
     }
   };
 
   return (
+    <>
+
+    <LoadingBar loading={loading.loading}/>
     <div className={styles.createPost}>
-      <LoadingBar loading={loading.loading} />
       <Avator size="48" />
       <div className={styles.fields}>
         {expand && (
@@ -102,6 +106,8 @@ export function CreateTweet({ expanded, onComplete = () => {} }) {
           </div>
         </div>
       </div>
+
     </div>
+    </>
   );
 }

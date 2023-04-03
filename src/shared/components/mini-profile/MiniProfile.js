@@ -1,7 +1,7 @@
 import { CgMore } from "react-icons/cg";
 import styles from "./MiniProfile.module.css";
 import { Avator } from "@/features/user/components/avatar/Avatar";
-export function MiniProfile({user,onClick}) {
+export function MiniProfile({user,onClick,action}) {
   return (
     <div className={styles.profile} onClick={onClick}>
       <Avator src={user.image} size="48" />
@@ -9,7 +9,9 @@ export function MiniProfile({user,onClick}) {
         <p className={styles.name}>{user.name}</p>
         <p className={styles.username}>@{user.username}</p>
       </div>
-      <CgMore />
+      <div className={styles.action}>
+      {action}
+      </div>
     </div>
   );
 }

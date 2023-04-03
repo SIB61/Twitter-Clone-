@@ -5,11 +5,13 @@ import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { getAllTweets } from "@/features/tweet/services/server/get-all-tweets";
+import { dbConnect } from "@/core/utils/db";
 
 export async function getServerSideProps(context) {
+  await dbConnect()
   const session = await getServerSession(context.req,context.res,authOptions)
+  const allTweets = await getAllTweets()
   if (session) {
     return {
       redirect: {
@@ -19,11 +21,15 @@ export async function getServerSideProps(context) {
     }
   }
   return {
-    props: {},
+    props:JSON.parse(JSON.stringify(
+    {
+      tweets:allTweets
+    },
+    )) 
   }
 }
 
-function Page({}) {
+function Page({tweets}) {
   return (
     <>
       <Head>
@@ -35,7 +41,7 @@ function Page({}) {
       <div className={styles.home}>
         <div className="center-container">
           <div className="appbar">Explore</div>
-          <TweetList />
+          <TweetList tweets={tweets}/>
         </div>
         <div className={styles.rightBar}>
           <AuthCard />

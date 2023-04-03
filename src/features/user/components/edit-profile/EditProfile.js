@@ -2,19 +2,12 @@ import styles from "./EditProfile.module.css";
 import tweeterLogo from "../../../../../public/images/Twitter-logo.png";
 import Image from "next/image";
 import { Input } from "@/shared/components/input/Input";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useRouter } from "next/router";
 import { FileInput } from "@/shared/components/file-reader/FileReader";
 import { Avator } from "../avatar/Avatar";
 import { useState } from "react";
-import user from "@/pages/api/user";
-import { useSession } from "next-auth/react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
-import { date } from "joi";
-import {u} from 'next-auth/utils'
 export function EditProfile({ user,onComplete }) {
 
   const {
@@ -29,7 +22,6 @@ export function EditProfile({ user,onComplete }) {
     },
   });
 
-  console.log("edit profile", user)
 
   const loading = useLoading()
   const [profile, setProfile] = useState(user?.image);
