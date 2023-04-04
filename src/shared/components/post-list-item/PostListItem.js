@@ -55,7 +55,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
             }}
           >
             <CommentIcon className={styles.commentIcon} />{" "}
-            {post.totalComments || post.totalReplies}
+            {post.totalComments || post.totalReplies || "0"}
           </span>
         </div>
       </div>

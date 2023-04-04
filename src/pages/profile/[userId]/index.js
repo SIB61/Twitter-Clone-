@@ -1,4 +1,3 @@
-
 import { MainLayout } from "@/core/layouts/main-layout";
 import { dbConnect } from "@/core/utils/db";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
@@ -9,7 +8,6 @@ import { ProfileLayout } from "@/features/user/components/profile-layout/Profile
 import { getIsFollowing } from "@/features/user/services/server/get-is-following";
 import { getUserById } from "@/features/user/services/server/get-user";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import tweet from "@/pages/api/tweet";
 import { useListState } from "@/shared/hooks/useListState";
 import { getNestedLayout } from "@/shared/utils/getNestedLayout";
 import { useAutoAnimate } from "@formkit/auto-animate/react";

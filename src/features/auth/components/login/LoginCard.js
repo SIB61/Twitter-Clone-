@@ -6,14 +6,19 @@ import { Input } from '@/shared/components/input/Input'
 import Link from 'next/link'
 import {signIn} from 'next-auth/react'
 import { useForm } from 'react-hook-form'
+import { LoadingBar } from '@/shared/components/loading-bar/LoadingBar'
+import { useLoading } from '@/shared/hooks/useLoading'
 
 
 
 export function LoginCard(){
    const {register,handleSubmit,formState:{isValid}} = useForm() 
+   const loading = useLoading()
    const onSubmit = async(data) => {
    console.log(data)
+   loading.start()
    const res = await signIn("credentials",{...data,redirect:true,callbackUrl:'/home'})
+   loading.complete()
    console.log(res)
   }
 
@@ -23,6 +28,8 @@ export function LoginCard(){
   }
 
   return (
+    <>
+      <LoadingBar loading={loading.loading}/>
   <div className={styles.loginCard}>
      <Image src={tweeterLogo} alt='tweeter' className={styles.tweeterLogo}/>
      <h4>Sign in to Twitter</h4>
@@ -35,5 +42,6 @@ export function LoginCard(){
       </form>
       <p>don't have any account? <span className='text-primary'> <Link href="?page=signup">Sign up</Link> </span> </p>
     </div>
+    </>
   )
 }

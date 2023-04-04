@@ -1,20 +1,28 @@
+import { createTweet } from "@/features/tweet/services/server/create-tweet";
 import { handleRequest } from "@/shared/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { createTweet } from "@/features/tweet/services/server/create-tweet";
+import { parseForm } from "@/shared/utils/parse-form";
+export const config = {
+  api:{
+    bodyParser:false
+  }
+}
 export default handleRequest({
   async POST(req, res) {
-    const { post, image } = req.body;
-    const {user} = await getServerSession(req, res, authOptions);
-    try {
-      const tweet = await createTweet({
-        post,
-        image,
-        user
-      });
-      res.json(tweet);
-    } catch (err) {
-      res.status(err.status).send(err.error);
-    }
+  try{
+  const {fields,files} = await parseForm(req)
+  const image = files.image? 'http://localhost:3000/uploads/' + files.image?.newFilename : undefined
+  const content = fields.content
+  console.log(image,content)
+  const {user} = await getServerSession(req,res,authOptions)
+  const tweet = await createTweet({content,image,user})
+  return res.send(JSON.stringify(tweet))
+  }catch(err){
+  console.log(err)
+  return res.status(500).send('error') 
+  }
   },
 });
+
+

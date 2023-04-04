@@ -20,7 +20,7 @@ export function CreateTweet({ expanded, onComplete = () => {} }) {
       if (image) formData.append("image", image.file);
       loading.start();
       try {
-        const tweetRes = await fetch("/api/tweet/create", { method: "POST", body: formData });
+        const tweetRes = await fetch("/api/tweet", { method: "POST", body: formData });
         const tweet = await tweetRes.json()
         await loading.complete()
         onComplete(tweet)

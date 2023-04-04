@@ -11,6 +11,7 @@ export function CommentView({
   comment,
   onClick = () => {},
   onDelete = () => {},
+  onComment = () => {}
 }) {
   const { data: session } = useSession();
   const modal = useModal();
@@ -20,7 +21,7 @@ export function CommentView({
     if (value) {
       modal.startLoading()
       try {
-        await postReply({
+        const reply = await postReply({
           content: value,
           commentId: comment.id,
           tweetId: comment.tweet,
@@ -29,6 +30,7 @@ export function CommentView({
           ...state,
           totalReplies: state.totalReplies + 1,
         }));
+        onComment(reply)
       } catch (err) {
         console.log(err);
       }
@@ -51,8 +53,9 @@ export function CommentView({
       <Confirmation
         subtitle={"Delete this comment."}
         onConfirm={async () => {
-          modal.close();
+          modal.startLoading()
           await axios.delete("/api/comment/" + comment.id);
+          modal.close();
           onDelete(comment);
         }}
       />

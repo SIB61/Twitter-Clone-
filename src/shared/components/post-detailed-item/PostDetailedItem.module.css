@@ -1,16 +1,16 @@
-.postCard{
+.post{
+  position: relative;
+  gap:1.2rem;
+  flex-direction: column;
+
   display: flex;
   width: 100%;
-  gap:1rem;
+  gap:0.4rem;
   padding: 1rem;
   font-size: 1rem;
   color: var(--black);
   letter-spacing: 0.4px;
   border-bottom: 1px solid var(--white);
-}
-.post{
-  font-size: 1.2rem;
-  position: relative;
 }
 
 .dropdown{
@@ -64,6 +64,7 @@
 
 .content{
   padding-top: 0rem;
+  font-size: 1.2rem;
 }
 
 .numbers{

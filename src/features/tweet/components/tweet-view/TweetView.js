@@ -30,7 +30,7 @@ export function TweetView({ tweet = {}, detailed , onDelete=()=>{}, onComment=()
             totalLikes: state.totalLikes + 1,
             isLiked: true,
           }));
-      await axios.post(`/api/tweet/${tweet.id}/like`);
+      await axios.post("/api/like",{tweetId:tweetState.id});
 
     } catch (err) {
       console.log(err);
@@ -43,7 +43,8 @@ export function TweetView({ tweet = {}, detailed , onDelete=()=>{}, onComment=()
 
       modal.startLoading()
       try {
-        const newComment = await postComment({ content: value, tweetId: tweet.id });
+        console.log(tweetState)
+        const newComment = await postComment({ content: value, tweetId: tweetState.id });
         onComment(newComment) 
         setTweetState(state=>({...state,totalComments:state.totalComments+1}))
         } catch (err) {

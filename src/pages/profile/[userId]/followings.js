@@ -8,7 +8,6 @@ import { getFollowings } from "@/features/user/services/server/get-followings";
 import { getIsFollowing } from "@/features/user/services/server/get-is-following";
 import { getUserById } from "@/features/user/services/server/get-user";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import tweet from "@/pages/api/tweet";
 import { UserList } from "@/shared/components/user-list/UserList";
 import { getNestedLayout } from "@/shared/utils/getNestedLayout";
 import { getServerSession } from "next-auth";

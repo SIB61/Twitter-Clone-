@@ -1,7 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import { MainLayout } from "@/core/layouts/main-layout";
-import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
@@ -9,8 +8,6 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getUserFeed } from "@/features/tweet/services/server/get-feed";
 import { YouMayKnow } from "@/features/user/components/you-may-know/YouMayKnow";
 import { getUsers } from "@/features/user/services/server/get-user";
-import { useState } from "react";
-import tweet from "../api/tweet";
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import {useAutoAnimate} from '@formkit/auto-animate/react'
 import { useListState } from "@/shared/hooks/useListState";

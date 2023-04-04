@@ -58,14 +58,17 @@ const unAuthenticatedOptions = [
   },
 ];
 
-export function Navbar() {
+export function Navbar({onNewTweet}) {
   const { data: session, status } = useSession();
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
   const modal = useModal()
   const showCreateTweet = () => {
     modal.open(
-        <CreateTweet expanded onComplete={modal.close} />
+        <CreateTweet expanded onComplete={(newTweet)=>{
+        onNewTweet(newTweet)
+        modal.close()
+      }} />
     )
   };
   return (
@@ -96,7 +99,11 @@ export function Navbar() {
                 <button
                   className={"btn btn-bordered brn-ghost"}
                   style={{marginBottom:'8px'}}
-                  onClick={() => modal.open(<Confirmation subtitle={'You want to log out'} onConfirm={signOut}/>)}
+                  onClick={() => modal.open(<Confirmation subtitle={'You want to log out'} onConfirm={async()=>{
+                    modal.startLoading()
+                    await signOut()
+                    modal.close()
+                  }}/>)}
                 >
                   <GrLogout/> Sign out
                 </button>

@@ -42,7 +42,7 @@ function Page({tweet}){
   const comments = useListState(tweet.comments)
   return <div>
     <div className="center-container" >
-    <div className="appbar">Tweet</div>
+   <div className="appbar">Tweet</div>
       <div style={{padding:'1rem'}}>
         <TweetView onComment={comments.add} onDelete={onDelete} detailed tweet={tweet} />    
         <div ref={parent}>

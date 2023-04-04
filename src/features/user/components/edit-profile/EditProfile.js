@@ -37,17 +37,13 @@ export function EditProfile({ user,onComplete }) {
         formData.append("image", profile.file);
       } 
       if (cover) formData.append("cover", cover.file);
-      const newUserRes = await fetch("/api/user/"+user?.id+"/update", {method:'PATCH',body:formData});
+      const newUserRes = await fetch("/api/user/"+user?.id, {method:'PATCH',body:formData});
       const newUser = await newUserRes.json()
-      console.log(newUser)
       loading.complete()
-      console.log(newUser)
-  
       onComplete(newUser)
     } catch (err) {
-      loading.complete()
-      onComplete(user)
       console.log(err);
+      loading.complete()
     }
   };
 
