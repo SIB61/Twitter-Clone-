@@ -5,11 +5,12 @@ import { Input } from "@/shared/components/input/Input";
 import { useForm } from "react-hook-form";
 import { FileInput } from "@/shared/components/file-reader/FileReader";
 import { Avator } from "../avatar/Avatar";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
+import { getDateFormatString } from "@/shared/utils/getDateString";
 export function EditProfile({ user,onComplete }) {
-
+  const dateOfBirth =  user.dateOfBirth && getDateFormatString(user.dateOfBirth)
   const {
     register,
     handleSubmit,
@@ -18,7 +19,7 @@ export function EditProfile({ user,onComplete }) {
     defaultValues: {
       name: user?.name,
       email: user?.email,
-      dateOfBirth: '11-11-2022',
+      dateOfBirth:  dateOfBirth || " ",
     },
   });
 

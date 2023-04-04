@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styles from "./InputModal.module.css";
 import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
-import { Avator } from "@/features/user/components/avatar/Avatar";
 import { useToggle } from "@/shared/hooks/useToggle";
 import { LoadingBar } from "../loading-bar/LoadingBar";
+import { Avator } from "@/features/user/components/avatar/Avatar";
 
 export function InputModal({
   placeholder,

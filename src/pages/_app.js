@@ -44,13 +44,7 @@ export default function App({
         >
         <LoadingBar loading={loading.loading} />
         </div>
-        {Component.Layout ? (
-          <Component.Layout>
-            <Component {...pageProps} />
-          </Component.Layout>
-        ) : (
-          <Component {...pageProps} />
-        )}
+        <Component {...pageProps} />
       </ModalProvider>
     </SessionProvider>
   );

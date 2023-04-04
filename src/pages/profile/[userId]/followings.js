@@ -13,40 +13,55 @@ import { getNestedLayout } from "@/shared/utils/getNestedLayout";
 import { getServerSession } from "next-auth";
 
 export async function getServerSideProps(ctx) {
-  try{
-  await dbConnect()
-  const {userId} = ctx.params
-  const {user:myUser} = await getServerSession(ctx.req,ctx.res,authOptions)
-  const user =  getUserById(userId)
-  const isFollowing =  getIsFollowing({followerId:myUser.id,followedId:userId})
-  const followings =  getFollowings(userId)
-  const [userRes,isFollowingRes,followingsRes] = await Promise.all([user,isFollowing,followings]) 
-  return {
-    props:
-      JSON.parse(JSON.stringify(
-      {
-      user:userRes,
-      followings: followingsRes,
-      isFollowing:isFollowingRes 
-     },
-    ))
-  };
-  }
-  catch(err){
-    console.log(err)
+  try {
+    await dbConnect();
+    const { userId } = ctx.params;
+    const { user: myUser } = await getServerSession(
+      ctx.req,
+      ctx.res,
+      authOptions
+    );
+    const user = getUserById(userId);
+    const isFollowing = getIsFollowing({
+      followerId: myUser.id,
+      followedId: userId,
+    });
+    const followings = getFollowings(userId);
+    let [userRes, isFollowingRes, followingsRes] = await Promise.all([
+      user,
+      isFollowing,
+      followings,
+
+    ]);
+    userRes.isFollowing = isFollowingRes
     return {
-      redirect:{
-         destination:'/home'
-      }
-    }
+      props: JSON.parse(
+        JSON.stringify({
+          user: userRes,
+          followings: followingsRes,
+        })
+      ),
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      redirect: {
+        destination: "/home",
+      },
+    };
   }
 }
 
-function Page({ followings }) {
-  return <div>
-    <UserList users={followings}/>
-  </div>;
+function Page({ followings,user }) {
+  return (
+    <MainLayout>
+      <ProfileLayout user={user}>
+        <div>
+          <UserList users={followings} />
+        </div>
+      </ProfileLayout>
+    </MainLayout>
+  );
 }
 
-Page.Layout = getNestedLayout({Parent:MainLayout,Child:ProfileLayout}) 
 export default Page;

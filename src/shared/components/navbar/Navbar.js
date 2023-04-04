@@ -105,7 +105,7 @@ export function Navbar({onNewTweet}) {
                     modal.close()
                   }}/>)}
                 >
-                  <GrLogout/> Sign out
+                  <GrLogout/> <span className={styles.navText}>Sign out</span> 
                 </button>
               </li>
               <li>

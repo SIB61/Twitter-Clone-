@@ -9,27 +9,27 @@ import { getAllTweets } from "@/features/tweet/services/server/get-all-tweets";
 import { dbConnect } from "@/core/utils/db";
 
 export async function getServerSideProps(context) {
-  await dbConnect()
-  const session = await getServerSession(context.req,context.res,authOptions)
-  const allTweets = await getAllTweets()
+  await dbConnect();
+  const session = await getServerSession(context.req, context.res, authOptions);
+  const allTweets = await getAllTweets();
   if (session) {
     return {
       redirect: {
-        destination: '/home',
+        destination: "/home",
         permanent: false,
       },
-    }
+    };
   }
   return {
-    props:JSON.parse(JSON.stringify(
-    {
-      tweets:allTweets
-    },
-    )) 
-  }
+    props: JSON.parse(
+      JSON.stringify({
+        tweets: allTweets,
+      })
+    ),
+  };
 }
 
-function Page({tweets}) {
+function Page({ tweets }) {
   return (
     <>
       <Head>
@@ -38,19 +38,19 @@ function Page({tweets}) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className={styles.home}>
-        <div className="center-container">
-          <div className="appbar">Explore</div>
-          <TweetList tweets={tweets}/>
+      <MainLayout>
+        <div className={styles.home}>
+          <div className="center-container">
+            <div className="appbar">Explore</div>
+            <TweetList tweets={tweets} />
+          </div>
+          <div className={styles.rightBar}>
+            <AuthCard />
+          </div>
         </div>
-        <div className={styles.rightBar}>
-          <AuthCard />
-        </div>
-      </div>
+      </MainLayout>
     </>
   );
 }
 
-Page.Layout = MainLayout;
 export default Page;
-

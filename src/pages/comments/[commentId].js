@@ -36,6 +36,7 @@ function Page({data:{ comment, replies }}) {
   const replyList = useListState(replies)
   const [parent,_] = useAutoAnimate()
   return (
+    <MainLayout>
     <div>
       <div className="center-container">
         <div className="appbar"><span className="btn btn-icon" onClick={router.back}> <CgArrowLeft/> </span> Comment</div>
@@ -50,8 +51,8 @@ function Page({data:{ comment, replies }}) {
         </div>
       </div>
     </div>
+    </MainLayout>
   );
 }
 
-Page.Layout = MainLayout;
 export default Page;

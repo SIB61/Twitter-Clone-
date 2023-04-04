@@ -2,12 +2,12 @@ import { useLoading } from "@/shared/hooks/useLoading";
 import styles from "./CreatePost.module.css";
 import { LoadingBar } from "../loading-bar/LoadingBar";
 import { useSession } from "next-auth/react";
-import { Avator } from "../avatar/Avatar";
 import { useState } from "react";
 import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
 import { FileInput } from "../file-reader/FileReader";
 import { ImgIcon } from "../icons/ImgIcon";
 import { RxCross1 } from "react-icons/rx";
+import { Avator } from "@/features/user/components/avatar/Avatar";
 export function CreatePost({
   content,
   img,

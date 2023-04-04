@@ -10,10 +10,10 @@ import { Avator } from "../avatar/Avatar";
 import styles from "./ProfileLayout.module.css";
 import { EditProfile } from "../edit-profile/EditProfile";
 import { useModal } from "@/shared/hooks/useModal";
-export function ProfileLayout({ children }) {
-  const [user,setUser] = useState(children.props.user);
-  user.isFollowing = children.props.isFollowing
-  const [isFollowingState ,toggleIsFollowingState]= useToggle(user.isFollowing)
+import { useCustomState } from "@/shared/hooks/useCustomState";
+export function ProfileLayout({ user,children }) {
+  const userState = useCustomState(user) 
+  const [isFollowingState ,toggleIsFollowingState]= useToggle(userState.isFollowing)
   const { data: session, status } = useSession();
   const [selected,setSelected] = useState(1)
   const modal = useModal()
@@ -40,7 +40,7 @@ export function ProfileLayout({ children }) {
   const follow = async() => {
     loading.start()
     try{
-     await PostFollow({followedId:user.id})       
+     await PostFollow({followedId:userState.value.id})       
      toggleIsFollowingState()
     }catch(err){
      console.log(err) 
@@ -50,9 +50,9 @@ export function ProfileLayout({ children }) {
 
   const editProfile = async()=>{
     modal.open(
-         <EditProfile user={user} onComplete={(newUser)=>{
+         <EditProfile user={userState.value} onComplete={(newUser)=>{
           modal.close()
-          setUser(newUser)
+          userState.set(newUser) 
         }}/>  
     )
   }
@@ -61,20 +61,20 @@ export function ProfileLayout({ children }) {
     <div>
       <div className="center-container">
         <div className="appbar">
-          {user?.name}</div>
+          {userState.value?.name}</div>
         <div className={styles.loading}>
         <LoadingBar loading={loading.loading}/>
         </div>
         <div className="col">
           <div className={styles.cover}>
-            <img src={user.cover}/>
+            <img src={userState.value?.cover}/>
           </div>
           <div className={styles.profilePic}>
             <div>
-              <Avator src={user?.image} size="120" />
+              <Avator src={userState.value?.image} size="120" />
             </div>
             {status === "authenticated" &&
-              (user.id === session.user.id ? (
+              (userState.value.id === session.user.id ? (
                 <button onClick={editProfile} className="btn btn-ghost btn-bordered">
                   edit profile
                 </button>
@@ -86,12 +86,12 @@ export function ProfileLayout({ children }) {
             </div>
           </div>
           <div className={styles.info}>
-            <div>{user?.name}</div>
-            <div>@{user?.username}</div>
+            <div>{userState.value?.name}</div>
+            <div>@{userState.value?.username}</div>
             <div>joined 21 december 2022</div>
             <div className="row" style={{ gap: "1rem" }}>
-              <div>{user?.totalFollowers | 0} followers</div>
-              <div>{user?.totalFollowings | 0} followings</div>
+              <div>{userState.value?.totalFollowers | 0} followers</div>
+              <div>{userState.value?.totalFollowings | 0} followings</div>
               <div></div>
             </div>
             <div className="tabbar" style={{ height: "3rem" }}>

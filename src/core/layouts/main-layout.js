@@ -33,16 +33,15 @@ const chirp = localFont({
   ],
 });
 
-export function MainLayout({ children }) {
+export function MainLayout({ onNewTweet,children }) {
   const router = useRouter();
   const { page } = router.query;
   const {status} = useSession()
-  const newTweet = useCustomState()
   const onClose=() => router.push("/",'',{shallow:true})
   return (
       <main className={styles.main + " " + chirp.className}>
         <aside className={styles.leftBar}>
-          <Navbar onNewTweet={newTweet.set} />
+          <Navbar onNewTweet={onNewTweet} />
         </aside>
         <div className={styles.content}>{children}</div>
         {page === "create-account" && (

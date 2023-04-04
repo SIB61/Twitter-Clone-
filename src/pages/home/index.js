@@ -42,6 +42,7 @@ function Page({ tweets, users }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <MainLayout onNewTweet={tweetList.add}>
       <div className={styles.home}>
         <div className="center-container">
           <div className="appbar">Home</div>
@@ -60,8 +61,8 @@ function Page({ tweets, users }) {
           <YouMayKnow users={users}/>   
         </div>
       </div>
+      </MainLayout>
     </>
   );
 }
-Page.Layout = MainLayout;
 export default Page;
