@@ -21,7 +21,7 @@ export async function getServerSideProps(ctx) {
     props:JSON.parse(JSON.stringify(
     {
       tweets:tweets,
-      users: users,
+      users: users.filter(u=>u.id!=user.id),
     },
     ))
   };

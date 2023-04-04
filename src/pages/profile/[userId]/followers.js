@@ -51,12 +51,12 @@ function Page({ followers,user }) {
   return (
     <MainLayout>
       <ProfileLayout user={user}>
-        <div style={{ padding: "1rem" }}>
+        <div className="col" style={{ gap:'1rem', padding:'1rem' }}>
           {followers.map((follower) => (
             <MiniProfile
               user={follower}
               key={follower.id}
-              action={<button className="btn btn-primary">unfollow</button>}
+              action={<button className="btn btn-bordered btn-ghost">follow</button>}
             />
           ))}
         </div>

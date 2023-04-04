@@ -8,6 +8,7 @@ import { getFollowings } from "@/features/user/services/server/get-followings";
 import { getIsFollowing } from "@/features/user/services/server/get-is-following";
 import { getUserById } from "@/features/user/services/server/get-user";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
 import { UserList } from "@/shared/components/user-list/UserList";
 import { getNestedLayout } from "@/shared/utils/getNestedLayout";
 import { getServerSession } from "next-auth";
@@ -56,8 +57,10 @@ function Page({ followings,user }) {
   return (
     <MainLayout>
       <ProfileLayout user={user}>
-        <div>
-          <UserList users={followings} />
+        <div className="col" style={{ gap:'1rem', padding:'1rem' }}>
+          {
+            followings.map(following=>(<MiniProfile user={following} action={<button className="btn btn-bordered btn-ghost">unfollow</button>}/>))
+          }
         </div>
       </ProfileLayout>
     </MainLayout>
