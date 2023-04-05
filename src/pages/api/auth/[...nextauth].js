@@ -3,6 +3,7 @@ import { dbConnect } from "@/core/utils/db";
 import { getUserByEmail } from "@/features/user/services/server/get-user";
 import { login } from "@/features/user/services/server/login";
 import NextAuth from "next-auth";
+import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 
@@ -17,7 +18,16 @@ export const authOptions = {
       credentials: {},
       async authorize(credentials, req) {
         await dbConnect();
+        let user;
         const { email, password } = credentials;
+        if(!email && !password ){
+         console.log(req)
+         const token =await getToken(req)     
+         if(token){
+            user = await getUserByEmail(token.email) 
+            if(user) return user
+         }
+        }
         try {
           console.log(email,password)
           const user = await login({ email, password });
