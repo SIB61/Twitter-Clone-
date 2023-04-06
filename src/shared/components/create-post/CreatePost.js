@@ -33,7 +33,7 @@ export function CreatePost({
           value={post}
           onChange={(e) => setPost(e.target.value)}
         ></textarea>
-        {image.src && (
+        {image?.src && (
           <div className={styles.image}>
             <img src={image.src} alt="img" />
             <button

@@ -22,7 +22,7 @@ export const authOptions = {
         const { email, password } = credentials;
         if(!email && !password ){
          console.log(req)
-         const token =await getToken(req)     
+         const token =await getToken({req})     
          if(token){
             user = await getUserByEmail(token.email) 
             if(user) return user
