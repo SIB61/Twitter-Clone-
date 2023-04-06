@@ -1,9 +1,8 @@
-import UserModel from "@/core/schemas/user.schema";
-import { mapId } from "@/shared/utils/mapId";
 import * as bcrypt from "bcryptjs";
+import { getUserByEmail } from "./get-user";
 
 export async function login({ email, password }) {
-  let user = await UserModel.findOne({ email });
+  let user = await getUserByEmail(email) 
   if (!user) {
     throw { status: 404, error: "Email not found" };
   }
@@ -14,7 +13,6 @@ export async function login({ email, password }) {
   if (!isValid) {
     throw { status: 400, error: "email or password incorrect" };
   }
-  user = mapId(user._doc);
-  const { passwordHash, totalFollowers, totalFollowings, ...userData } = user;
+  const { passwordHash, followers, followings , tweets,  ...userData } = user;
   return userData;
 }

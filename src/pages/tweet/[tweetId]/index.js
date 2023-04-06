@@ -1,7 +1,6 @@
 import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { getServerSession } from "next-auth";
-import { getIsLiked } from "@/features/tweet/services/server/get-is-liked";
 import { getTweetById } from "@/features/tweet/services/server/get-tweet-by-id";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { useRouter } from "next/router";
@@ -12,10 +11,8 @@ export async function getServerSideProps(ctx) {
   const { tweetId } = ctx.params;
   try {
     const { user } = await getServerSession(ctx.req, ctx.res, authOptions);
-    const tweetPromise = getTweetById(tweetId);
-    const isLikedPromise = getIsLiked({ tweetId, userId: user.id });
-    const [tweet, isLiked] = await Promise.all([tweetPromise, isLikedPromise]);
-    tweet.isLiked = isLiked;
+    const tweet = await getTweetById(tweetId);
+    tweet.isLiked = tweet.likes.includes(user.id)
     return {
       props: {
         tweet: JSON.parse(JSON.stringify(tweet)),
@@ -39,9 +36,11 @@ function Page({ tweet }) {
   };
   const [parent, _] = useAutoAnimate();
 
-  const comments = useListState(tweet.comments);
+  const comments = useListState(tweet.replies);
+
   return (
     <MainLayout>
+      {
       <div>
         <div className="center-container">
           <div className="appbar">Tweet</div>
@@ -65,8 +64,11 @@ function Page({ tweet }) {
           </div>
         </div>
       </div>
+      }
     </MainLayout>
   );
 }
 
 export default Page;
+
+

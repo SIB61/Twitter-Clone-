@@ -22,7 +22,7 @@ export function PostDetailedItem({post,onActionClick,onClick}){
             <Dropdown options={['edit','delete']} onOptionClick={onActionClick}/>
         }/>
       <div className={styles.content}>
-      <Content image={post?.image} content={post?.content} />
+      <Content image={post?.content?.image} content={post?.content?.text}/>
       </div>
       <div className={styles.date}>{createdAt}</div>
       <div className="h-divider"></div>

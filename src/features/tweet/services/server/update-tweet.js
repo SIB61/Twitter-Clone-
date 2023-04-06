@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 export async function updateTweet(id, { image, content }) {
   try {
-    const newTweet = await TweetModel.findOneAndUpdate({ _id: id }, { image, content },{new:true});
+    const newTweet = await TweetModel.findOneAndUpdate({ _id: id }, { content:{text:content, image: image } },{new:true});
     return mapId(newTweet._doc) 
   } catch (err) {
     if (err instanceof mongoose.Error) {

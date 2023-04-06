@@ -1,6 +1,6 @@
 import UserModel from "@/core/schemas/user.schema";
 import { dbConnect } from "@/core/utils/db";
-import { getUserByEmail } from "@/features/user/services/server/get-user";
+import { getUserByEmail, getUserById } from "@/features/user/services/server/get-user";
 import { login } from "@/features/user/services/server/login";
 import NextAuth from "next-auth";
 import { getToken } from "next-auth/jwt";
@@ -20,17 +20,9 @@ export const authOptions = {
         await dbConnect();
         let user;
         const { email, password } = credentials;
-        if(!email && !password ){
-         console.log(req)
-         const token =await getToken(req)     
-         if(token){
-            user = await getUserByEmail(token.email) 
-            if(user) return user
-         }
-        }
         try {
           console.log(email,password)
-          const user = await login({ email, password });
+          user = await login({ email, password });
           return user;
         } catch (err) {
           console.log(err) 
@@ -50,10 +42,14 @@ export const authOptions = {
   },
 
   callbacks: {
-    async jwt({token,user,account}) {
-      console.log(account,user,token)
-      if (user) {
+    async jwt({token,user}) {
+
+     if (user) {
+        try{
         user = await getUserByEmail(token.email)
+        }catch(err){
+          return token
+        }
         token.id = user.id;
         token.name = user.name;
         token.username = user.username;

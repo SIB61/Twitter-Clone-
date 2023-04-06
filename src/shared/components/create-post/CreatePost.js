@@ -33,9 +33,9 @@ export function CreatePost({
           value={post}
           onChange={(e) => setPost(e.target.value)}
         ></textarea>
-        {image.src && (
+        {image?.src && (
           <div className={styles.image}>
-            <img src={image.src} alt="img" />
+            <img src={image?.src} alt="img" />
             <button
               onClick={() => setImage(undefined)}
               className={`btn btn-ghost`}
@@ -55,7 +55,7 @@ export function CreatePost({
           <div>
             <button
               onClick={() => {
-                onSubmit(post, image?.file);
+                onSubmit({text:post,image:image});
               }}
               className={"btn btn-primary"}
               style={{ padding: "0.7rem 1rem", fontSize: "1rem" }}

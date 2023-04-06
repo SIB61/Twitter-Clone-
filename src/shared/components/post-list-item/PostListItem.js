@@ -9,9 +9,7 @@ import { useSession } from "next-auth/react";
 export function PostListItem({ post = {}, onClick, onActionClick }) {
   const createdAt = "1 hr ago";
   const { data: session } = useSession();
-
   const isMyPost = session && session?.user?.id === post?.user?.id;
-
   return (
     <div className={styles.postCard} onClick={onClick}>
       <Link
@@ -32,7 +30,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
             />
           )}
         </div>
-        <Content image={post.image} content={post.content} />
+        <Content image={post.content.image} content={post.content.text} />
         <div className={styles.actions}>
           <span
             style={
@@ -55,7 +53,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
             }}
           >
             <CommentIcon className={styles.commentIcon} />{" "}
-            {post.totalComments || post.totalReplies || "0"}
+            {post.totalComments}
           </span>
         </div>
       </div>

@@ -5,46 +5,25 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { PostFollow } from "../../services/client/post-follow";
 import { Avator } from "../avatar/Avatar";
 import styles from "./ProfileLayout.module.css";
 import { EditProfile } from "../edit-profile/EditProfile";
 import { useModal } from "@/shared/hooks/useModal";
 import { useCustomState } from "@/shared/hooks/useCustomState";
+import { follow, unfollow } from "../../services/client/follow.client";
 export function ProfileLayout({ user,children }) {
   const userState = useCustomState(user) 
-  const [isFollowingState ,toggleIsFollowingState]= useToggle(userState.isFollowing)
+  const [isFollowingState ,toggleIsFollowingState]= useToggle(userState.value.isFollowing)
   const { data: session, status } = useSession();
   const [selected,setSelected] = useState(1)
   const modal = useModal()
   const router = useRouter()
-
-  useEffect(()=>{
-    switch(router.pathname){
-      case '/profile/[userId]' : 
-        setSelected(1)
-      break
-      case '/profile/[userId]/followers' : 
-        setSelected(2)
-      break
-      case '/profile/[userId]/followings' : 
-        setSelected(3)
-      break
-      default:
-        console.log(router.pathname)
-
-    }
-  },[router.pathname])
-
+  const {page} = router.query
   const loading = useLoading()
-  const follow = async() => {
+  const sendFollow = async() => {
     loading.start()
-    try{
-     await PostFollow({followedId:userState.value.id})       
-     toggleIsFollowingState()
-    }catch(err){
-     console.log(err) 
-    }
+    const followRes = isFollowingState? await unfollow(user.id): await follow(user.id)
+    if(followRes) toggleIsFollowingState()
     loading.complete()
   }
 
@@ -79,7 +58,7 @@ export function ProfileLayout({ user,children }) {
                   edit profile
                 </button>
               ) : (
-                <button className="btn btn-ghost btn-bordered" onClick={follow}>
+                <button className="btn btn-ghost btn-bordered" onClick={sendFollow}>
                   {isFollowingState? 'unfollow' : 'follow' }
                 </button>
               ))}
@@ -95,9 +74,9 @@ export function ProfileLayout({ user,children }) {
               <div></div>
             </div>
             <div className="tabbar" style={{ height: "3rem" }}>
-              <Link scroll={false} href={`/profile/${user.id}/`} className={`tab ${selected === 1? 'selected':'' }`}>Tweets</Link>
-              <Link scroll={false} href={`/profile/${user.id}/followers`} className={`tab ${selected ===2? 'selected':'' }`}>Followers</Link>
-              <Link scroll={false} href={`/profile/${user.id}/followings`} className={`tab ${selected === 3? 'selected':'' }`}>Followings</Link>
+              <Link scroll={false} href={`/profile/${user.id}/`} shallow className={`tab ${page===undefined? 'selected':'' }`}>Tweets</Link>
+              <Link scroll={false} href={`/profile/${user.id}/?page=followers`} shallow className={`tab ${page==='followers'? 'selected':'' }`}>Followers</Link>
+              <Link scroll={false} href={`/profile/${user.id}/?page=followings`} shallow className={`tab ${page === 'followings'? 'selected':'' }`}>Followings</Link>
             </div>
           </div>
         {children}

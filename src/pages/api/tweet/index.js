@@ -14,9 +14,13 @@ export default handleRequest({
   const {fields,files} = await parseForm(req)
   const image = files.image? 'http://localhost:3000/uploads/' + files.image?.newFilename : undefined
   const content = fields.content
-  console.log(image,content)
+  const parent = fields.parent
+  const type = fields.type
+  console.log(image,content,type)
   const {user} = await getServerSession(req,res,authOptions)
-  const tweet = await createTweet({content,image,user})
+  const tweet = await createTweet({content,parent,image,user,type})
+  tweet.totalLikes = 0
+  tweet.totalComments = 0
   return res.send(JSON.stringify(tweet))
   }catch(err){
   console.log(err)

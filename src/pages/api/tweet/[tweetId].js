@@ -14,7 +14,7 @@ export default handleRequest({
   try{
   const {tweetId} = req.query
   const {fields,files} = await parseForm(req)
-  const image = files.image? 'http://localhost:3000/uploads/' + files.image?.newFilename : undefined
+  const image = files.image? 'http://localhost:3000/uploads/' + files.image?.newFilename : fields.imageUrl
   const content = fields.content
   const newTweet = await updateTweet(tweetId,{content,image})
   return res.status(200).send(JSON.stringify(newTweet))

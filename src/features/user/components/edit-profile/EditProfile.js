@@ -9,9 +9,11 @@ import { useMemo, useState } from "react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { getDateFormatString } from "@/shared/utils/getDateString";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 export function EditProfile({ user,onComplete }) {
+
   const dateOfBirth =  user.dateOfBirth && getDateFormatString(user.dateOfBirth)
+  const {data:session,status} = useSession()
   const {
     register,
     handleSubmit,
@@ -24,7 +26,7 @@ export function EditProfile({ user,onComplete }) {
     },
   });
 
-
+  
   const loading = useLoading()
   const [profile, setProfile] = useState(user?.image);
   const [cover, setCover] = useState(user?.cover);
@@ -42,7 +44,7 @@ export function EditProfile({ user,onComplete }) {
       const newUserRes = await fetch("/api/user/"+user?.id, {method:'PATCH',body:formData});
       const newUser = await newUserRes.json()
       loading.complete()
-      signIn('credentials')
+      await signIn('credentials')
       onComplete(newUser)
     } catch (err) {
       console.log(err);

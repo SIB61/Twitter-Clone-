@@ -12,7 +12,7 @@ import { CreatePost } from "@/shared/components/create-post/CreatePost";
 import { Confirmation } from "@/shared/components/confirmation/Confirmation";
 import { deleteTweet } from "../../services/client/delete-tweet";
 export function TweetView({ tweet = {}, detailed , onDelete=()=>{}, onComment=()=>{} }) {
-  const [tweetState, setTweetState] = useState(tweet);
+  const [tweetState, setTweetState] = useState(tweet)
   const { data: session, status } = useSession();
   const router = useRouter()
   const modal = useModal()
@@ -40,25 +40,31 @@ export function TweetView({ tweet = {}, detailed , onDelete=()=>{}, onComment=()
   const sendComment = async (value) => {
     if (value)
     {
-
       modal.startLoading()
       try {
-        console.log(tweetState)
-        const newComment = await postComment({ content: value, tweetId: tweetState.id });
+        const form = new FormData()
+        form.append('parent',tweetState.id)
+        form.append('content',value)
+        form.append('type','reply')
+        const newCommentRes = await fetch('/api/tweet',{body:form,method:'POST'})
+        const newComment = await newCommentRes.json()
         onComment(newComment) 
         setTweetState(state=>({...state,totalComments:state.totalComments+1}))
         } catch (err) {
+        console.log(err)
       }
       modal.close()
     }
   };
 
-  const editTweet = async(content,image)=>{
-
+  const editTweet = async({text,image})=>{
+    
     modal.startLoading()
     const formData = new FormData()
-    formData.append("content",content)
-    formData.append("image",image)
+    formData.append("content",text)
+    formData.append("image",image?.file)
+    formData.append("imageUrl",image?.src)
+    console.log(image,tweetState.content.image)
     const newPost = await fetch("/api/tweet/"+tweet.id , {method:"PATCH",body:formData})
     const post = await newPost.json()
     modal.close()
@@ -82,7 +88,7 @@ export function TweetView({ tweet = {}, detailed , onDelete=()=>{}, onComment=()
 
   function edit(){
     modal.open(
-      <CreatePost content={tweetState.content} img={tweetState.image} submitButton="save" onSubmit={editTweet}/>
+      <CreatePost content={tweetState.content.text} img={tweetState.content.image} submitButton="save" onSubmit={editTweet}/>
     )
   }
 
