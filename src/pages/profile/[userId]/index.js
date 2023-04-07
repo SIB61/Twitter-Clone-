@@ -28,7 +28,7 @@ export async function getServerSideProps(ctx) {
       followerId: myUser.id,
       followedId: userId,
     });
-    const tweetsPromise = getUserTweets(userId);
+    const tweetsPromise = getUserTweets(userId,myUser.id);
     let [user,isFollowing,tweets] = await Promise.all([userPromise,isFollowingPromise,tweetsPromise])
     user.isFollowing = isFollowing
     return {

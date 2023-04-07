@@ -13,7 +13,8 @@ import { useModal } from "@/shared/hooks/useModal";
 import { useCustomState } from "@/shared/hooks/useCustomState";
 export function ProfileLayout({ user,children }) {
   const userState = useCustomState(user) 
-  const [isFollowingState ,toggleIsFollowingState]= useToggle(userState.isFollowing)
+  const [isFollowingState ,toggleIsFollowingState]= useToggle(userState.value.isFollowing)
+  console.log(isFollowingState,userState.isFollowing)
   const { data: session, status } = useSession();
   const [selected,setSelected] = useState(1)
   const modal = useModal()
