@@ -2,29 +2,24 @@ import { MainLayout } from "@/core/layouts/main-layout";
 import { dbConnect } from "@/core/utils/db";
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { ProfileLayout } from "@/features/user/components/profile-layout/ProfileLayout";
-import {
-  getProfile,
-  getProfileWithFollowers,
-  getProfileWithFollowings,
-  getProfileWithTweets,
-} from "@/features/user/services/server/get-profile";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getProfile } from "@/features/user/services/server/get-profile.server";
 import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
 import { useListState } from "@/shared/hooks/useListState";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { createOptions } from "../api/auth/[...nextauth]";
 
 export async function getServerSideProps(ctx) {
   try {
     await dbConnect();
     const { userId } = ctx.params;
+    console.log(userId)
     const { page } = ctx.query;
     const { user } = await getServerSession(
       ctx.req,
       ctx.res,
-      authOptions
+      createOptions(ctx.req)
     );
     let profile;
     // if (page === "followers") {
@@ -35,7 +30,8 @@ export async function getServerSideProps(ctx) {
     //   profile = await getProfileWithTweets(userId);
     // }
     
-    profile = await getProfile(userId,user.id)
+    profile = await getProfile(userId,user)
+
 
     return {
       props: JSON.parse(

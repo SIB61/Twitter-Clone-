@@ -44,7 +44,6 @@ export function EditProfile({ user,onComplete }) {
       const newUserRes = await fetch("/api/user/"+user?.id, {method:'PATCH',body:formData});
       const newUser = await newUserRes.json()
       loading.complete()
-      await signIn('credentials')
       onComplete(newUser)
     } catch (err) {
       console.log(err);

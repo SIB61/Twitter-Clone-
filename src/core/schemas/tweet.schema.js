@@ -10,14 +10,18 @@ const TweetSchema = new mongoose.Schema(
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: USER_SCHEMA }],
     replies: [{ type: mongoose.Schema.Types.ObjectId, ref: TWEET_SCHEMA }],
     retweets:[{type:mongoose.Schema.Types.ObjectId, ref:TWEET_SCHEMA}],
-    parent: { type: mongoose.Schema.Types.ObjectId, ref: TWEET_SCHEMA },
+    origin: { type: mongoose.Schema.Types.ObjectId, ref: TWEET_SCHEMA },
+    immediateOrigin: { type:mongoose.Schema.Types.ObjectId, ref: TWEET_SCHEMA}, 
     user: {
       id: mongoose.Schema.Types.ObjectId,
       username: String,
       name: String,
       image: String,
     },
-    type:{type:String, default:'tweet'}
+    type:{type:String, enum:['tweet','retweet','reply'], default:'tweet'},
+    totalLikes: {type:Number,default:0,min:0},
+    totalReplies:{type:Number,default:0,min:0},
+    totalRetweets:{type:Number,default:0,min:0}
   },
   { timestamps: true }
 );

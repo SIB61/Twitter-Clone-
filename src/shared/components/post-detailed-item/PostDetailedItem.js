@@ -29,11 +29,11 @@ export function PostDetailedItem({post,onActionClick,onClick}){
       <div className={styles.numbers}>
         <span>
           {" "}
-          <span className={styles.number}> {post.totalLikes} </span> likes
+          <span className={styles.number}> {post.totalLikes.toString()} </span> likes
         </span>
         <span>
           {" "}
-          <span className={styles.number}> {post.totalComments} </span>{" "}
+          <span className={styles.number}> {post.totalReplies.toString()} </span>{" "}
           comments
         </span>
       </div>

@@ -1,13 +1,13 @@
 import UserModel from "@/core/schemas/user.schema";
 import { dbConnect } from "@/core/utils/db";
-import { getUserByEmail, getUserById } from "@/features/user/services/server/get-user";
-import { login } from "@/features/user/services/server/login";
+import { getUserByEmail } from "@/features/user/services/server/get-user.server";
+import { login } from "@/features/user/services/server/login.server";
 import NextAuth from "next-auth";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 
-export const authOptions = {
+export const createOptions = (req) => ({
   session: {
     strategy: "jwt",
   },
@@ -16,10 +16,17 @@ export const authOptions = {
       id: "credentials",
       name: "credentials",
       credentials: {},
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         await dbConnect();
         let user;
         const { email, password } = credentials;
+        if(!email && !password) {
+          const token = await getToken(req)
+          if(token){
+            const user = await getUserByEmail(token.email)
+            return user
+          }
+        } 
         try {
           console.log(email,password)
           user = await login({ email, password });
@@ -90,8 +97,7 @@ export const authOptions = {
       return true
     },
   },
-  
   secret: process.env.NEXTAUTH_SECRET,
-};
+})
 
-export default NextAuth(authOptions);
+export default (req,res) => NextAuth(createOptions(req));

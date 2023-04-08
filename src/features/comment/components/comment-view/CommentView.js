@@ -65,12 +65,12 @@ export function CommentView({
   const update = () => {
     modal.open(
         <InputModal
-          content={commentState.content}
+          content={commentState.content.text}
           user={commentState.user}
           onSubmit={async (content) => {
             modal.startLoading()            
             const newComment = await axios.patch(`/api/comment/${comment.id}`, {
-              content: content,
+              text: content,
             });
             modal.close();
             setCommentState(newComment.data);

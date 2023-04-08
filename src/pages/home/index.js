@@ -4,20 +4,25 @@ import { MainLayout } from "@/core/layouts/main-layout";
 import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
-import { getUserFeed } from "@/features/tweet/services/server/get-feed";
 import { YouMayKnow } from "@/features/user/components/you-may-know/YouMayKnow";
-import { getUsers } from "@/features/user/services/server/get-user";
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useListState } from "@/shared/hooks/useListState";
-import { getAllTweets } from "@/features/tweet/services/server/get-all-tweets";
+import { getUser, getUsers } from "@/features/user/services/server/get-user.server";
+import { getAllTweets } from "@/features/tweet/services/server/get-tweet.server";
+import { dbConnect } from "@/core/utils/db";
+import { createOptions } from "../api/auth/[...nextauth]";
 
 export async function getServerSideProps(ctx) {
-  const { user } = await getServerSession(ctx.req, ctx.res, authOptions);
+  await dbConnect()
+  const { user } = await getServerSession(ctx.req, ctx.res, createOptions(ctx.req));
   const tweetsPromise = getAllTweets();
   const usersPromise = getUsers();
-  const [tweets, users] = await Promise.all([tweetsPromise, usersPromise]);
+  let [tweets, users] = await Promise.all([tweetsPromise, usersPromise]);
+  tweets = tweets.map(tweet=>{
+    tweet.isLiked = tweet.likes.reduce((acc,cur)=>acc||cur.toString()===user.id.toString(),false)
+    return tweet
+  })
   console.log(tweets)
   return {
     props: JSON.parse(

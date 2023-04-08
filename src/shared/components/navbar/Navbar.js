@@ -62,6 +62,7 @@ export function Navbar({onNewTweet}) {
   const { data: session, status } = useSession();
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
+  console.log(status)
   const modal = useModal()
   const showCreateTweet = () => {
     modal.open(

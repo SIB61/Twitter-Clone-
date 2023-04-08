@@ -16,7 +16,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
         onClick={(e) => e.stopPropagation()}
         href={`/profile/${post.user?.id}`}
       >
-        <Avator src={post.user.image} />
+        <Avator src={post?.user?.image} />
       </Link>
       <div>
         <div className={styles.name}>
@@ -43,7 +43,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
             }}
           >
             <LikeIcon className={styles.likeIcon} isLiked={post.isLiked} />{" "}
-            {post.totalLikes}
+            {post.totalLikes?.toString()}
           </span>
           <span
             className={styles.commentButton + " " + styles.actionButton}
@@ -53,7 +53,7 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
             }}
           >
             <CommentIcon className={styles.commentIcon} />{" "}
-            {post.totalComments}
+            {post.totalReplies?.toString()}
           </span>
         </div>
       </div>

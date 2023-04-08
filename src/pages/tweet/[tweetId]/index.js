@@ -1,18 +1,18 @@
 import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { getServerSession } from "next-auth";
-import { getTweetById } from "@/features/tweet/services/server/get-tweet-by-id";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { useRouter } from "next/router";
 import { useListState } from "@/shared/hooks/useListState";
 import { CommentView } from "@/features/comment/components/comment-view/CommentView";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { getTweetById } from "@/features/tweet/services/server/get-tweet.server";
+import { createOptions } from "@/pages/api/auth/[...nextauth]";
 export async function getServerSideProps(ctx) {
   const { tweetId } = ctx.params;
   try {
-    const { user } = await getServerSession(ctx.req, ctx.res, authOptions);
+    const { user } = await getServerSession(ctx.req, ctx.res, createOptions(ctx.req));
     const tweet = await getTweetById(tweetId);
-    tweet.isLiked = tweet.likes.includes(user.id)
+    tweet.isLiked = tweet.likes.reduce((acc,cur)=>acc||cur.toString()===user.id.toString(),false)
     return {
       props: {
         tweet: JSON.parse(JSON.stringify(tweet)),

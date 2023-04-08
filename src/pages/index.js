@@ -4,13 +4,13 @@ import { MainLayout } from "@/core/layouts/main-layout";
 import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]";
-import { getAllTweets } from "@/features/tweet/services/server/get-all-tweets";
 import { dbConnect } from "@/core/utils/db";
+import { getAllTweets } from "@/features/tweet/services/server/get-tweet.server";
+import { createOptions } from "./api/auth/[...nextauth]";
 
 export async function getServerSideProps(context) {
   await dbConnect();
-  const session = await getServerSession(context.req, context.res, authOptions);
+  const session = await getServerSession(context.req, context.res, createOptions(context.req));
   const allTweets = await getAllTweets();
   if (session) {
     return {

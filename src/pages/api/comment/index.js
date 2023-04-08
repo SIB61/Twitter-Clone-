@@ -1,18 +1,25 @@
-// import { createComment } from "@/features/comment/services/server/create-comment";
-// import { handleRequest } from "@/shared/middlewares/request-handler";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "../auth/[...nextauth]";
-// export default handleRequest({
-//     async POST(req,res){
-//     let {tweetId,content,commentId} = req.body
-//     try{
-//     console.log(tweetId,content,commentId)
-//     const {user} = await getServerSession(req,res,authOptions)
-//     const newComment = await createComment({content,tweetId,user,commentId})   
-//     return res.json(newComment)
-//     }catch(err){
-//     return res.status(err.status || 500).send(err.error || 'Internal server error')
-//     }
-//    }
-// })
-//
+import { handleRequest } from "@/shared/middlewares/request-handler";
+import { getServerSession } from "next-auth";
+import { parseForm } from "@/shared/utils/parse-form";
+import { createComment } from "@/features/tweet/services/server/create-tweet.server";
+import { createOptions } from "../auth/[...nextauth]";
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+export default handleRequest({
+  async POST(req, res) {
+    try {
+      const { fields } = await parseForm(req);
+      const text = fields.text;
+      const origin = fields.origin
+      const { user } = await getServerSession(req, res, createOptions(req));
+      const tweet = await createComment({ text , user, origin });
+      return res.send(JSON.stringify(tweet));
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send("error");
+    }
+  },
+});
