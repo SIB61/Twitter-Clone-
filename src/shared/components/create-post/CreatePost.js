@@ -18,14 +18,14 @@ export function CreatePost({
   isLoading = false,
 }) {
   const {
-    data: { user },
+    data: session,
   } = useSession();
   const imageState = useCustomState({src:image})
   const textState = useCustomState(text)
   const textAreaRef = useAutoResizeTextArea(textState.value);
   return (
     <div className={styles.createPost}>
-      <Avator src={user.image} size="48" />
+      <Avator src={session?.user?.image} size="48" />
       <div className={styles.fields}>
         <textarea
           ref={textAreaRef}

@@ -98,7 +98,7 @@ export function Navbar({onNewTweet}) {
             <>
               <li>
                 <button
-                  className={"btn btn-bordered brn-ghost"}
+                  className={`btn btn-bordered brn-ghost ${styles.navOptions}`}
                   style={{marginBottom:'8px'}}
                   onClick={() => modal.open(<Confirmation subtitle={'You want to log out'} onConfirm={async()=>{
                     modal.startLoading()
