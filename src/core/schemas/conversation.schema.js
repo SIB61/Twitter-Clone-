@@ -1,6 +1,5 @@
 import { CONVERSATION_SCHEMA, USER_SCHEMA } from "@/constants";
 import { models, model, Schema, SchemaTypes } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 
 const conversationSchema = new Schema(
   {
@@ -12,10 +11,6 @@ const conversationSchema = new Schema(
     ],
     messages: [
       {
-        msgID: {
-          type: String,
-          default: uuidv4,
-        },
         content: {
           text: String,
           file: String,
@@ -24,8 +19,16 @@ const conversationSchema = new Schema(
           type: mongoose.SchemaTypes.ObjectId,
           ref: USER_SCHEMA,
         },
-        senderReact: String,
-        receiverReact: String,
+        senderReact: {
+          type: String,
+          enum: ["none", "like", "haha", "love", "sad", "angry"],
+          default: "none",
+        },
+        receiverReact: {
+          type: String,
+          enum: ["none", "like", "haha", "love", "sad", "angry"],
+          default: "none",
+        },
         originalMessage: {
           id: String,
           text: String,
