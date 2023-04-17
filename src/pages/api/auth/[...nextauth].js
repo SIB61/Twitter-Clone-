@@ -21,19 +21,17 @@ export const createOptions = (req) => ({
         let user;
         const { email, password } = credentials;
         if(!email && !password) {
-          const token = await getToken(req)
+          const token = await getToken({req})
           if(token){
             const user = await getUserByEmail(token.email)
             return user
           }
         } 
         try {
-          console.log(email,password)
           user = await login({ email, password });
           return user;
         } catch (err) {
-          console.log(err) 
-          throw err;
+          throw new Error(err.error);
         }
       },
     }),
@@ -80,15 +78,22 @@ export const createOptions = (req) => ({
         try{
         const { email, name, image } = user;
         await dbConnect();
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await UserModel.findOne({email});
         if (!existingUser) {
            await UserModel.create({
             username: email.split("@")[0],
             email,
             name,
-            image
+            image,
+            isVerified:true
           });
         }
+        else if(!existingUser.isVerified){
+           existingUser.isVerified = true;
+           existingUser.verificationToken = undefined;
+           await existingUser.save()
+        }
+        return true
         }
         catch(err){
           return false
@@ -100,4 +105,4 @@ export const createOptions = (req) => ({
   secret: process.env.NEXTAUTH_SECRET,
 })
 
-export default (req,res) => NextAuth(createOptions(req));
+export default (req,res) => NextAuth(req,res,createOptions(req));

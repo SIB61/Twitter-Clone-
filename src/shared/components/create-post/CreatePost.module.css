@@ -63,3 +63,9 @@
   font-size: 1.5rem;
   line-height: 24px;
 }
+
+.submit{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

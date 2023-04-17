@@ -18,8 +18,14 @@
   --grey: rgb(83, 100, 113);
   --black-alpha: rgba(15, 20, 25, 0.2);
   --background-color: white;
-  --pink:rgb(249, 24, 128);
-  --pink-alpha:rgb(249, 24, 128,0.1);
+  --pink: rgb(249, 24, 128);
+  --pink-alpha: rgb(249, 24, 128, 0.1);
+  --green: rgba(0, 200, 0, 1);
+  --success: rgba(0, 200, 0, 0.4);
+  --success-alpha: rgba(0, 200, 0, 0.2);
+  --green-alpha: rgba(0,200,0,0.2);
+  --error: rgba(200, 0, 0, 0.4);
+  
 }
 
 html,
@@ -30,7 +36,7 @@ body {
   font-size: 15px;
 }
 
-input[type='file']{
+input[type="file"] {
   display: none;
 }
 
@@ -42,7 +48,6 @@ a {
   text-decoration: none;
   display: inline-block;
 }
-
 
 .btn {
   padding: 0.8rem 1rem;
@@ -75,7 +80,7 @@ a {
   color: var(--white);
 }
 
-.btn-disabled{
+.btn-disabled {
   background-color: var(--dark-white);
 }
 .btn-primary:hover {
@@ -93,7 +98,7 @@ textarea {
 .h-divider {
   width: 100%;
   height: 1px;
-  margin: 0.5rem 0; 
+  margin: 0.5rem 0;
   background-color: var(--dark-white);
 }
 
@@ -130,7 +135,7 @@ textarea {
   position: relative;
 }
 
-.modal{
+.modal {
   position: fixed;
   height: 100vh;
   top: 0;
@@ -140,18 +145,18 @@ textarea {
   background-color: white;
 }
 
-.h-divider-or{
+.h-divider-or {
   width: 100%;
   height: 1px;
   background-color: var(--dark-white);
   position: relative;
   font-size: 1.2rem;
   color: var(--black);
-  margin: 1rem 0; 
+  margin: 1rem 0;
 }
 
-.h-divider-or::before{
-  content: 'or';
+.h-divider-or::before {
+  content: "or";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -165,24 +170,38 @@ textarea {
   display: flex;
 }
 
-.col{
+.col {
   display: flex;
   flex-direction: column;
 }
 
-
-.card{
-
+.center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.tabbar{
- display: flex;
- justify-content: center;
- align-items: center;
- border-bottom: 1px solid var(--white) ;
+.w-full{
+ width: 100%; 
 }
 
-.tabbar .tab{
+.screen{
+  width: 100vw;
+  height: 100vh;
+}
+
+.h-full{
+ height: 100%;
+}
+
+.tabbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid var(--white);
+}
+
+.tabbar .tab {
   height: 100%;
   width: 100%;
   cursor: pointer;
@@ -193,12 +212,69 @@ textarea {
   width: 700;
 }
 
-.tabbar .tab:hover{
+.tabbar .tab:hover {
   background-color: var(--white);
-  
 }
 
-.tabbar .selected{
+.tabbar .selected {
   border-bottom: 3px solid var(--primary-color);
   color: var(--black);
 }
+
+
+
+.fadeIn{
+  animation: fadeIn 0.5s ease-in-out;
+
+}
+
+@keyframes fadeIn{
+from{
+  opacity: 0;
+}to{
+ opacity: 1;
+}
+}
+
+
+.toast {
+  padding: 1rem 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  display: flex;
+  padding-right: 2rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toast.success{
+  background-color: var(--success);
+  box-shadow: 0 0 1rem var(--success);
+}
+
+.toast.error{
+  background-color: var(--error);
+  box-shadow: 0 0 1rem var(--error);
+}
+
+
+.loader {
+    width: 1.2em;
+    height: 1.2em;
+    border: 0.2em solid currentColor;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    opacity: 0.8;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 

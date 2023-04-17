@@ -9,6 +9,9 @@ export async function login({ email, password }) {
   if(!user.passwordHash){
     throw {status:400,error: "please login with github"}
   }
+  if(!user.isVerified){
+    throw {status:400,error:"Please verify your email!"}
+  }
   const isValid = bcrypt.compareSync(password, user.passwordHash);
   if (!isValid) {
     throw { status: 400, error: "email or password incorrect" };

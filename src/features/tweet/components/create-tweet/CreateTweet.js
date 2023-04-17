@@ -7,6 +7,7 @@ import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
 import { FileInput } from "@/shared/components/file-reader/FileReader";
 import { RxCross1 } from "react-icons/rx";
+import { postTweet } from "../../services/client/create-tweet.client";
 export function CreateTweet({ expanded, onComplete = () => {} }) {
   const [expand, setExpand] = useState(expanded);
   const [post, setPost] = useState();
@@ -15,22 +16,15 @@ export function CreateTweet({ expanded, onComplete = () => {} }) {
   const [image, setImage] = useState();
   const twitPost = async () => {
     if (post || image) {
-      const formData = new FormData();
-      if (post) formData.append("content", post);
-      if (image) formData.append("image", image.file);
       loading.start();
-
       try {
-        const tweetRes = await fetch("/api/tweet", { method: "POST", body: formData });
-        const tweet = await tweetRes.json()
+        const tweet = await postTweet({text:post,image:image?.file})
         await loading.complete()
         onComplete(tweet)
       } catch (err) {
+        console.log(err)
         await loading.complete()
-        onComplete()
-        console.log(err);
       }
-
       setPost("");
       setImage(undefined);
     }

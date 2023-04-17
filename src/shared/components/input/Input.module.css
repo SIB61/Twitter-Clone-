@@ -1,5 +1,6 @@
 .input{
  border: 1.5px solid var(--dark-white);
+ margin-top: 0.5rem;
  padding: 1rem;
  border-radius: 10px;
  position: relative;

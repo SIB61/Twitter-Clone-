@@ -6,12 +6,19 @@ import { Avator } from "@/features/user/components/avatar/Avatar";
 import Link from "next/link";
 import { Dropdown } from "../dropdown/Dropdown";
 import { useSession } from "next-auth/react";
-export function PostListItem({ post = {}, onClick, onActionClick }) {
+import { RetweetIcon } from "../icons/RetweetIcon";
+import { CgMoreVertical } from "react-icons/cg";
+export function PostListItem({
+  post = {},
+  parentType,
+  onClick,
+  onActionClick,
+}) {
   const createdAt = "1 hr ago";
   const { data: session } = useSession();
   const isMyPost = session && session?.user?.id === post?.user?.id;
   return (
-    <div className={styles.postCard} onClick={onClick}>
+    <div className={styles.postCard}>
       <Link
         onClick={(e) => e.stopPropagation()}
         href={`/profile/${post.user?.id}`}
@@ -20,17 +27,21 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
       </Link>
       <div>
         <div className={styles.name}>
-          <div>{post.user.name}</div>
-          <div>@{post.user.username}</div>.<div>{createdAt}</div>
+          <div>{post.user?.name}</div>
+          <div>@{post.user?.username}</div>.<div>{createdAt}</div>
           {isMyPost && (
             <Dropdown
               className={`${styles.dropdown}`}
               onOptionClick={onActionClick}
               options={["edit", "delete"]}
-            />
+            >
+              <button className="btn btn-icon" style={{ padding: "0.5rem" }}>
+                <CgMoreVertical />
+              </button>
+            </Dropdown>
           )}
         </div>
-        <Content image={post.content.image} content={post.content.text} />
+        <Content image={post.content?.image} content={post.content?.text} />
         <div className={styles.actions}>
           <span
             style={
@@ -42,19 +53,33 @@ export function PostListItem({ post = {}, onClick, onActionClick }) {
               onActionClick("like");
             }}
           >
-            <LikeIcon className={styles.likeIcon} isLiked={post.isLiked} />{" "}
+            <LikeIcon className={styles.icon} isLiked={post.isLiked} />
             {post.totalLikes?.toString()}
           </span>
-          <span
-            className={styles.commentButton + " " + styles.actionButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              onActionClick("comment");
-            }}
-          >
-            <CommentIcon className={styles.commentIcon} />{" "}
-            {post.totalReplies?.toString()}
-          </span>
+          {parentType != "reply" && (
+            <span
+              className={styles.commentButton + " " + styles.actionButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                onActionClick("comment");
+              }}
+            >
+              <CommentIcon className={styles.icon} />
+              {post.totalReplies?.toString()}
+            </span>
+          )}
+          {post.type != "reply" && (
+            <span
+              className={styles.retweetButton + " " + styles.actionButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                onActionClick("retweet");
+              }}
+            >
+              <RetweetIcon className={styles.icon} />
+              {post.totalRetweets?.toString()}
+            </span>
+          )}
         </div>
       </div>
     </div>

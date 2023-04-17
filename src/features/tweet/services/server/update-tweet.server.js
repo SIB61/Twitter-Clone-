@@ -1,10 +1,15 @@
 import TweetModel from "@/core/schemas/tweet.schema";
 import { mapId } from "@/shared/utils/mapId";
 
-export async function updateTweet({tweetId,text,image}) {
+export async function updateTweet({tweetId,text,image,userId}) {
   try {
-    const newTweet = await TweetModel.findOneAndUpdate({ _id: tweetId }, {content:{text, image}},{new:true});
-    return mapId(newTweet._doc) 
+    const tweet = await TweetModel.findById(tweetId)
+    if(tweet.user.id != userId){
+      throw {status: 400, error:'do not have access to modify'}
+    }
+    tweet.content = {text,image}
+    tweet.save()
+    return mapId(tweet._doc) 
   } catch (err) {
       throw { status: 500, error: err.message };
   }

@@ -4,18 +4,19 @@ import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { ProfileLayout } from "@/features/user/components/profile-layout/ProfileLayout";
 import { getProfile } from "@/features/user/services/server/get-profile.server";
 import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
+import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useListState } from "@/shared/hooks/useListState";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { createOptions } from "../api/auth/[...nextauth]";
 
 export async function getServerSideProps(ctx) {
   try {
     await dbConnect();
     const { userId } = ctx.params;
-    console.log(userId)
-    const { page } = ctx.query;
+    console.log("this is a profile id ",userId)
     const { user } = await getServerSession(
       ctx.req,
       ctx.res,
@@ -29,9 +30,8 @@ export async function getServerSideProps(ctx) {
     // } else {
     //   profile = await getProfileWithTweets(userId);
     // }
-    
     profile = await getProfile(userId,user)
-
+    console.log("adslk")
 
     return {
       props: JSON.parse(

@@ -50,7 +50,7 @@
   font-weight:400;
 }
 
-.commentIcon{
+.icon{
   width: 1.2rem;
   color: var(--white);
   padding: 0.5rem;
@@ -96,13 +96,6 @@
   color: var(--black)
 }
 
-.likeIcon{
-  width: 1.2rem;
-  color: var(--grey);
-  padding: 0.5rem;
-  border-radius: 50%;
-  box-sizing: content-box;
-}
 
 .actionButton{
   display: flex;
@@ -117,17 +110,30 @@
  color: var(--pink);
 }
 
+
+
 .commentButton:hover{
  color: var(--primary-color);
 }
 
-.commentButton:hover .commentIcon{
+.retweetButton:hover{
+ color: green;
+}
+
+.commentButton:hover .icon{
  color: var(--primary-color);
  fill: var(--primary-color);
  background-color: var(--primary-alpha);
 }
 
-.likeButton:hover .likeIcon{
+
+.retweetButton:hover .icon{
+ color: green;
+ fill: green;
+ background-color: rgba(0, 200, 0, 0.1);
+}
+
+.likeButton:hover .icon{
  color: var(--pink);
  fill: var(--pink);
  background-color: var(--pink-alpha);

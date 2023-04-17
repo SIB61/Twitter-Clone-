@@ -9,6 +9,8 @@ const UserSchema = new mongoose.Schema(
     dateOfBirth: Date,
     image: String,
     cover: String,
+    isVerified:{type:Boolean,default:false},
+    verificationToken:String,
     passwordHash: String,
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: USER_SCHEMA }],
     followings: [{ type: mongoose.Schema.Types.ObjectId, ref: USER_SCHEMA }],

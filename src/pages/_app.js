@@ -5,17 +5,17 @@ import { SessionProvider } from "next-auth/react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { createContext, useEffect, useState } from "react";
-import { Router } from "next/router";
+import { Router, useRouter } from "next/router";
 import { Modal } from "@/shared/components/modal/Modal";
-import {  ModalProvider } from "@/shared/contexts/modalContext";
+import { ModalProvider } from "@/shared/contexts/modalContext";
+import { InputBoxProvider } from "@/shared/contexts/InputBoxContext";
+import { ToastProvider } from "@/shared/contexts/ToastContext";
 const PageContext = createContext();
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }) {
-
-
   const loading = useLoading();
 
   useEffect(() => {
@@ -30,21 +30,25 @@ export default function App({
     });
   }, [Router]);
 
+  const router = useRouter()
+
   return (
     <SessionProvider session={session}>
       <ModalProvider>
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            zIndex: 10,
-          }}
-        >
-        <LoadingBar loading={loading.loading} />
-        </div>
-        <Component {...pageProps} />
+        <ToastProvider>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              zIndex: 10,
+            }}
+          >
+            <LoadingBar loading={loading.loading} />
+          </div>
+          <Component {...pageProps} key={router.asPath} />
+        </ToastProvider>
       </ModalProvider>
     </SessionProvider>
   );

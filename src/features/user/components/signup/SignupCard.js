@@ -8,19 +8,20 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import { LoadingBar } from '@/shared/components/loading-bar/LoadingBar'
 import { useLoading } from '@/shared/hooks/useLoading'
+import { useToast } from '@/shared/hooks/useToast'
 export function SignupCard(){
   const {register,handleSubmit,formState:{isValid}} = useForm() 
   const router = useRouter()
   const loading = useLoading()
+  const createToast = useToast()
 
   const onSubmit = async (data)=>{
     try{
     loading.start()
     const user = await axios.post("/api/user",data)
     loading.complete()
-    console.log(user)
-    router.push('?page=login','',{shallow:true})
-    console.log(user)
+    router.push('/','',{shallow:true})
+    createToast({text:"Email verification link sent."})
     }catch(err){
     console.log(err)
     }
@@ -29,7 +30,7 @@ export function SignupCard(){
   return (
     <>
       <LoadingBar loading={loading.loading}/>
-  <div className={styles.signupCard}>
+     <div className={styles.signupCard}>
      <Image src={tweeterLogo} alt='tweeter' className={styles.tweeterLogo}/>
      <h4>Sign up to Twitter</h4>
       <form onSubmit={handleSubmit(onSubmit)}>

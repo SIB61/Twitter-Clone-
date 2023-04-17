@@ -8,16 +8,26 @@ import {signIn} from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { LoadingBar } from '@/shared/components/loading-bar/LoadingBar'
 import { useLoading } from '@/shared/hooks/useLoading'
+import { useToast } from '@/shared/hooks/useToast'
+import { useRouter } from 'next/router'
 
 
 
 export function LoginCard(){
+  const createToast = useToast()
    const {register,handleSubmit,formState:{isValid}} = useForm() 
    const loading = useLoading()
+   const router = useRouter()
    const onSubmit = async(data) => {
    console.log(data)
    loading.start()
-   const res = await signIn("credentials",{...data,redirect:true,callbackUrl:'/home'})
+   const res = await signIn("credentials",{...data,redirect:false})
+   if(res.error){
+     createToast({text:res.error,importance:'error'}) 
+   }
+   else{
+     router.push('/home')   
+   }
    loading.complete()
    console.log(res)
   }

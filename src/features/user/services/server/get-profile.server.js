@@ -1,9 +1,10 @@
 import UserModel from "@/core/schemas/user.schema";
+import { addIsLiked } from "@/shared/utils/addIsLiked";
 import { mapId } from "@/shared/utils/mapId";
 
-export async function getProfileWithTweets(id,user) {
+export async function getProfileWithTweets(id, user) {
   let profile = await UserModel.findById(id)
-    .select({ passwordHash: 0 ,followers:0 , followings:0 })
+    .select({ passwordHash: 0, followers: 0, followings: 0 })
     .populate({ path: "tweets", options: { sort: { createdBy: -1 } } })
     .lean();
   profile = mapId(profile);
@@ -11,10 +12,9 @@ export async function getProfileWithTweets(id,user) {
   return profile;
 }
 
-
-export async function getProfileWithFollowers(id,user) {
+export async function getProfileWithFollowers(id, user) {
   let profile = await UserModel.findById(id)
-    .select({ passwordHash: 0,followings:0,tweets:0 })
+    .select({ passwordHash: 0, followings: 0, tweets: 0 })
     .populate({
       path: "followers",
       select: "_id name username image",
@@ -26,9 +26,9 @@ export async function getProfileWithFollowers(id,user) {
   return profile;
 }
 
-export async function getProfileWithFollowings(id,user) {
+export async function getProfileWithFollowings(id, user) {
   let profile = await UserModel.findById(id)
-    .select({ passwordHash: 0 , tweets:0 , followers: 0})
+    .select({ passwordHash: 0, tweets: 0, followers: 0 })
     .populate({
       path: "followings",
       select: "_id name username image",
@@ -43,31 +43,43 @@ export async function getProfileWithFollowings(id,user) {
   return profile;
 }
 
-export async function getProfile(id,user) {
+export async function getProfile(id, user) {
   let profile = await UserModel.findById(id)
     .select({ passwordHash: 0 })
     .populate({
       path: "followings",
       select: "_id name username image",
-      options: { sort: { createdBy: -1 } },
+      options: { sort: { createdAt: -1 } },
     })
     .populate({
-      path:"followers",
+      path: "followers",
       select: "_id name username image",
-      options: { sort: { createdBy: -1 } },
+      options: { sort: { createdAt: -1 } },
     })
     .populate({
-      path:"tweets",
-      options: { sort: { createdBy: -1 } },
+      path: "tweets",
+      options: { sort: { createdAt: -1 } },
+      select:{replies:0},
+      populate: [
+        { path: "parent",select:{replies:0}},
+      ],
     })
     .lean();
   profile = mapId(profile);
   profile.followings = profile.followings.map((following) => mapId(following));
   profile.followers = profile.followers.map((follower) => mapId(follower));
-  profile.tweets = profile.tweets.map(tweet=>{
-        tweet.isLiked = tweet.likes.reduce((acc,cur)=>acc||cur.toString()===user.id.toString(),false)
-        return mapId(tweet)
+  profile.tweets = profile.tweets.map((tweet) => {
+    if (tweet.parent && tweet.type === "retweet") {
+      tweet.parent = addIsLiked(tweet.parent, user.id);
+      return mapId(tweet);
+    } else {
+      tweet = addIsLiked(tweet, user.id);
+      return tweet;
+    }
   });
-  profile.isFollowing = profile.followers.reduce((acc,cur)=>acc||cur.id.toString()===user.id.toString(),false)
+  profile.isFollowing = profile.followers.reduce(
+    (acc, cur) => acc || cur.id.toString() === user.id.toString(),
+    false
+  );
   return profile;
 }

@@ -8,38 +8,74 @@ import { YouMayKnow } from "@/features/user/components/you-may-know/YouMayKnow";
 import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useListState } from "@/shared/hooks/useListState";
-import { getUser, getUsers } from "@/features/user/services/server/get-user.server";
-import { getAllTweets } from "@/features/tweet/services/server/get-tweet.server";
+import {
+  getUser,
+  getUsers,
+} from "@/features/user/services/server/get-user.server";
+import {
+  getAllTweets,
+  getFeed,
+  getUserFeed,
+} from "@/features/tweet/services/server/get-tweet.server";
 import { dbConnect } from "@/core/utils/db";
 import { createOptions } from "../api/auth/[...nextauth]";
+import { useEffect, useReducer, useRef, useState } from "react";
+import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
+import { useOnScreen } from "@/shared/hooks/useOnScreen";
+import { useCustomState } from "@/shared/hooks/useCustomState";
+import useSwr from "swr";
+import { fetcher } from "@/shared/utils/fetcher";
+import axios from "axios";
+import { trusted } from "mongoose";
 
 export async function getServerSideProps(ctx) {
-  await dbConnect()
-  const { user } = await getServerSession(ctx.req, ctx.res, createOptions(ctx.req));
-  const tweetsPromise = getAllTweets();
+  await dbConnect();
+  const { user } = await getServerSession(
+    ctx.req,
+    ctx.res,
+    createOptions(ctx.req)
+  );
+  const tweetsPromise = getUserFeed({
+    userId: user.id,
+    pageIndex: 1,
+    pageSize: 10,
+  });
   const usersPromise = getUsers();
-  let [tweets, users] = await Promise.all([tweetsPromise, usersPromise]);
-  tweets = tweets.map(tweet=>{
-    tweet.isLiked = tweet.likes.reduce((acc,cur)=>acc||cur.toString()===user.id.toString(),false)
-    return tweet
-  })
-  console.log(tweets)
+  let [tweetsPage, users] = await Promise.all([tweetsPromise, usersPromise]);
   return {
     props: JSON.parse(
       JSON.stringify({
-        tweets: tweets,
+        tweetsPage: tweetsPage,
         users: users.filter((u) => u.id != user.id),
       })
     ),
   };
 }
 
-function Page({ tweets, users }) {
-  const { data, status } = useSession();
-  const tweetList = useListState(tweets);
-  const [parent, _] = useAutoAnimate();
+function Page({ tweetsPage, users }) {
+  const tweetList = useListState(tweetsPage.data);
+  const loaderRef = useRef();
+  const isLoaderOnScreen = !!useIntersectionObserver(loaderRef,{})?.isIntersecting;
+  const pageIndex = useCustomState(2);
+  const isLastPage = useCustomState(false);
+  useEffect(() => {
+    if (isLoaderOnScreen && !isLastPage.value) {
+      const fetchNewPost = async () => {
+        try {
+          const { data: newPage } = await axios.get(
+            `/api/tweet/?pageIndex=${pageIndex.value}&pageSize=${tweetsPage.pageSize}`
+          );
+          if (newPage?.data?.length === 0) {
+            isLastPage.set(true);
+          } else tweetList.set((state) => [...state, ...newPage?.data]);
+          pageIndex.set((v) => v + 1);
+        } catch (err) {}
+      };
+      fetchNewPost();
+    }
+  }, [isLoaderOnScreen]);
 
-  console.log(status, data);
+  const [parent, _] = useAutoAnimate();
   return (
     <>
       <Head>
@@ -66,6 +102,20 @@ function Page({ tweets, users }) {
                     onDelete={tweetList.remove}
                   />
                 ))}
+                {isLastPage.value ? (
+                  <div className="w-full center" style={{padding:'1rem',color:'var(--grey)'}}>no more tweets</div>
+                ) : (
+                  <div
+                    className="w-full center"
+                    style={{
+                      fontSize: "2rem",
+                      padding: "1rem",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    <div ref={loaderRef} className="loader"></div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
