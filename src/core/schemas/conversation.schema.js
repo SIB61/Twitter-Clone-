@@ -27,6 +27,7 @@ const conversationSchema = new Schema(
         senderReact: String,
         receiverReact: String,
         originalMessage: {
+          id: String,
           text: String,
           file: String,
         },
