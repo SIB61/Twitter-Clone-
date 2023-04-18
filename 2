@@ -1,0 +1,47 @@
+import { handleRequest } from "@/shared/middlewares/request-handler";
+import { getServerSession } from "next-auth";
+import { Server } from "socket.io";
+import { createOptions } from "./auth/[...nextauth]";
+import { getRedisClient } from "@/core/utils/redis-client";
+
+export default handleRequest({
+  GET:async(req,res)=>{
+    const {user} = await getServerSession(req,res,createOptions(req))
+    console.log(user)
+    await createSocketConnection(user.id,res)
+    res.end()
+  }
+})
+
+async function createSocketConnection(userId,res) {
+  let io = res.socket.server.io;
+  console.log("userId",userId)
+  const redis = getRedisClient()
+  if (!io) {
+    const io = new Server(res.socket.server);
+    io.on("connection", async(socket) => {
+      console.log('connection',userId,socket.id)
+      await redis.set(userId,socket.id)
+      socket.on("sendMessage", async ({content,senderId,receiverId}) => {
+           
+          socket.broadcast.to(`${room[1]}-${room[0]}`).emit("newMessage",newMessage)
+      });
+
+
+     socket.on('join',(room)=>{
+        socket.rooms.forEach(existingRoom=>socket.leave(existingRoom))
+        socket.join(room)
+      })
+
+
+
+    });
+    res.socket.server.io = io;
+  }
+}
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};

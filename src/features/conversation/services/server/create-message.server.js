@@ -5,7 +5,7 @@ export async function createMessage({
   text,
   file,
   sender,
-  conversationID,
+  receiver,
   originalMessage,
 }) {
   try {
@@ -17,8 +17,14 @@ export async function createMessage({
       sender,
       originalMessage,
     };
-
-    const conversation = await Conversation.findById(conversationID);
+    const conversations = await Conversation.find({members:{$all:[sender,receiver]}}).sort({createdAt:-1}).limit(1);
+    let conversation
+    if(!conversations || conversations.length === 0  ){
+      conversation = await createConversation(sender,receiver)
+    }
+    else{
+      conversation = conversations[0]
+    }
     if (conversation.messages.length < 50) {
       conversation.messages.push(message);
       conversation.lastMessage = {
@@ -26,19 +32,9 @@ export async function createMessage({
         file,
         sender,
       };
-
       await conversation.save();
     } else {
-      const userID = conversation.members[0];
-      const receiverID = conversation.members[1];
-
-      const newConversation = await createConversation(userID, receiverID);
-
-      await Conversation.updateOne(
-        { _id: newConversation._id },
-        { $push: { messages: message } }
-      );
-
+      const newConversation = await createConversation(sender, receiver);
       newConversation.messages.push(message);
       newConversation.lastMessage = {
         text,

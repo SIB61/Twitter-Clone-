@@ -11,7 +11,7 @@ export async function createConversation(userID, receiverID) {
       messages,
     });
 
-    return mapId(conversation._doc);
+    return conversation;
   } catch (error) {
     throw { status: 500, error: error.message };
   }

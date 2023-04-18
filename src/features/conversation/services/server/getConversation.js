@@ -1,31 +1,17 @@
 import Conversation from "@/core/schemas/conversation.schema";
 import { mapId } from "@/shared/utils/mapId";
 
-export async function getAllConversationsForUser({ userID, receiverID }) {
+export async function getAllConversationsForUser({ userId, receiverID }) {
   try {
     const conversations = await Conversation.find({
-      members: { $all: [userID, receiverID] },
+      members: { $all: [userId, receiverID] },
     })
-      .populate({
-        path: "members",
-        select: {
-          name: 1,
-          username: 1,
-          email: 1,
-          profilePicture: 1,
-        },
-      })
-      .populate({
-        path: "messages.sender",
-        select: {
-          name: 1,
-          username: 1,
-          email: 1,
-          profilePicture: 1,
-        },
-      })
-      .sort({ createdAt: -1 });
-    return mapId(conversations._doc);
+      .select("messages")
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .lean();
+    console.log(conversations);
+    return conversations[0]?.messages.map((msg) => mapId(msg)) || [];
   } catch (error) {
     throw { status: 500, message: error.message };
   }

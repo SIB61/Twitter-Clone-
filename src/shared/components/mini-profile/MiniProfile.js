@@ -4,10 +4,10 @@ import { Avator } from "@/features/user/components/avatar/Avatar";
 export function MiniProfile({user,onClick,action}) {
   return (
     <div className={styles.profile} onClick={onClick}>
-      <Avator src={user.image} size="48" />
+      <Avator src={user?.image} size="48" />
       <div>
-        <p className={styles.name}>{user.name}</p>
-        <p className={styles.username}>@{user.username}</p>
+        <p className={styles.name}>{user?.name}</p>
+        <p className={styles.username}>@{user?.username}</p>
       </div>
       <div className={styles.action}>
       {action}

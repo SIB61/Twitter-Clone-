@@ -56,6 +56,8 @@ export function CreatePost({
           <div>
             <button
               onClick={() => {
+                textState.set('')
+                imageState.set({src:''})
                  onSubmit({ text: textState.value, image: imageState.value });
               }}
               className={`btn btn-primary ${styles.submit}`} 

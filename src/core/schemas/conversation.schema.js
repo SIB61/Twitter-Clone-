@@ -1,5 +1,5 @@
 import { CONVERSATION_SCHEMA, USER_SCHEMA } from "@/constants";
-import { models, model, Schema, SchemaTypes } from "mongoose";
+import mongoose, { models, model, Schema, SchemaTypes } from "mongoose";
 
 const conversationSchema = new Schema(
   {
@@ -16,7 +16,7 @@ const conversationSchema = new Schema(
           file: String,
         },
         sender: {
-          type: mongoose.SchemaTypes.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           ref: USER_SCHEMA,
         },
         senderReact: {
