@@ -33,7 +33,7 @@ const authenticatedOptions = [
 
   {
     title: "Messages",
-    route: (...params) => "/home",
+    route: (...params) => "/message",
     icon: GrInbox,
   },
 

@@ -10,7 +10,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import styles from "../../styles/Message.module.css";
-
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const users = await getUsers();
@@ -19,28 +18,31 @@ export async function getServerSideProps(ctx) {
   };
 }
 
+let socket 
 export default function Page({ users }) {
   const messages = useListState([]);
   const router = useRouter();
   const { room } = router.query;
-  const socket = useMemo(getSocket, []);
   const { data: session } = useSession();
-  useEffect(() => {
-    socket.emit("join", room);
-  }, [room]);
 
-  useEffect(() => {
-    fetch("/api/socket");
+  const socketInitializer = async()=>{
+    await fetch("/api/socket");
+    socket = getSocket()
     socket.on("newMessage", (msg) => {
+      console.log("new message")
       messages.add(JSON.parse(msg).content?.text);
     });
+  }
+
+  useEffect(() => {
+    socketInitializer()
     return () => {
-      socket.removeAllListeners();
+      socket?.removeAllListeners();
     };
   }, [socket]);
 
   const sendMessage = (message) => {
-    socket.emit("sendMessage", JSON.stringify({
+    socket?.emit("sendMessage", JSON.stringify({
       content: { text: message },
       receiverId: room,
       senderId: session.user?.id,

@@ -8,7 +8,8 @@ let redis
 
 export default handleRequest({
   GET:async(req,res)=>{
-    const user = await getServerSession(req,res,createOptions(req))
+    const {user} = await getServerSession(req,res,createOptions(req))
+    console.log(user)
     await createSocketConnection(user.id,res)
     res.end()
   }
@@ -16,21 +17,24 @@ export default handleRequest({
 
 async function createSocketConnection(userId,res) {
   let io = res.socket.server.io;
+  console.log("userId",userId)
   if(!redis) redis = new Redis(process.env.REDIS_URL)
   if (!io) {
     const io = new Server(res.socket.server);
     io.on("connection", async(socket) => {
+      console.log('connection',userId,socket.id)
       await redis.set(userId,socket.id)
       socket.on("sendMessage", async (msg) => {
         const newMessage = JSON.parse(msg)
+        console.log(msg)
         const receiverSocketId = await redis.get(newMessage.receiverId)
+        console.log(receiverSocketId)
         if(receiverSocketId) {
-          socket.to(receiverSocketId).emit("newMessage",msg)
+          console.log('receiver socket id',receiverSocketId)
+          // socket.broadcast.to(receiverSocketId).emit("newMessage",msg)
+          socket.broadcast.emit("newMessage",msg)
         }
       });
-      socket.on('join',(room)=>{
-        socket.join(room)
-      })
     });
     res.socket.server.io = io;
   }
