@@ -27,6 +27,7 @@ import useSwr from "swr";
 import { fetcher } from "@/shared/utils/fetcher";
 import axios from "axios";
 import { trusted } from "mongoose";
+import { MessageProvider } from "@/core/Providers/MessageProvider";
 
 export async function getServerSideProps(ctx) {
   await dbConnect();

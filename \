@@ -13,7 +13,8 @@ import styles from "../../styles/Message.module.css";
 import { getAllConversationsForUser } from "@/features/conversation/services/server/getConversation";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../api/auth/[...nextauth]";
-import { useMessage } from "@/shared/hooks/useMessages";
+import { useMessage } from "@/core/Providers/MessageProvider";
+import { useCustomState } from "@/shared/hooks/useCustomState";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -29,7 +30,7 @@ export async function getServerSideProps(ctx) {
   let messages = [];
   let receiver;
   if (room) {
-    const receiverId = room 
+    const receiverId = room.split("-")[1];
     receiver = users.reduce(
       (acc, cur) => (cur.id.toString() === receiverId ? cur : acc),
       undefined
@@ -52,25 +53,53 @@ export default function Page({ users, previousMessages, receiver }) {
   const { room } = router.query;
   const { data: session } = useSession();
   const {messages,sendMessage} = useMessage()
+  const messageList = useCustomState(previousMessages)
    
   useEffect(()=>{
-    if(receiver?.id){
+    messageList.set(...messages[receiver])
     messages.set(curr=>{
-      if(!curr[receiver.id])
-      curr[receiver.id] = [...previousMessages]
-      return curr
+      if(!curr[receiver])
+      curr[receiver] = previousMessages
+       
     })
-    }
   },[])
 
+  useEffect(()=>{
+    const newMessage = messages.value[receiver].slice(-1)
+    const currLastMessage = messageList.value.slice(-1)
+    if(newMessage.id != currLastMessage.id){
+      messageList.add(newMessage)
+    }
+  },[messages.value])
+
+  // const socketInitializer = async () => {
+  //   socket = await getSocket();
+  //   socket.on("connect", () => {
+  //     socket.emit("join", room);
+  //   });
+  //   socket.on("newMessage", (msg) => {
+  //     console.log("new message");
+  //     messageList.add(msg);
+  //   });
+  // };
+  //
+  // useEffect(() => {
+  //   socketInitializer();
+  //   return () => {
+  //     socket?.removeAllListeners();
+  //   };
+  // }, [socket]);
 
   const postMessage = (message) => {
+    const [senderId, receiverId] = room.split("-");
     const newMessage = {
       content: { text: message },
-      sender: session.user.id,
-      receiver: room,
+      sender: senderId,
+      receiver: receiverId,
     };
     sendMessage(newMessage)
+    messageList.add(newMessage);
+    // socket?.emit("sendMessage", newMessage);
   };
 
   return (
@@ -79,9 +108,10 @@ export default function Page({ users, previousMessages, receiver }) {
         <div className={styles.userList}>
           {users?.map((user) => (
             <div>
+
             <Link
               key={user.id}
-              href={`/message/?room=${user.id}`}
+              href={`/message/?room=${session?.user.id}-${user.id}`}
             >
               <MiniProfile user={user} />{" "}
             </Link>
@@ -98,7 +128,7 @@ export default function Page({ users, previousMessages, receiver }) {
               <MiniProfile user={receiver} />
             </div>
             <div>
-              {messages.value[receiver.id]?.map((msg, idx) => (
+              {messageList.value.map((msg, idx) => (
                 <>
                   {session?.user.id === msg.sender ? (
                     <div key={idx} className={`${styles.msg} ${styles.myMsg}`}>

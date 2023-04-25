@@ -1,9 +1,9 @@
 import { io } from "socket.io-client"
-
 let socket
-export  function getSocket(){
+export async function getSocket(){
   if(!socket)
   {
+    await fetch('/api/socket')
     socket = io()
   }
   return socket

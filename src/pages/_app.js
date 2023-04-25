@@ -10,6 +10,7 @@ import { Modal } from "@/shared/components/modal/Modal";
 import { ModalProvider } from "@/shared/contexts/modalContext";
 import { InputBoxProvider } from "@/shared/contexts/InputBoxContext";
 import { ToastProvider } from "@/shared/contexts/ToastContext";
+import { MessageProvider } from "@/core/Providers/MessageProvider";
 const PageContext = createContext();
 
 export default function App({
@@ -36,6 +37,7 @@ export default function App({
     <SessionProvider session={session}>
       <ModalProvider>
         <ToastProvider>
+          <MessageProvider>
           <div
             style={{
               position: "fixed",
@@ -48,6 +50,7 @@ export default function App({
             <LoadingBar loading={loading.loading} />
           </div>
           <Component {...pageProps} key={router.asPath} />
+          </MessageProvider>
         </ToastProvider>
       </ModalProvider>
     </SessionProvider>
