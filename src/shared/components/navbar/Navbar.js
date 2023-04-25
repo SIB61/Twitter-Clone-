@@ -1,7 +1,7 @@
-import {  FaRegUser  } from "react-icons/fa";
-import {  CgMore, CgMoreO } from "react-icons/cg";
+import { FaRegUser } from "react-icons/fa";
+import { CgMore, CgMoreO } from "react-icons/cg";
 import styles from "./Navbar.module.css";
-import { RiHashtag,   } from "react-icons/ri";
+import { RiHashtag } from "react-icons/ri";
 import { GrInbox, GrLogout, GrNotification } from "react-icons/gr";
 import { BiHomeCircle } from "react-icons/bi";
 import Link from "next/link";
@@ -12,6 +12,8 @@ import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTwee
 import { signOut, useSession } from "next-auth/react";
 import { useModal } from "@/shared/hooks/useModal";
 import { Confirmation } from "../confirmation/Confirmation";
+import { useMessage } from "@/shared/hooks/useMessages";
+import { useEffect } from "react";
 
 const authenticatedOptions = [
   {
@@ -58,19 +60,24 @@ const unAuthenticatedOptions = [
   },
 ];
 
-export function Navbar({onNewTweet}) {
+export function Navbar({ onNewTweet }) {
   const { data: session, status } = useSession();
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
-  console.log(status)
-  const modal = useModal()
+  console.log(status);
+  const modal = useModal();
+  const { unseenMessageCount } = useMessage();
+
   const showCreateTweet = () => {
     modal.open(
-        <CreateTweet expanded onComplete={(newTweet)=>{
-        onNewTweet(newTweet)
-        modal.close()
-      }} />
-    )
+      <CreateTweet
+        expanded
+        onComplete={(newTweet) => {
+          onNewTweet(newTweet);
+          modal.close();
+        }}
+      />
+    );
   };
   return (
     <>
@@ -89,6 +96,7 @@ export function Navbar({onNewTweet}) {
                 <div className={styles.navItem} style={{ fontWeight: "500" }}>
                   {<v.icon className={styles.navIcon} />}
                   <span className={styles.navText}>{v.title}</span>
+                  <span>{ Object.values(unseenMessageCount.value).reduce((acc,curr)=>acc+curr,0) }</span>
                 </div>
               </Link>
             </li>
@@ -99,14 +107,21 @@ export function Navbar({onNewTweet}) {
               <li>
                 <button
                   className={`btn btn-bordered brn-ghost ${styles.navOptions}`}
-                  style={{marginBottom:'8px'}}
-                  onClick={() => modal.open(<Confirmation subtitle={'You want to log out'} onConfirm={async()=>{
-                    modal.startLoading()
-                    await signOut()
-                    modal.close()
-                  }}/>)}
+                  style={{ marginBottom: "8px" }}
+                  onClick={() =>
+                    modal.open(
+                      <Confirmation
+                        subtitle={"You want to log out"}
+                        onConfirm={async () => {
+                          modal.startLoading();
+                          await signOut();
+                          modal.close();
+                        }}
+                      />
+                    )
+                  }
                 >
-                  <GrLogout/> <span className={styles.navText}>Sign out</span> 
+                  <GrLogout /> <span className={styles.navText}>Sign out</span>
                 </button>
               </li>
               <li>

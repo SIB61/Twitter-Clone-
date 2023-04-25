@@ -6,8 +6,9 @@ export const MessageContext = createContext();
 export function MessageProvider({ children }) {
   const messages = useCustomState({});
   const [socket, setSocket] = useState(undefined);
-  const {data:session} = useSession()
+  const { data: session } = useSession();
   const unseenMessageCount = useCustomState({});
+  const newMessages = useCustomState({});
   useEffect(() => {
     const socketInitializer = async () => {
       if (!socket) {
@@ -16,32 +17,36 @@ export function MessageProvider({ children }) {
       }
 
       socket?.on("newMessage", (message) => {
-        messages.set((curr) => {
-          if (curr[message.sender]) {
-            curr[message.sender].unshift(message);
-          } else {
-            curr[message.sender] = [message];
-          }
-          return { ...curr };
-        });
-        unseenMessageCount.set((curr) => {
-          if (curr[message.sender]) {
-            curr[message.sender]++;
-          } else {
-            curr[message.sender] = 1;
-          }
-          return curr;
-        });
+        if (!newMessages.value[message.id]) {
+          newMessages.value[message.id] = message;
+
+          messages.set((curr) => {
+            if (curr[message.sender]) {
+              curr[message.sender].unshift(message);
+            } else {
+              curr[message.sender] = [message];
+            }
+            return { ...curr };
+          });
+          unseenMessageCount.set((curr) => {
+            if (curr[message.sender]) {
+              curr[message.sender]++;
+            } else {
+              curr[message.sender] = 1;
+            }
+            return curr;
+          });
+
+        }
       });
     };
     socketInitializer();
-    return ()=>socket?.removeAllListeners()
+    return () => socket?.removeAllListeners();
   }, [socket]);
 
-  useEffect(()=>{
-    if(session && session.user)
-    socket?.emit('join',session.user.id)
-  },[session,socket])
+  useEffect(() => {
+    if (session && session.user) socket?.emit("join", session.user.id);
+  }, [session, socket]);
 
   const sendMessage = (message) => {
     socket.emit("sendMessage", message);

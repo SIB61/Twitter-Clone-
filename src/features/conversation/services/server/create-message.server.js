@@ -25,6 +25,7 @@ export async function createMessage({
     else{
       conversation = conversations[0]
     }
+    let newMessage 
     if (conversation.messages.length < 50) {
       conversation.messages.push(message);
       conversation.lastMessage = {
@@ -33,6 +34,7 @@ export async function createMessage({
         sender,
       };
       await conversation.save();
+      newMessage  = conversation.messages[conversation.messages.length-1]
     } else {
       const newConversation = await createConversation(sender, receiver);
       newConversation.messages.push(message);
@@ -43,8 +45,9 @@ export async function createMessage({
       };
 
       await newConversation.save();
+      newMessage  = conversation.messages[conversation.messages.length-1]
     }
-    return message;
+    return newMessage;
   } catch (error) {
     throw { status: 500, error: error.message };
   }
