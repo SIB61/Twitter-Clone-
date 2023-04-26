@@ -17,6 +17,7 @@ import { useMessage } from "@/shared/hooks/useMessages";
 import { TbSettings } from "react-icons/tb";
 import { MdOutlineForward, MdOutlineForwardToInbox } from "react-icons/md";
 import { Input } from "@/shared/components/input/Input";
+import { MessageBubble } from "@/features/conversation/components/MessageBubble";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -69,20 +70,22 @@ export default function Page({ users, previousMessages, receiver }) {
         }
         return { ...curr };
       });
-      messageNotifications.set(value=>{
-        value.delete(receiver.id)
-        return value
-      })
+      messageNotifications.set((value) => {
+        value.delete(receiver.id);
+        return value;
+      });
     }
   }, []);
 
   const postMessage = (message) => {
-    const newMessage = {
-      content: { text: message },
-      sender: session.user.id,
-      receiver: room,
-    };
-    sendMessage(newMessage);
+    if (message) {
+      const newMessage = {
+        content: { text: message },
+        sender: session.user.id,
+        receiver: room,
+      };
+      sendMessage(newMessage);
+    }
   };
 
   return (
@@ -100,15 +103,15 @@ export default function Page({ users, previousMessages, receiver }) {
               </span>
             </div>
             <div>
-              <Input placeHolder={"Search Direct Messages"} />
+              <Input placeHolder={"Search User"} />
             </div>
           </div>
           {users?.map((user) => (
             <div className={styles.user}>
               <Link
-                style={{ position: "relative" }}
+                style={{ position: "relative", width: "100%" }}
                 key={user.id}
-                href={{pathname:'/message',query:{room:user.id}}}
+                href={{ pathname: "/message", query: { room: user.id } }}
               >
                 <MiniProfile user={user} />{" "}
                 {messageNotifications.value.has(user.id) && (
@@ -121,25 +124,12 @@ export default function Page({ users, previousMessages, receiver }) {
 
         {receiver ? (
           <div className={styles.chatBox}>
-            <div className={styles.receiver}>
+            <Link href={`/profile/${receiver?.id}`} className={styles.receiver}>
               <MiniProfile user={receiver} />
-            </div>
+            </Link>
             <div>
               {messages?.value[receiver.id]?.map((msg, idx) => (
-                <>
-                  {session?.user.id === msg.sender ? (
-                    <div key={idx} className={`${styles.msg} ${styles.myMsg}`}>
-                      {msg.content.text}
-                    </div>
-                  ) : (
-                    <div
-                      key={idx}
-                      className={`${styles.msg} ${styles.otherMsg}`}
-                    >
-                      {msg.content.text}
-                    </div>
-                  )}
-                </>
+                <MessageBubble key={idx} message={msg}/>
               ))}
             </div>
             <div className={styles.sendMsg}>

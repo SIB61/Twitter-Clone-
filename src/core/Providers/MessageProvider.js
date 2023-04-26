@@ -44,7 +44,7 @@ export function MessageProvider({ children }) {
     };
     socketInitializer();
     return () => socket?.removeAllListeners();
-  }, [socket,router]);
+  }, [socket]);
 
   useEffect(() => {
     if (session && session.user) socket?.emit("join", session.user.id);
