@@ -7,15 +7,19 @@ export async function getAllConversationsForUser({ userId, receiverID }) {
       members: { $all: [userId, receiverID] },
     }).sort({ createdAt: -1 });
 
+    console.log("Fetching...." + fetchedConversations?._id);
     console.log(fetchedConversations);
 
-    fetchedConversations.messages.forEach((message) => {
-      if (message.sender !== receiverID) {
-        message.seen = true;
-      }
-    });
+    if (fetchedConversations) {
+      fetchedConversations.messages.forEach((message) => {
+        console.log();
+        if (message.sender.toString() !== userId) {
+          message.seen = true;
+        }
+      });
 
-    await fetchedConversations.save();
+      await fetchedConversations.save();
+    }
 
     const conversations = await Conversation.find({
       members: { $all: [userId, receiverID] },
@@ -25,7 +29,7 @@ export async function getAllConversationsForUser({ userId, receiverID }) {
       .limit(1)
       .lean();
 
-    console.log(conversations);
+    //console.log(conversations);
     return conversations[0]?.messages.map((msg) => mapId(msg)) || [];
   } catch (error) {
     throw { status: 500, message: error.message };

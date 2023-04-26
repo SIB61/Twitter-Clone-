@@ -69,12 +69,12 @@ export default function Page({ users, previousMessages, receiver }) {
     }
   }, []);
 
-  useEffect(()=>{
-    messageNotifications.set(value=>{
-      value?.delete(receiver.id)
-      return value
-    })
-  },[messages])
+  useEffect(() => {
+    messageNotifications.set((value) => {
+      value?.delete(receiver?.id);
+      return value;
+    });
+  }, [messages]);
 
   const postMessage = (message) => {
     const newMessage = {
