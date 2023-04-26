@@ -18,6 +18,9 @@ import { TbSettings } from "react-icons/tb";
 import { MdOutlineForward, MdOutlineForwardToInbox } from "react-icons/md";
 import { Input } from "@/shared/components/input/Input";
 import { MessageBubble } from "@/features/conversation/components/MessageBubble";
+import { debounce } from "@/shared/utils/debounce";
+import axios from "axios";
+import { useCustomState } from "@/shared/hooks/useCustomState";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -59,6 +62,7 @@ export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
+  const userList = useCustomState(users)
   const { messages, messageNotifications, sendMessage } = useMessage();
 
   useEffect(() => {
@@ -88,6 +92,15 @@ export default function Page({ users, previousMessages, receiver }) {
     }
   };
 
+ const onUserSearch=(e)=>{
+    let text = e.target.value
+    debounce(async()=>{
+       text = text.replace(' ','_')
+       const {data} = await axios.get('/api/user/?search='+text)  
+       userList.set(data)
+    })
+  }
+
   return (
     <MainLayout>
       <div className={styles.messageContainer}>
@@ -103,10 +116,10 @@ export default function Page({ users, previousMessages, receiver }) {
               </span>
             </div>
             <div>
-              <Input placeHolder={"Search User"} />
+              <Input onChange={onUserSearch} placeHolder={"Search User"} />
             </div>
           </div>
-          {users?.map((user) => (
+          {userList.value?.map((user) => (
             <div className={styles.user}>
               <Link
                 style={{ position: "relative", width: "100%" }}

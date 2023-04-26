@@ -25,6 +25,8 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
+UserSchema.index({name:'text',username:'text'})
+
 const UserModel =
   mongoose?.models?.User || mongoose?.model(USER_SCHEMA, UserSchema);
 export default UserModel;

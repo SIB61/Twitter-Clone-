@@ -11,6 +11,7 @@ import { ModalProvider } from "@/shared/contexts/modalContext";
 import { InputBoxProvider } from "@/shared/contexts/InputBoxContext";
 import { ToastProvider } from "@/shared/contexts/ToastContext";
 import { MessageProvider } from "@/core/Providers/MessageProvider";
+import { SocketProvider } from "@/core/Providers/SocketProvider";
 const PageContext = createContext();
 
 export default function App({
@@ -31,26 +32,28 @@ export default function App({
     });
   }, [Router]);
 
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <SessionProvider session={session}>
       <ModalProvider>
         <ToastProvider>
-          <MessageProvider>
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              zIndex: 10,
-            }}
-          >
-            <LoadingBar loading={loading.loading} />
-          </div>
-          <Component {...pageProps} key={router.asPath} />
-          </MessageProvider>
+          <SocketProvider>
+            <MessageProvider>
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  zIndex: 10,
+                }}
+              >
+                <LoadingBar loading={loading.loading} />
+              </div>
+              <Component {...pageProps} key={router.asPath} />
+            </MessageProvider>
+          </SocketProvider>
         </ToastProvider>
       </ModalProvider>
     </SessionProvider>
