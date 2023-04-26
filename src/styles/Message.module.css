@@ -77,7 +77,7 @@
 
 .otherMsg {
   margin-left: 1rem;
-  color: var(--white);
-  background-color: var(--primary-color);
+  color: var(--black);
+  background-color: var(--white);
   border-bottom-left-radius: 0.2rem;
 }

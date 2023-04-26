@@ -29,7 +29,7 @@ export async function getServerSideProps(ctx) {
   let messages = [];
   let receiver;
   if (room) {
-    const receiverId = room 
+    const receiverId = room;
     receiver = users.reduce(
       (acc, cur) => (cur.id.toString() === receiverId ? cur : acc),
       undefined
@@ -42,7 +42,11 @@ export async function getServerSideProps(ctx) {
   }
   return {
     props: JSON.parse(
-      JSON.stringify({ users: users, previousMessages: messages, receiver: receiver })
+      JSON.stringify({
+        users: users,
+        previousMessages: messages,
+        receiver: receiver,
+      })
     ),
   };
 }
@@ -51,18 +55,26 @@ export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
-  const {messages,sendMessage} = useMessage()
-   
-  useEffect(()=>{
-    if(receiver?.id){
-    messages.set(curr=>{
-      if(!curr[receiver.id])
-      curr[receiver.id] = [...previousMessages]
-      return curr
-    })
-    }
-  },[])
+  const { messages, messageNotifications, sendMessage } = useMessage();
 
+  useEffect(() => {
+    console.log(previousMessages);
+    if (receiver?.id) {
+      messages.set((curr) => {
+        if (!curr[receiver.id]) {
+          curr[receiver.id] = previousMessages;
+        }
+        return { ...curr };
+      });
+    }
+  }, []);
+
+  useEffect(()=>{
+    messageNotifications.set(value=>{
+      value?.delete(receiver.id)
+      return value
+    })
+  },[messages])
 
   const postMessage = (message) => {
     const newMessage = {
@@ -70,7 +82,7 @@ export default function Page({ users, previousMessages, receiver }) {
       sender: session.user.id,
       receiver: room,
     };
-    sendMessage(newMessage)
+    sendMessage(newMessage);
   };
 
   return (
@@ -79,17 +91,18 @@ export default function Page({ users, previousMessages, receiver }) {
         <div className={styles.userList}>
           {users?.map((user) => (
             <div>
-            <Link
-              key={user.id}
-              href={`/message/?room=${user.id}`}
-            >
-              <MiniProfile user={user} />{" "}
-            </Link>
-             
+              <Link
+                style={{ position: "relative" }}
+                key={user.id}
+                href={`/message/?room=${user.id}`}
+              >
+                <MiniProfile user={user} />{" "}
+                {messageNotifications.value.has(user.id) && (
+                  <span className="notification-badge"></span>
+                )}
+              </Link>
             </div>
           ))}
-
-
         </div>
 
         {receiver && (
@@ -98,7 +111,7 @@ export default function Page({ users, previousMessages, receiver }) {
               <MiniProfile user={receiver} />
             </div>
             <div>
-              {messages.value[receiver.id]?.map((msg, idx) => (
+              {messages?.value[receiver.id]?.map((msg, idx) => (
                 <>
                   {session?.user.id === msg.sender ? (
                     <div key={idx} className={`${styles.msg} ${styles.myMsg}`}>

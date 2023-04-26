@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { Server } from "socket.io";
 import { createOptions } from "./auth/[...nextauth]";
 import { createMessage } from "@/features/conversation/services/server/create-message.server";
-import { Socket } from "socket.io-client";
+import { mapId } from "@/shared/utils/mapId";
 
 export default handleRequest({
   GET: async (req, res) => {
@@ -20,20 +20,21 @@ async function createSocketConnection(userId, res) {
     const io = new Server(res.socket.server);
     io.on("connection", async (socket) => {
       socket.on("sendMessage", async ({ content, sender, receiver }) => {
-        const room = receiver;
-        console.log(room);
-        await createMessage({
+        const newMessage = await createMessage({
           sender: sender,
           receiver: receiver,
           text: content.text,
         });
-        socket.to(room).emit("newMessage", { content, sender, receiver });
+        console.log("new message",newMessage)
+        socket.to(receiver).emit("newMessage", mapId(newMessage._doc));
       });
 
       socket.on("join", (room) => {
         console.log("room is ", room);
-        if(!socket.rooms.has(room))
-        socket.join(room);
+        console.log(socket.rooms)
+        if (!socket.rooms.has(room)) {
+          socket.join(room);
+        }
       });
 
       socket.on("leave", (room) => {
