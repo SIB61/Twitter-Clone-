@@ -66,7 +66,7 @@ export function Navbar({ onNewTweet }) {
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
   console.log(status);
   const modal = useModal();
-  const { unseenMessageCount } = useMessage();
+  const { messageNotifications } = useMessage();
 
   const showCreateTweet = () => {
     modal.open(
@@ -94,9 +94,13 @@ export function Navbar({ onNewTweet }) {
                 className={styles.navOptions}
               >
                 <div className={styles.navItem} style={{ fontWeight: "500" }}>
+                  <div style={{position:"relative"}}>
                   {<v.icon className={styles.navIcon} />}
+                  {
+                    v.title === "Messages" && messageNotifications.value.size !== 0 && <span className="notification-badge"></span>
+                  }
+                  </div>
                   <span className={styles.navText}>{v.title}</span>
-                  <span>{ Object.values(unseenMessageCount.value).reduce((acc,curr)=>acc+curr,0) }</span>
                 </div>
               </Link>
             </li>

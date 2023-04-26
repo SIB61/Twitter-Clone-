@@ -55,10 +55,10 @@ export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
-  const { messages, sendMessage } = useMessage();
+  const { messages, messageNotifications, sendMessage } = useMessage();
 
   useEffect(() => {
-    console.log(previousMessages)
+    console.log(previousMessages);
     if (receiver?.id) {
       messages.set((curr) => {
         if (!curr[receiver.id]) {
@@ -68,6 +68,13 @@ export default function Page({ users, previousMessages, receiver }) {
       });
     }
   }, []);
+
+  useEffect(()=>{
+    messageNotifications.set(value=>{
+      value?.delete(receiver.id)
+      return value
+    })
+  },[messages])
 
   const postMessage = (message) => {
     const newMessage = {
@@ -84,8 +91,15 @@ export default function Page({ users, previousMessages, receiver }) {
         <div className={styles.userList}>
           {users?.map((user) => (
             <div>
-              <Link key={user.id} href={`/message/?room=${user.id}`}>
+              <Link
+                style={{ position: "relative" }}
+                key={user.id}
+                href={`/message/?room=${user.id}`}
+              >
                 <MiniProfile user={user} />{" "}
+                {messageNotifications.value.has(user.id) && (
+                  <span className="notification-badge"></span>
+                )}
               </Link>
             </div>
           ))}

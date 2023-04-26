@@ -20,15 +20,13 @@ async function createSocketConnection(userId, res) {
     const io = new Server(res.socket.server);
     io.on("connection", async (socket) => {
       socket.on("sendMessage", async ({ content, sender, receiver }) => {
-        const room = receiver;
-        console.log(room);
         const newMessage = await createMessage({
           sender: sender,
           receiver: receiver,
           text: content.text,
         });
         console.log("new message",newMessage)
-        socket.to(room).emit("newMessage", mapId(newMessage._doc));
+        socket.to(receiver).emit("newMessage", mapId(newMessage._doc));
       });
 
       socket.on("join", (room) => {
