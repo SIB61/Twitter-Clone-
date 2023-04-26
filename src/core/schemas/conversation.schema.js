@@ -29,6 +29,10 @@ const conversationSchema = new Schema(
           enum: ["none", "like", "haha", "love", "sad", "angry"],
           default: "none",
         },
+        seen: {
+          type: Boolean,
+          default: false,
+        },
         originalMessage: {
           id: String,
           text: String,

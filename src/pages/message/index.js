@@ -14,6 +14,9 @@ import { getAllConversationsForUser } from "@/features/conversation/services/ser
 import { getServerSession } from "next-auth";
 import { createOptions } from "../api/auth/[...nextauth]";
 import { useMessage } from "@/shared/hooks/useMessages";
+import { TbSettings } from "react-icons/tb";
+import { MdOutlineForward, MdOutlineForwardToInbox } from "react-icons/md";
+import { Input } from "@/shared/components/input/Input";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -73,7 +76,6 @@ export default function Page({ users, previousMessages, receiver }) {
     }
   }, []);
 
-
   const postMessage = (message) => {
     const newMessage = {
       content: { text: message },
@@ -87,8 +89,22 @@ export default function Page({ users, previousMessages, receiver }) {
     <MainLayout>
       <div className={styles.messageContainer}>
         <div className={styles.userList}>
-          {users?.map((user) => (
+          <div className={styles.userBoxHeader}>
+            <div className={styles.userBoxHeaderOptionsAndText}>
+              <h4>Messages</h4>
+              <span className={styles.userBoxSettingsOption}>
+                <TbSettings />
+              </span>
+              <span>
+                <MdOutlineForwardToInbox />
+              </span>
+            </div>
             <div>
+              <Input placeHolder={"Search Direct Messages"} />
+            </div>
+          </div>
+          {users?.map((user) => (
+            <div className={styles.user}>
               <Link
                 style={{ position: "relative" }}
                 key={user.id}
@@ -103,7 +119,7 @@ export default function Page({ users, previousMessages, receiver }) {
           ))}
         </div>
 
-        {receiver && (
+        {receiver ? (
           <div className={styles.chatBox}>
             <div className={styles.receiver}>
               <MiniProfile user={receiver} />
@@ -133,6 +149,14 @@ export default function Page({ users, previousMessages, receiver }) {
                 onSubmit={(e) => postMessage(e.text)}
               />
             </div>
+          </div>
+        ) : (
+          <div className={styles.empty}>
+            <h1>Select a Message</h1>
+            <p>
+              Choose from your existing conversations, start a new one, or just
+              keep swimming.
+            </p>
           </div>
         )}
       </div>

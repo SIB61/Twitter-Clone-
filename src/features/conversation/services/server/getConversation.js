@@ -3,6 +3,24 @@ import { mapId } from "@/shared/utils/mapId";
 
 export async function getAllConversationsForUser({ userId, receiverID }) {
   try {
+    const fetchedConversations = await Conversation.findOne({
+      members: { $all: [userId, receiverID] },
+    }).sort({ createdAt: -1 });
+
+    console.log("Fetching...." + fetchedConversations?._id);
+    console.log(fetchedConversations);
+
+    if (fetchedConversations) {
+      fetchedConversations.messages.forEach((message) => {
+        console.log();
+        if (message.sender.toString() !== userId) {
+          message.seen = true;
+        }
+      });
+
+      await fetchedConversations.save();
+    }
+
     const conversations = await Conversation.find({
       members: { $all: [userId, receiverID] },
     })
@@ -10,7 +28,8 @@ export async function getAllConversationsForUser({ userId, receiverID }) {
       .sort({ createdAt: -1 })
       .limit(1)
       .lean();
-    console.log(conversations);
+
+    //console.log(conversations);
     return conversations[0]?.messages.map((msg) => mapId(msg)) || [];
   } catch (error) {
     throw { status: 500, message: error.message };
