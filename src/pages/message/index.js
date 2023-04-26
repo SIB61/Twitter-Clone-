@@ -66,15 +66,13 @@ export default function Page({ users, previousMessages, receiver }) {
         }
         return { ...curr };
       });
+      messageNotifications.set(value=>{
+        value.delete(receiver.id)
+        return value
+      })
     }
   }, []);
 
-  useEffect(()=>{
-    messageNotifications.set(value=>{
-      value?.delete(receiver.id)
-      return value
-    })
-  },[messages])
 
   const postMessage = (message) => {
     const newMessage = {
@@ -94,7 +92,7 @@ export default function Page({ users, previousMessages, receiver }) {
               <Link
                 style={{ position: "relative" }}
                 key={user.id}
-                href={`/message/?room=${user.id}`}
+                href={{pathname:'/message',query:{room:user.id}}}
               >
                 <MiniProfile user={user} />{" "}
                 {messageNotifications.value.has(user.id) && (

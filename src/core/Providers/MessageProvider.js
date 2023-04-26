@@ -2,13 +2,24 @@ import { useSession } from "next-auth/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSocket } from "../utils/getSocket";
 import { useCustomState } from "@/shared/hooks/useCustomState";
+import { useRouter } from "next/router";
 export const MessageContext = createContext();
 const newMessages = {};
 export function MessageProvider({ children }) {
   const messages = useCustomState({});
   const [socket, setSocket] = useState(undefined);
   const { data: session } = useSession();
-  const messageNotifications = useCustomState(new Set())
+  const messageNotifications = useCustomState(new Set());
+  const router = useRouter();
+  const {room} = router.query
+  const addMessageNotification=(sender)=>{
+      messageNotifications.set((value) => {
+          if ( room !== sender) {
+            value.add(sender);
+          }
+          return value;
+        });
+  }
   // const newMessages = useCustomState({});
   useEffect(() => {
     const socketInitializer = async () => {
@@ -16,12 +27,8 @@ export function MessageProvider({ children }) {
         const socketClient = await getSocket();
         setSocket(socketClient);
       }
-
       socket?.on("newMessage", (message) => {
-        messageNotifications.set(value=>{
-          value.add(message.sender)
-          return value
-        })
+        addMessageNotification(message.sender)
         messages.set((curr) => {
           if (!newMessages[message.id]) {
             if (curr[message.sender]) {
@@ -37,7 +44,7 @@ export function MessageProvider({ children }) {
     };
     socketInitializer();
     return () => socket?.removeAllListeners();
-  }, [socket]);
+  }, [socket,router]);
 
   useEffect(() => {
     if (session && session.user) socket?.emit("join", session.user.id);

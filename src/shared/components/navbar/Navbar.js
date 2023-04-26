@@ -1,9 +1,9 @@
 import { FaRegUser } from "react-icons/fa";
 import { CgMore, CgMoreO } from "react-icons/cg";
 import styles from "./Navbar.module.css";
-import { RiHashtag } from "react-icons/ri";
+import { RiHashtag, RiMessage2Line } from "react-icons/ri";
 import { GrInbox, GrLogout, GrNotification } from "react-icons/gr";
-import { BiHomeCircle } from "react-icons/bi";
+import { BiHomeCircle, BiMessageSquare, BiMessageSquareDetail } from "react-icons/bi";
 import Link from "next/link";
 import TwitterLogo from "public/images/Twitter-logo.png";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { useModal } from "@/shared/hooks/useModal";
 import { Confirmation } from "../confirmation/Confirmation";
 import { useMessage } from "@/shared/hooks/useMessages";
 import { useEffect } from "react";
+import { TbMessageCircle } from 'react-icons/tb'
 
 const authenticatedOptions = [
   {
@@ -36,7 +37,7 @@ const authenticatedOptions = [
   {
     title: "Messages",
     route: (...params) => "/message",
-    icon: GrInbox,
+    icon: RiMessage2Line,
   },
 
   {
