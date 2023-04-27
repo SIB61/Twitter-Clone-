@@ -5,6 +5,8 @@ import { createOptions } from "./auth/[...nextauth]";
 import { createMessage } from "@/features/conversation/services/server/create-message.server";
 import { mapId } from "@/shared/utils/mapId";
 import { seeMessage } from "@/features/conversation/services/server/seeMessage.server";
+import { createNotification } from "@/features/notification/services/server/create-notification";
+import UserModel from "@/core/schemas/user.schema";
 
 export default handleRequest({
   GET: async (req, res) => {
@@ -30,10 +32,17 @@ async function createSocketConnection(userId, res) {
 
       socket.on("join", (room) => {
         console.log("room is ", room);
-        console.log(socket.rooms)
+        console.log(socket.rooms);
         if (!socket.rooms.has(room)) {
           socket.join(room);
         }
+      });
+
+      socket.on("sendNotification", async (notification) => {
+        await UserModel.updateOne(
+          { _id: notification.receiver },
+          { $push: { messageNotifications: notification.sender } }
+        );
       });
 
       socket.on("leave", (room) => {
@@ -41,11 +50,10 @@ async function createSocketConnection(userId, res) {
         socket.leave(room);
       });
 
-      socket.on("see",async(messageId)=>{
-          console.log("socket seen",messageId)
-          await seeMessage({messageId})
-      })
-
+      socket.on("see", async (messageId) => {
+        console.log("socket seen", messageId);
+        await seeMessage({ messageId });
+      });
     });
     res.socket.server.io = io;
   }

@@ -1,5 +1,5 @@
 import { NOTIFICATION_SCHEMA, USER_SCHEMA } from "@/constants";
-import { Schema, SchemaType, SchemaTypes } from "mongoose";
+import { Schema, SchemaType, SchemaTypes, model, models } from "mongoose";
 
 const notificationSchema = new Schema(
   {
@@ -9,7 +9,7 @@ const notificationSchema = new Schema(
       ref: USER_SCHEMA,
     },
     seen: {
-      type: false,
+      type: Boolean,
       default: false,
     },
     content: SchemaTypes.ObjectId,
