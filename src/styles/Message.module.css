@@ -19,8 +19,14 @@
   border-bottom: 1px solid var(--white);
   padding: 1rem;
 }
+
 .user:hover {
   background-color: var(--white);
+}
+
+.user.selected{
+  background-color: var(--white);
+  border-right: 2px solid var(--primary-color);
 }
 
 .chatBox {

@@ -4,12 +4,10 @@ import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { ProfileLayout } from "@/features/user/components/profile-layout/ProfileLayout";
 import { getProfile } from "@/features/user/services/server/get-profile.server";
 import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
-import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useListState } from "@/shared/hooks/useListState";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { createOptions } from "../api/auth/[...nextauth]";
 
 export async function getServerSideProps(ctx) {
