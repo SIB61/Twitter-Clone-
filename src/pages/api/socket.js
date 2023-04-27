@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import { createOptions } from "./auth/[...nextauth]";
 import { createMessage } from "@/features/conversation/services/server/create-message.server";
 import { mapId } from "@/shared/utils/mapId";
+import { seeMessage } from "@/features/conversation/services/server/seeMessage.server";
 
 export default handleRequest({
   GET: async (req, res) => {
@@ -15,7 +16,6 @@ export default handleRequest({
 
 async function createSocketConnection(userId, res) {
   let io = res.socket.server.io;
-  console.log("userId", userId);
   if (!io) {
     const io = new Server(res.socket.server);
     io.on("connection", async (socket) => {
@@ -25,7 +25,6 @@ async function createSocketConnection(userId, res) {
           receiver: receiver,
           text: content.text,
         });
-        console.log("new message",newMessage)
         socket.to(receiver).emit("newMessage", mapId(newMessage._doc));
       });
 
@@ -41,6 +40,12 @@ async function createSocketConnection(userId, res) {
         console.log("room is ", room);
         socket.leave(room);
       });
+
+      socket.on("see",async(messageId)=>{
+          console.log("socket seen",messageId)
+          await seeMessage({messageId})
+      })
+
     });
     res.socket.server.io = io;
   }

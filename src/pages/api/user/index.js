@@ -1,6 +1,7 @@
 import { sendVerificationMail } from "@/core/utils/sendVerificationMail";
 import createUser from "@/features/user/services/server/create-user.server";
 import { getUserByEmail } from "@/features/user/services/server/get-user.server";
+import { searchUser } from "@/features/user/services/server/search-user";
 import { handleRequest } from "@/shared/middlewares/request-handler";
 import { generateVerificationToken } from "@/shared/utils/generateVerificationToken";
 import { mapId } from "@/shared/utils/mapId";
@@ -21,10 +22,21 @@ export default handleRequest({
           verificationToken
         });
       await sendVerificationMail({email:email,id:user.id,verificationToken})
-      return res.json(true);
+      return res.status(201).json(true);
     } catch (err) {
       console.log(err)
       return res.status(err.status).send(err.message);
     }
   },
+
+  GET: async (req,res) =>{
+    const {search} = req.query
+    if(search){
+        const searchText = search.replace('_'," ")
+        const users = await searchUser(searchText)
+        return res.json(users)
+    }
+    return res.end()
+  }
+
 });

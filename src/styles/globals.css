@@ -25,7 +25,7 @@
   --success-alpha: rgba(0, 200, 0, 0.2);
   --green-alpha: rgba(0,200,0,0.2);
   --error: rgba(200, 0, 0, 0.4);
-  
+  --bg-color:white; 
 }
 
 html,
