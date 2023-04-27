@@ -40,6 +40,7 @@ export async function getServerSideProps(ctx) {
     messages = await getAllConversationsForUser({
       userId: user.id,
       receiverID: receiverId,
+      pageIndex: 1,
     });
     messages.reverse();
   }
@@ -69,10 +70,10 @@ export default function Page({ users, previousMessages, receiver }) {
         }
         return { ...curr };
       });
-      messageNotifications.set(value=>{
-        value.delete(receiver.id)
-        return value
-      })
+      messageNotifications.set((value) => {
+        value.delete(receiver.id);
+        return value;
+      });
     }
   }, []);
 
@@ -108,7 +109,7 @@ export default function Page({ users, previousMessages, receiver }) {
               <Link
                 style={{ position: "relative" }}
                 key={user.id}
-                href={{pathname:'/message',query:{room:user.id}}}
+                href={{ pathname: "/message", query: { room: user.id } }}
               >
                 <MiniProfile user={user} />{" "}
                 {messageNotifications.value.has(user.id) && (
