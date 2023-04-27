@@ -58,7 +58,6 @@ export function MessageProvider({ children }) {
 
   const sendMessage = (message) => {
     socket?.emit("sendMessage", message);
-    // newMessage.set(message);
     messages.set((value) => {
       if (!value[message.receiver]) {
         value[message.receiver] = [];
