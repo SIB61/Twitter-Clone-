@@ -43,6 +43,7 @@ export async function getServerSideProps(ctx) {
     messages = await getAllConversationsForUser({
       userId: user.id,
       receiverID: receiverId,
+      pageIndex: 1,
     });
     messages.reverse();
   }
