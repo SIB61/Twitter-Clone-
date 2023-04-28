@@ -3,6 +3,7 @@ import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useRouter } from "next/router";
 import { useSocket } from "./SocketProvider";
 import { useSession } from "next-auth/react";
+import axios from "axios";
 export const MessageContext = createContext();
 const newMessages = {};
 export function MessageProvider({ children }) {
@@ -14,8 +15,23 @@ export function MessageProvider({ children }) {
   const newMessage = useCustomState();
   const { data: session } = useSession();
 
+  useEffect(async () => {
+    const { data: notifications } = await axios.get("/api/messageNotification");
+    messageNotifications.set(new Set(notifications));
+  }, []);
+
   useEffect(() => {
-    if (newMessage.value && room && room != newMessage.value?.sender && newMessage.value?.sender !== session?.user.id) {
+    if (
+      newMessage.value &&
+      room &&
+      room != newMessage.value?.sender &&
+      newMessage.value?.sender !== session?.user.id
+    ) {
+      socket?.emit("sendNotification", {
+        ...newMessage.value,
+        receiver: session?.user.id,
+      });
+
       messageNotifications.set((value) => {
         value.add(newMessage.value?.sender);
         return new Set(value);
@@ -62,8 +78,8 @@ export function MessageProvider({ children }) {
       if (!value[message.receiver]) {
         value[message.receiver] = [];
       }
-      value[message.receiver].unshift(message)
-      return {...value}
+      value[message.receiver].unshift(message);
+      return { ...value };
     });
   };
 
