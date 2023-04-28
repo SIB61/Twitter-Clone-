@@ -1,5 +1,4 @@
 import Conversation from "@/core/schemas/conversation.schema";
-import retweet from "@/pages/api/retweet";
 import { mapId } from "@/shared/utils/mapId";
 
 export async function getAllConversationsForUser({
@@ -13,17 +12,12 @@ export async function getAllConversationsForUser({
       members: { $all: [userId, receiverID] },
     }).sort({ createdAt: -1 });
 
-    console.log("Fetching...." + fetchedConversations?._id);
-    console.log(fetchedConversations);
-
-    if (fetchedConversations) {
-      fetchedConversations.messages.forEach((message) => {
-        console.log();
+    if (fetchedConversations && fetchedConversations.messages) {
+      fetchedConversations?.messages.forEach((message) => {
         if (message.sender.toString() !== userId) {
           message.seen = true;
         }
       });
-
       await fetchedConversations.save();
     }
 
@@ -36,7 +30,7 @@ export async function getAllConversationsForUser({
       .sort({ createdAt: -1 })
       .lean();
 
-    if (conversations[0].messages.length < 20) {
+    if (conversations[0]?.messages?.length < 20) {
       const moreConversations = await Conversation.find({
         members: { $all: [userId, receiverID] },
       })
@@ -48,17 +42,17 @@ export async function getAllConversationsForUser({
 
       if (moreConversations.length > 1) {
         const firstConversationMessages =
-          moreConversations[1]?.messages.map((msg) => mapId(msg)) || [];
+          moreConversations[1]?.messages?.map((msg) => mapId(msg)) || [];
         const secondConversationMessages =
-          moreConversations[0]?.messages.map((msg) => mapId(msg)) || [];
+          moreConversations[0]?.messages?.map((msg) => mapId(msg)) || [];
         return [...firstConversationMessages, ...secondConversationMessages];
       } else {
-        return conversations[0]?.messages.map((msg) => mapId(msg)) || [];
+        return conversations[0]?.messages?.map((msg) => mapId(msg)) || [];
       }
 
       //return moreConversations?.messages.map((msg) => mapId(msg)) || [];
     } else {
-      return conversations[0]?.messages.map((msg) => mapId(msg)) || [];
+      return conversations[0]?.messages?.map((msg) => mapId(msg)) || [];
     }
 
     //console.log(conversations);

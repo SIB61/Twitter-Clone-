@@ -1,5 +1,6 @@
 import Conversation from "@/core/schemas/conversation.schema";
 import { createConversation } from "./createConversation";
+import { mapId } from "@/shared/utils/mapId";
 
 export async function createMessage({
   text,
@@ -15,6 +16,7 @@ export async function createMessage({
         file,
       },
       sender,
+      receiver,
       originalMessage,
     };
     const conversations = await Conversation.find({members:{$all:[sender,receiver]}}).sort({createdAt:-1}).limit(1);
@@ -47,7 +49,7 @@ export async function createMessage({
       await newConversation.save();
       newMessage  = conversation.messages[conversation.messages.length-1]
     }
-    return newMessage;
+    return mapId(newMessage._doc);
   } catch (error) {
     throw { status: 500, error: error.message };
   }

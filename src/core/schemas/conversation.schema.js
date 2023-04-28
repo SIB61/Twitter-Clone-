@@ -19,6 +19,10 @@ const conversationSchema = new Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: USER_SCHEMA,
         },
+        receiver:{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: USER_SCHEMA,
+        },
         senderReact: {
           type: String,
           enum: ["none", "like", "haha", "love", "sad", "angry"],

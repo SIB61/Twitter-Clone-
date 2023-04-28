@@ -1,5 +1,4 @@
 import Conversation from "@/core/schemas/conversation.schema";
-import { mapId } from "@/shared/utils/mapId";
 
 export async function createConversation(userID, receiverID) {
   try {

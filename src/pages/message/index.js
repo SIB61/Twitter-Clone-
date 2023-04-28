@@ -22,6 +22,7 @@ import { debounce } from "@/shared/utils/debounce";
 import axios from "axios";
 import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useSocket } from "@/core/Providers/SocketProvider";
+import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -40,6 +41,7 @@ export async function getServerSideProps(ctx) {
       (acc, cur) => (cur.id.toString() === receiverId ? cur : acc),
       undefined
     );
+    await deleteMessageNotification({userId:user.id,notificationSenderId:receiverId})
     messages = await getAllConversationsForUser({
       userId: user.id,
       receiverID: receiverId,

@@ -15,9 +15,15 @@ export function MessageProvider({ children }) {
   const newMessage = useCustomState();
   const { data: session } = useSession();
 
-  useEffect(async () => {
-    const { data: notifications } = await axios.get("/api/messageNotification");
-    messageNotifications.set(new Set(notifications));
+  useEffect(() => {
+    const setNotifications = async () => {
+      const { data: notifications } = await axios.get(
+        "/api/notification?type=message"
+      );
+      console.log(notifications)
+      messageNotifications.set(new Set(notifications));
+    };
+    setNotifications();
   }, []);
 
   useEffect(() => {

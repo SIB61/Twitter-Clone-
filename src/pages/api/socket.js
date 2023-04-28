@@ -7,6 +7,7 @@ import { mapId } from "@/shared/utils/mapId";
 import { seeMessage } from "@/features/conversation/services/server/seeMessage.server";
 import { createNotification } from "@/features/notification/services/server/create-notification";
 import UserModel from "@/core/schemas/user.schema";
+import { createMessageNotification } from "@/features/notification/services/server/create-message-notification.server";
 
 export default handleRequest({
   GET: async (req, res) => {
@@ -27,22 +28,18 @@ async function createSocketConnection(userId, res) {
           receiver: receiver,
           text: content.text,
         });
-        socket.to(receiver).emit("newMessage", mapId(newMessage._doc));
+        socket.to(receiver).emit("newMessage", newMessage);
       });
 
       socket.on("join", (room) => {
         console.log("room is ", room);
-        console.log(socket.rooms);
         if (!socket.rooms.has(room)) {
           socket.join(room);
         }
       });
 
       socket.on("sendNotification", async (notification) => {
-        await UserModel.updateOne(
-          { _id: notification.receiver },
-          { $push: { messageNotifications: notification.sender } }
-        );
+        createMessageNotification({userId:notification.receiver,notificationSenderId:notification.sender})
       });
 
       socket.on("leave", (room) => {
