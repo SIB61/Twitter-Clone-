@@ -2,7 +2,7 @@ import { getAllConversationsByUser } from "@/features/conversation/services/serv
 import { handleRequest } from "@/shared/middlewares/request-handler";
 
 export default handleRequest({
-  async GET(req, res) {
+  async POST(req, res) {
     try {
       const { userId, receiverID } = req.body;
       const { pageIndex } = req.query;

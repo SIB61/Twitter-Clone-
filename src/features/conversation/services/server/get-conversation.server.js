@@ -30,7 +30,7 @@ export async function getAllConversationsByUser({
       { $limit: pageSize },
       { $replaceRoot: { newRoot: "$message" } },
     ]);
-    console.log(messages);
+    //console.log(messages);
     return messages?.map((msg) => mapId(msg)) || [];
     //console.log(conversations);
   } catch (error) {

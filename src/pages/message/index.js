@@ -8,7 +8,7 @@ import { useListState } from "@/shared/hooks/useListState";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { use, useCallback, useEffect, useMemo } from "react";
+import { use, useCallback, useEffect, useMemo, useRef } from "react";
 import styles from "../../styles/Message.module.css";
 import { getAllConversationsForUser } from "@/features/conversation/services/server/getConversation";
 import { getServerSession } from "next-auth";
@@ -23,6 +23,8 @@ import axios from "axios";
 import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useSocket } from "@/core/Providers/SocketProvider";
 import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
+import { getAllConversationsByUser } from "@/features/conversation/services/server/get-conversation.server";
+import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -34,15 +36,18 @@ export async function getServerSideProps(ctx) {
   users = users.filter((u) => u.id.toString() !== user.id.toString());
   const { room } = ctx.query;
   let receiver;
-  let messages
+  let messages;
   if (room) {
     const receiverId = room;
     receiver = users.reduce(
       (acc, cur) => (cur.id.toString() === receiverId ? cur : acc),
       undefined
     );
-    await deleteMessageNotification({userId:user.id,notificationSenderId:receiverId})
-    messages = await getAllConversationsForUser({
+    await deleteMessageNotification({
+      userId: user.id,
+      notificationSenderId: receiverId,
+    });
+    messages = await getAllConversationsByUser({
       userId: user.id,
       receiverID: receiverId,
       pageIndex: 1,
@@ -60,25 +65,57 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-
 export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
-  const userList = useCustomState(users)
+  const userList = useCustomState(users);
   const { messages, messageNotifications, sendMessage } = useMessage();
-  const conversations = useListState([])
+  const conversations = useListState([]);
+  const pageIndex = useCustomState(2);
+  const isLastPage = useCustomState(false);
+  const loaderRef = useRef();
+  const isLoaderOnScreen = !!useIntersectionObserver(loaderRef, {})
+    ?.isIntersecting;
 
-  useEffect(()=>{
-    const receiverMessages = messages?.value[receiver?.id] || []
-    if(receiverMessages.length > 0 &&  conversations.value.length != receiverMessages.length){
-         conversations.set(receiverMessages) 
+  useEffect(() => {
+    if (isLoaderOnScreen && !isLastPage.value) {
+      const fetchMoreMessages = async () => {
+        try {
+          console.log(session?.user.id + " " + receiver.id);
+          const { data: newPage } = await axios.post(
+            `/api/conversation/?pageIndex=${pageIndex.value}`,
+            {
+              userId: session?.user.id,
+              receiverID: receiver.id,
+            }
+          );
+          console.log(newPage);
+          // if (newPage?.data?.length === 0) {
+          //   isLastPage.set(true);
+          // } else {
+          //   conversations.set((state) => [...state, ...newPage?.data]);
+          //   pageIndex.set((value) => value + 1);
+          // }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchMoreMessages();
     }
-  },[messages.value])
+  }, [isLoaderOnScreen]);
 
-  useEffect(()=>{
+  useEffect(() => {
+    const receiverMessages = messages?.value[receiver?.id] || [];
+    if (
+      receiverMessages.length > 0 &&
+      conversations.value.length != receiverMessages.length
+    ) {
+      conversations.set(receiverMessages);
+    }
+  }, [messages.value]);
 
-  },[conversations.value])
+  useEffect(() => {}, [conversations.value]);
 
   useEffect(() => {
     console.log(previousMessages);
@@ -103,19 +140,19 @@ export default function Page({ users, previousMessages, receiver }) {
     }
   };
 
- const onUserSearch=useCallback((e)=>{
-    let text = e.target.value.trim()
-    const search = async()=>{
-       const searchKey = text.replace(' ','_')
-       const {data} = await axios.get('/api/user/?search='+searchKey)  
-       userList.set(data)
+  const onUserSearch = useCallback((e) => {
+    let text = e.target.value.trim();
+    const search = async () => {
+      const searchKey = text.replace(" ", "_");
+      const { data } = await axios.get("/api/user/?search=" + searchKey);
+      userList.set(data);
+    };
+    if (text.length === 0) {
+      userList.set(users);
+    } else {
+      debounce(search, 1000)();
     }
-    if(text.length === 0){
-      userList.set(users)
-    }else{
-      debounce(search,1000)()
-    }
-  },[])
+  }, []);
 
   return (
     <MainLayout>
@@ -136,8 +173,11 @@ export default function Page({ users, previousMessages, receiver }) {
             </div>
           </div>
           {userList.value?.map((user) => (
-            <div className={`${styles.user} ${room===user.id? styles.selected : ''}`}>
-
+            <div
+              className={`${styles.user} ${
+                room === user.id ? styles.selected : ""
+              }`}
+            >
               <Link
                 style={{ position: "relative", width: "100%" }}
                 key={user.id}
@@ -159,8 +199,9 @@ export default function Page({ users, previousMessages, receiver }) {
             </Link>
             <div>
               {conversations.value?.map((msg, idx) => (
-                <MessageBubble key={idx} message={msg}/>
+                <MessageBubble key={idx} message={msg} />
               ))}
+              {isLastPage.value ? <></> : <div ref={loaderRef}>Loading</div>}
             </div>
             <div className={styles.sendMsg}>
               <CreatePost
