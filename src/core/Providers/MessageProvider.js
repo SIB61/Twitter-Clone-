@@ -1,8 +1,9 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useRef } from "react";
 import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useRouter } from "next/router";
 import { useSocket } from "./SocketProvider";
 import { useSession } from "next-auth/react";
+// import notificationSound from "../../../public/sounds/notification.mp3"
 import axios from "axios";
 export const MessageContext = createContext();
 const newMessages = {};
@@ -14,6 +15,7 @@ export function MessageProvider({ children }) {
   const { room } = router.query;
   const newMessage = useCustomState();
   const { data: session } = useSession();
+  const notificationAudio = useRef()
 
   useEffect(() => {
     const setNotifications = async () => {
@@ -38,6 +40,12 @@ export function MessageProvider({ children }) {
         receiver: session?.user.id,
       });
 
+      // try{
+      // notificationAudio.current?.play()
+      // }
+      // catch(err){
+      // 
+      // }
       messageNotifications.set((value) => {
         value.add(newMessage.value?.sender);
         return new Set(value);
@@ -94,6 +102,7 @@ export function MessageProvider({ children }) {
       value={{ messages, messageNotifications, sendMessage }}
     >
       {children}
+      <audio src={"/sounds/notification.mp3"} autoPlay ref={notificationAudio}/>
     </MessageContext.Provider>
   );
 }
