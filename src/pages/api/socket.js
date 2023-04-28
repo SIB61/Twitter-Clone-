@@ -29,6 +29,7 @@ async function createSocketConnection(userId, res) {
           text: content.text,
         });
         socket.to(receiver).emit("newMessage", newMessage);
+        io.to(socket.id).emit("newMessage",newMessage)
       });
 
       socket.on("join", (room) => {
@@ -47,10 +48,12 @@ async function createSocketConnection(userId, res) {
         socket.leave(room);
       });
 
-      socket.on("see", async (messageId) => {
-        console.log("socket seen", messageId);
-        await seeMessage({ messageId });
+      socket.on("see", async (message) => {
+        console.log("socket seen", message.id);
+        await seeMessage({ messageId:message.id });
+        socket.to(message.sender).emit('seen', message);
       });
+
     });
     res.socket.server.io = io;
   }

@@ -12,9 +12,7 @@ import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTwee
 import { signOut, useSession } from "next-auth/react";
 import { useModal } from "@/shared/hooks/useModal";
 import { Confirmation } from "../confirmation/Confirmation";
-import { useMessage } from "@/shared/hooks/useMessages";
-import { useEffect } from "react";
-import { TbMessageCircle } from 'react-icons/tb'
+import { useMessages } from "@/features/conversation/hooks/useMessages";
 
 const authenticatedOptions = [
   {
@@ -66,8 +64,7 @@ export function Navbar({ onNewTweet }) {
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
   console.log(status);
-  const modal = useModal();
-  const { messageNotifications } = useMessage();
+  const modal = useModal(); const { messageNotifications } = useMessages();
 
   const showCreateTweet = () => {
     modal.open(

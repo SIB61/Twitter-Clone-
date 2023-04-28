@@ -10,9 +10,8 @@ import { Modal } from "@/shared/components/modal/Modal";
 import { ModalProvider } from "@/shared/contexts/modalContext";
 import { InputBoxProvider } from "@/shared/contexts/InputBoxContext";
 import { ToastProvider } from "@/shared/contexts/ToastContext";
-import { MessageProvider } from "@/core/Providers/MessageProvider";
 import { SocketProvider } from "@/core/Providers/SocketProvider";
-const PageContext = createContext();
+import { MessageProvider } from "@/features/conversation/providers/message-provider";
 
 export default function App({
   Component,

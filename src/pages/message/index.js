@@ -1,6 +1,5 @@
 import { MainLayout } from "@/core/layouts/main-layout";
 import { dbConnect } from "@/core/utils/db";
-import { getSocket } from "@/core/utils/getSocket";
 import { getUsers } from "@/features/user/services/server/get-user.server";
 import { CreatePost } from "@/shared/components/create-post/CreatePost";
 import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
@@ -13,7 +12,6 @@ import styles from "../../styles/Message.module.css";
 import { getAllConversationsForUser } from "@/features/conversation/services/server/getConversation";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../api/auth/[...nextauth]";
-import { useMessage } from "@/shared/hooks/useMessages";
 import { TbSettings } from "react-icons/tb";
 import { MdOutlineForward, MdOutlineForwardToInbox } from "react-icons/md";
 import { Input } from "@/shared/components/input/Input";
@@ -21,8 +19,9 @@ import { MessageBubble } from "@/features/conversation/components/MessageBubble"
 import { debounce } from "@/shared/utils/debounce";
 import axios from "axios";
 import { useCustomState } from "@/shared/hooks/useCustomState";
-import { useSocket } from "@/core/Providers/SocketProvider";
 import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
+import { useMessages } from "@/features/conversation/hooks/useMessages";
+import { useSocket } from "@/core/Providers/SocketProvider";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -60,28 +59,48 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-
 export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
   const userList = useCustomState(users)
-  const { messages, messageNotifications, sendMessage } = useMessage();
-  const conversations = useListState([])
+  const { messages,newMessage, messageNotifications, sendMessage } = useMessages();
+  const socket = useSocket()
+
+  // useEffect(()=>{
+  //   const receiverMessages = messages?.value[receiver?.id] || []
+  //   const newMessage = receiverMessages[0]
+  //   if(newMessage && newMessage.sender === room){
+  //     socket?.emit('see',newMessage)  
+  //   }
+  //   if(receiverMessages.length > 0 &&  conversations.value.length != receiverMessages.length){
+  //        conversations.set(receiverMessages) 
+  //   }
+  // },[messages.value])
+  
+  // useEffect(()=>{
+  //   const receiverMessages = messages?.value[receiver?.id] || []
+  //   // if(newMessage.value && newMessage.value.sender === room){
+  //   //   socket.emit('see',newMessage.value)  
+  //   // }
+  //   // if(receiverMessages[0].sender === room){
+  //   //      socket?.emit('see',receiverMessages[0])  
+  //   // }
+  //   if(receiverMessages.length > 0 &&  conversations.value.length != receiverMessages.length){
+  //        socket?.emit('see',receiverMessages[0])  
+  //        conversations.set(receiverMessages) 
+  //   }
+  // },[messages.value])
+  //
 
   useEffect(()=>{
-    const receiverMessages = messages?.value[receiver?.id] || []
-    if(receiverMessages.length > 0 &&  conversations.value.length != receiverMessages.length){
-         conversations.set(receiverMessages) 
+    if( newMessage.value && newMessage.value.sender === room){
+      socket?.emit('see',newMessage.value)
     }
-  },[messages.value])
+  },[newMessage.value])
 
-  useEffect(()=>{
-
-  },[conversations.value])
 
   useEffect(() => {
-    console.log(previousMessages);
     if (receiver?.id) {
       messages.set((curr) => {
         if (!curr[receiver.id]) {
@@ -89,6 +108,7 @@ export default function Page({ users, previousMessages, receiver }) {
         }
         return { ...curr };
       });
+      // socket?.emit('see',messages.value[0])
     }
   }, []);
 
@@ -158,7 +178,7 @@ export default function Page({ users, previousMessages, receiver }) {
               <MiniProfile user={receiver} />
             </Link>
             <div>
-              {conversations.value?.map((msg, idx) => (
+              {messages?.value[receiver.id]?.map((msg, idx) => (
                 <MessageBubble key={idx} message={msg}/>
               ))}
             </div>
