@@ -5,7 +5,7 @@ const conversationSchema = new Schema(
   {
     members: [
       {
-        type: SchemaTypes.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: USER_SCHEMA,
       },
     ],
@@ -19,7 +19,7 @@ const conversationSchema = new Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: USER_SCHEMA,
         },
-        receiver:{
+        receiver: {
           type: mongoose.Schema.Types.ObjectId,
           ref: USER_SCHEMA,
         },
@@ -52,7 +52,7 @@ const conversationSchema = new Schema(
       text: String,
       file: String,
       sender: {
-        type: SchemaTypes.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: USER_SCHEMA,
       },
     },
@@ -61,6 +61,6 @@ const conversationSchema = new Schema(
 );
 
 const Conversation =
-  models.Conversation || model(CONVERSATION_SCHEMA, conversationSchema);
+  models?.Conversation || model(CONVERSATION_SCHEMA, conversationSchema);
 
 export default Conversation;
