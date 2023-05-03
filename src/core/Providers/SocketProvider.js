@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSocket } from "../utils/getSocket";
 import { useSession } from "next-auth/react";
+import { JOIN } from "@/constants";
 
 const SocketContext = createContext()
 export function SocketProvider({children}){
@@ -18,7 +19,7 @@ export function SocketProvider({children}){
   }, [socket]);
 
   useEffect(() => {
-    if (session && session.user) socket?.emit("join", session.user.id);
+    if (session && session.user) socket?.emit(JOIN, session.user.id);
   }, [session, socket]);
 
   return <SocketContext.Provider value={socket}>

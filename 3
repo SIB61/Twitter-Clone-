@@ -8,8 +8,7 @@ import { seeMessage } from "@/features/conversation/services/server/seeMessage.s
 import { createNotification } from "@/features/notification/services/server/create-notification";
 import UserModel from "@/core/schemas/user.schema";
 import { createMessageNotification } from "@/features/notification/services/server/create-message-notification.server";
-import { CONNECTION, JOIN, LEAVE, MESSAGE_SEEN, NEW_MESSAGE, SEE_MESSAGE, SEND_MESSAGE, SEND_NOTIFICATION } from "@/constants";
-import mongoose from "mongoose";
+import { CONNECTION, JOIN, LEAVE, MESSAGE_SEEN, NEW_MESSAGE, SEE_MESSAGE, SEND_MESSAGE } from "@/constants";
 
 export default handleRequest({
   GET: async (req, res) => {
@@ -43,7 +42,7 @@ async function createSocketConnection(userId, res) {
         }
       });
 
-      socket.on(SEND_NOTIFICATION, async (notification) => {
+      socket.on("sendNotification", async (notification) => {
         createMessageNotification({
           userId: notification.receiver,
           notificationSenderId: notification.sender,
@@ -57,8 +56,8 @@ async function createSocketConnection(userId, res) {
 
       socket.on(SEE_MESSAGE, async (message) => {
         console.log("socket seen", message.id);
-        seeMessage({ messageIds: [new mongoose.Types.ObjectId(message.id)] });
-        socket.to(message.sender).emit(MESSAGE_SEEN, message.receiver);
+        await seeMessage({ messageId: message.id });
+        socket.to(message.sender).emit(MESSAGE_SEEN, message);
       });
     });
     res.socket.server.io = io;

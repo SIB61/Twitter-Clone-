@@ -10,7 +10,7 @@ export const config = {
   },
 };
 export default handleRequest({
-  async POST(req, res) {
+  POST:async(req, res) => {
     try {
       const { fields, files } = await parseForm(req);
       const image = files.image

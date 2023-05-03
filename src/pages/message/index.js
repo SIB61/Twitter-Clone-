@@ -21,6 +21,9 @@ import { deleteMessageNotification } from "@/features/notification/services/serv
 import { useMessages } from "@/features/conversation/hooks/useMessages";
 import { useSocket } from "@/core/Providers/SocketProvider";
 import { getAllConversationsByUser } from "@/features/conversation/services/server/get-conversation.server";
+import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
+import { CONNECTION, MESSAGE_SEEN, SEE_MESSAGE } from "@/constants";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -28,36 +31,45 @@ export async function getServerSideProps(ctx) {
     ctx.res,
     createOptions(ctx.req)
   );
-  let users = getUsers();
-  users = users.filter((u) => u.id.toString() !== user.id.toString());
   const { room } = ctx.query;
   let receiver;
-  let messages = new Promise.resolve([]);
+  let users = getUsers().then((result) => {
+    result = result.filter((u) => u.id.toString() !== user.id.toString());
+    if (room) {
+      receiver = result.reduce(
+        (acc, cur) => (cur.id.toString() === room ? cur : acc),
+        undefined
+      );
+    }
+    return Promise.resolve(result);
+  });
+  let messages = Promise.resolve([]);
   if (room) {
     const receiverId = room;
-    receiver = users.reduce(
-      (acc, cur) => (cur.id.toString() === receiverId ? cur : acc),
-      undefined
-    );
     deleteMessageNotification({
       userId: user.id,
       notificationSenderId: receiverId,
     });
-    messages = getAllConversationsByUser({
+    messages =  getAllConversationsByUser({
       userId: user.id,
       receiverID: receiverId,
       pageIndex: 1,
-    }).then(msgs => {
-      msgs.reverse()
-      return Promise.resolve(msgs)
+      pageSize:50
     });
-    // messages.reverse();
   }
+
+  const [usersResult,messagesResult] = await Promise.all([users,messages])
+
+  const io = ctx.res.socket.server.io
+  if(io && receiver){
+    io.to(room).emit(MESSAGE_SEEN,receiver.id)
+  }
+
   return {
     props: JSON.parse(
       JSON.stringify({
-        users: await users,
-        previousMessages: await messages,
+        users:  usersResult,
+        previousMessages:  messagesResult,
         receiver: receiver,
       })
     ),
@@ -68,16 +80,17 @@ export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
-  const userList = useCustomState(users)
-  const { messages, newMessage, messageNotifications, sendMessage } = useMessages();
-  const socket = useSocket()
-
+  const userList = useCustomState(users);
+  const [animationParent] = useAutoAnimate()
+  const { messages, newMessage, messageNotifications, sendMessage } =
+    useMessages();
+  const socket = useSocket();
 
   useEffect(() => {
     if (newMessage.value && newMessage.value.sender === room) {
-      socket?.emit('see', newMessage.value)
+      socket?.emit(SEE_MESSAGE, newMessage.value);
     }
-  }, [newMessage.value])
+  }, [newMessage.value]);
 
   const pageIndex = useCustomState(2);
   const isLastPage = useCustomState(false);
@@ -91,19 +104,20 @@ export default function Page({ users, previousMessages, receiver }) {
         try {
           console.log(session?.user.id + " " + receiver.id);
           const { data: newPage } = await axios.post(
-            `/api/conversation/?pageIndex=${pageIndex.value}`,
+            `/api/conversation/?pageIndex=${pageIndex.value}&pageSize=${50}`,
             {
               userId: session?.user.id,
               receiverID: receiver.id,
             }
           );
+          if (newPage && newPage.length < 50) {
+            isLastPage.set(true);
+          } else {
+            const newMessages = [...messages?.value[room], ...newPage];
+            messages.set((value) => ({ ...value, [room]: newMessages }));
+            pageIndex.set((value) => value + 1);
+          }
           console.log(newPage);
-          // if (newPage?.data?.length === 0) {
-          //   isLastPage.set(true);
-          // } else {
-          //   conversations.set((state) => [...state, ...newPage?.data]);
-          //   pageIndex.set((value) => value + 1);
-          // }
         } catch (error) {
           console.log(error);
         }
@@ -111,7 +125,6 @@ export default function Page({ users, previousMessages, receiver }) {
       fetchMoreMessages();
     }
   }, [isLoaderOnScreen]);
-
 
   useEffect(() => {
     if (receiver?.id) {
@@ -121,7 +134,9 @@ export default function Page({ users, previousMessages, receiver }) {
         }
         return { ...curr };
       });
-      // socket?.emit('see',messages.value[0])
+    }
+    if(previousMessages.length < 50){
+      isLastPage.set(true)
     }
   }, []);
 
@@ -170,8 +185,10 @@ export default function Page({ users, previousMessages, receiver }) {
           </div>
           {userList.value?.map((user) => (
             <div
-              className={`${styles.user} ${room === user.id ? styles.selected : ""
-                }`}
+              className={`${styles.user} ${
+                room === user.id ? styles.selected : ""
+              }`}
+              key={user.id}
             >
               <Link
                 style={{ position: "relative", width: "100%" }}
@@ -192,38 +209,33 @@ export default function Page({ users, previousMessages, receiver }) {
             <Link href={`/profile/${receiver?.id}`} className={styles.receiver}>
               <MiniProfile user={receiver} />
             </Link>
-            <div>
-<<<<<<< HEAD
-  {
-    messages?.value[receiver.id]?.map((msg, idx) => (
-      <MessageBubble key={idx} message={msg} />
-=======
-              {conversations.value?.map((msg, idx) => (
-                <MessageBubble key={idx} message={msg} />
->>>>>>> development
-    ))
-  }
-  { isLastPage.value ? <></> : <div ref={loaderRef}>Loading</div> }
-            </div >
-    <div className={styles.sendMsg}>
-      <CreatePost
-        submitButton="send"
-        placeholder="write your message"
-        onSubmit={(e) => postMessage(e.text)}
-      />
-    </div>
-          </div >
+            <div ref={animationParent}>
+               
+              {messages?.value[room]?.map((msg, idx) => (
+                <MessageBubble key={msg?.id} message={msg} />
+              ))}
+              <div className={styles.pageLoader}>
+              {!isLastPage.value && <div ref={loaderRef} className="loader"></div>}
+              </div>
+            </div>
+            <div className={styles.sendMsg}>
+              <CreatePost
+                submitButton="send"
+                placeholder="write your message"
+                onSubmit={(e) => postMessage(e.text)}
+              />
+            </div>
+          </div>
         ) : (
-    <div className={styles.empty}>
-      <h1>Select a Message</h1>
-      <p>
-        Choose from your existing conversations, start a new one, or just
-        keep swimming.
-      </p>
-    </div>
-  )
-}
-      </div >
-    </MainLayout >
+          <div className={styles.empty}>
+            <h1>Select a Message</h1>
+            <p>
+              Choose from your existing conversations, start a new one, or just
+              keep swimming.
+            </p>
+          </div>
+        )}
+      </div>
+    </MainLayout>
   );
 }

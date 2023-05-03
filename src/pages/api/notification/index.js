@@ -6,12 +6,14 @@ import UserModel from "@/core/schemas/user.schema";
 export default handleRequest({
   GET: async (req, res) => {
     try {
-      const { user } = await getServerSession(req, res, createOptions(req));
+      const session = await getServerSession(req, res, createOptions(req));
+      if(!session){
+        return res.status(401).json({error:"you must be logged in to perform this action"})
+      }
       const { type } = req.query;
-
       if (type === "message") {
         const { messageNotifications } = await UserModel.findById(
-          user?.id
+          session.user.id
         ).select({
           messageNotifications: 1,
         });

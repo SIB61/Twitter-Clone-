@@ -45,7 +45,6 @@ export async function createMessage({
         file,
         sender,
       };
-
       await newConversation.save();
       newMessage  = conversation.messages[conversation.messages.length-1]
     }

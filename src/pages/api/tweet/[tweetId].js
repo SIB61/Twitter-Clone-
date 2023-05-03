@@ -27,7 +27,7 @@ export default handleRequest({
       return res.status(200).send(JSON.stringify(newTweet));
     } catch (err) {
       console.log(err);
-      return res.status(500).send("error");
+      return res.status(err.status).json(err.error);
     }
   },
 

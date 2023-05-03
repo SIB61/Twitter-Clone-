@@ -6,7 +6,6 @@ import { createOptions } from "../auth/[...nextauth]";
 export default handleRequest({
 
  async POST(req,res){
-
     const {user:follower} = await getServerSession(req,res,createOptions(req))
     const {id:followingId} = req.query
     const followRes  = await follow({followerId:follower.id,followingId:followingId})

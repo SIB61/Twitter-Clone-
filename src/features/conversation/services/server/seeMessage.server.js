@@ -1,11 +1,10 @@
 import Conversation from "@/core/schemas/conversation.schema";
 
-export async function seeMessage({ messageId }) {
+export async function seeMessage({ messageIds }) {
   try {
-    console.log(messageId)
-    await Conversation.update(
+    await Conversation.updateMany(
       {
-        "messages._id": messageId,
+        "messages._id": {$in:messageIds},
       },
       {
         $set: { "messages.$.seen": true },

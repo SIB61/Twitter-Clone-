@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { useSocket } from "@/core/Providers/SocketProvider";
+import { MESSAGE_SEEN, NEW_MESSAGE, SEND_MESSAGE, SEND_NOTIFICATION } from "@/constants";
 export const MessageContext = createContext();
 export function MessageProvider({ children }) {
   const messages = useCustomState({});
@@ -19,7 +20,6 @@ export function MessageProvider({ children }) {
       const { data: notifications } = await axios.get(
         "/api/notification?type=message"
       );
-      console.log(notifications);
       messageNotifications.set(new Set(notifications));
     };
     setNotifications();
@@ -46,7 +46,7 @@ export function MessageProvider({ children }) {
 
   const addNewMessageNotification = (message) => {
     if (room && room != message.sender && message.sender!== session?.user.id) {
-      socket?.emit("sendNotification", {
+      socket?.emit(SEND_NOTIFICATION, {
         ...message,
         receiver: session?.user.id,
       });
@@ -76,22 +76,21 @@ export function MessageProvider({ children }) {
   }, [room]);
 
   useEffect(() => {
-    socket?.on("newMessage", (message) => {
+    socket?.on(NEW_MESSAGE, (message) => {
       newMessage.set(message)
     });
-    socket?.on('seen',(message)=>{
-      console.log("seen called",message)
-      const otherMessages = messages.value[message.receiver]
-      // console.log(otherMessages)
-      for(let i = otherMessages.length-1;i>=0;i--){
-        if(otherMessages[i].id && otherMessages[i].id.toString() === message.id.toString()){
-           console.log(otherMessages[i])
-           otherMessages[i].seen = true
-           break;
+    socket?.on(MESSAGE_SEEN,(receiver)=>{
+      const otherMessages = messages.value[receiver]
+      if(otherMessages && otherMessages.length > 0){
+      for(let i=0;i<otherMessages.length;i++){
+        if(otherMessages[i].seen){
+            break;
         }
+        otherMessages[i].seen = true
+      }
       }
       messages.set(curr=>{
-        const newMessages = {...curr,[message.receiver]:otherMessages}
+        const newMessages = {...curr,[receiver]:otherMessages}
         console.log(newMessages)
         return newMessages
       })
@@ -99,7 +98,7 @@ export function MessageProvider({ children }) {
   }, [socket]);
 
   const sendMessage = (message) => {
-    socket?.emit("sendMessage", message);
+    socket?.emit(SEND_MESSAGE, message);
   };
 
   return (

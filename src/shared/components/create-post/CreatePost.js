@@ -9,10 +9,11 @@ import { RxCross1 } from "react-icons/rx";
 import { Avator } from "@/features/user/components/avatar/Avatar";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useCustomState } from "@/shared/hooks/useCustomState";
+import { AsyncButton } from "../async-button/AsyncButton";
 export function CreatePost({
   text,
   image,
-  onSubmit = () => {},
+  onSubmit = async() => {},
   submitButton = "tweet",
   placeholder = "What's happening",
   isLoading = false,
@@ -54,21 +55,20 @@ export function CreatePost({
             </FileInput>
           </div>
           <div>
-            <button
-              onClick={() => {
+            <AsyncButton 
+              onClickAsync={async()=>{
+                await onSubmit({ text: textState.value, image: imageState.value });
                 textState.set('')
                 imageState.set({src:''})
-                 onSubmit({ text: textState.value, image: imageState.value });
               }}
               className={`btn btn-primary ${styles.submit}`} 
-              disabled={isLoading}
-              style={{width:'6rem'}}
             >
-              {isLoading ? <span className="loader"></span> : submitButton}
-            </button>
+              {submitButton}
+            </AsyncButton>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

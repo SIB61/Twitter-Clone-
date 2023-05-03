@@ -1,6 +1,7 @@
 import Conversation from "@/core/schemas/conversation.schema";
 import { mapId } from "@/shared/utils/mapId";
 import mongoose from "mongoose";
+import { seeMessage } from "./seeMessage.server";
 
 export async function getAllConversationsByUser({
   userId,
@@ -12,11 +13,7 @@ export async function getAllConversationsByUser({
     console.log(userId + " " + receiverID + " " + pageIndex);
     const objectIdUserId = new mongoose.Types.ObjectId(userId);
     const objectIdReceiverId = new mongoose.Types.ObjectId(receiverID);
-    // const conversation = await Conversation.find({
-    //   members: { $all: [userId, receiverID] },
-    // });
-    // console.log(conversation);
-    const messages = await Conversation.aggregate([
+    let messages = await Conversation.aggregate([
       { $match: { members: { $all: [objectIdUserId, objectIdReceiverId] } } },
       { $unwind: "$messages" },
       {
@@ -25,14 +22,30 @@ export async function getAllConversationsByUser({
           message: "$messages",
         },
       },
-      { $sort: { "messages.createdAt": -1 } },
+      { $sort: { "message.createdAt": -1 } },
       { $skip: (pageIndex - 1) * pageSize },
       { $limit: pageSize },
       { $replaceRoot: { newRoot: "$message" } },
     ]);
-    //console.log(messages);
-    return messages?.map((msg) => mapId(msg)) || [];
-    //console.log(conversations);
+
+    let unseenMessages = [];
+    messages =
+      messages?.map((msg) => {
+        if (!msg.seen && msg.sender.toString() === receiverID.toString()) {
+          unseenMessages.push(msg._id);
+          msg.seen = true;
+        }
+        return mapId(msg);
+      }) || [];
+
+    if (unseenMessages.length != 0) {
+      seeMessage({ messageIds: unseenMessages });
+    }
+
+    console.log("unseen", unseenMessages);
+
+    return messages;
+
   } catch (error) {
     throw { status: 500, message: error.message };
   }

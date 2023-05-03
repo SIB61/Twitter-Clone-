@@ -5,11 +5,12 @@ export default handleRequest({
   async POST(req, res) {
     try {
       const { userId, receiverID } = req.body;
-      const { pageIndex } = req.query;
+      const { pageIndex,pageSize } = req.query;
       const messages = await getAllConversationsByUser({
         userId,
         receiverID,
-        pageIndex,
+        pageIndex:+pageIndex,
+        pageSize:+pageSize
       });
       return res.status(200).json(messages);
     } catch (error) {
