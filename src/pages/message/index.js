@@ -154,14 +154,13 @@ export default function Page({ users, previousMessages, receiver }) {
   const onUserSearch = useCallback((e) => {
     let text = e.target.value.trim();
     const search = async () => {
-      const searchKey = text.replace(" ", "_");
-      const { data } = await axios.get("/api/user/?search=" + searchKey);
+      const { data } = await axios.post("/api/search",{user:text});
       userList.set(data);
     };
     if (text.length === 0) {
       userList.set(users);
     } else {
-      debounce(search, 1000)();
+      debounce(search, 300)();
     }
   }, []);
 
