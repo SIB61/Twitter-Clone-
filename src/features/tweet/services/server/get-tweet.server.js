@@ -55,7 +55,7 @@ export async function getUserFeed({ userId, pageIndex = 1, pageSize = 10 }) {
       tweet.parent.replies = [];
     }
     tweet = addIsLiked(tweet, userId);
-    tweet.replies = []
+    tweet.replies = [];
     return tweet;
   });
   return { pageIndex, pageSize, data: tweets };
@@ -72,7 +72,7 @@ export async function getReplies({
       .select("replies")
       .populate({
         path: "replies",
-        select: { replies: 0,retweets:0},
+        select: { replies: 0, retweets: 0 },
         options: {
           skip: (pageIndex - 1) * pageSize,
           limit: pageSize,
@@ -83,8 +83,10 @@ export async function getReplies({
     const replies = tweet.replies.map((reply) => {
       if (reply.parent) {
         reply.parent = addIsLiked(reply.parent, userId);
+        reply.parent.replies = [];
       }
       reply = addIsLiked(reply, userId);
+      reply.replies = [];
       return reply;
     });
     return { pageIndex, pageSize, data: replies };

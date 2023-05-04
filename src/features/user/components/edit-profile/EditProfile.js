@@ -9,11 +9,10 @@ import { useMemo, useState } from "react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { getDateFormatString } from "@/shared/utils/getDateString";
-import { signIn, useSession } from "next-auth/react";
-export function EditProfile({ user,onComplete }) {
-
+import { userActions } from "../../actions/user.action";
+import { useToast } from "@/shared/hooks/useToast";
+export function EditProfile({user,onComplete=()=>{},dispatch}) {
   const dateOfBirth =  user.dateOfBirth && getDateFormatString(user.dateOfBirth)
-  const {data:session,status} = useSession()
   const {
     register,
     handleSubmit,
@@ -25,31 +24,14 @@ export function EditProfile({ user,onComplete }) {
       dateOfBirth:  dateOfBirth || " ",
     },
   });
-
-  
+  const createToast = useToast()
   const loading = useLoading()
   const [profile, setProfile] = useState(user?.image);
   const [cover, setCover] = useState(user?.cover);
   const onSubmit = async (data) => {
-    try {
       loading.start()
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("dateOfBirth", data.dateOfBirth);
-      formData.append("email", data.email);
-      if (profile){
-        formData.append("image", profile.file);
-      } 
-      if (cover) formData.append("cover", cover.file);
-      const newUserRes = await fetch("/api/user/"+user?.id, {method:'PATCH',body:formData});
-      const newUser = await newUserRes.json()
-      await signIn('credentials')
+      await dispatch({type:userActions.UPDATE,payload:{...data,profile:profile?.file,cover:cover?.file}})
       loading.complete()
-      onComplete(newUser)
-    } catch (err) {
-      console.log(err);
-      loading.complete()
-    }
   };
 
   return (

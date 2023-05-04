@@ -1,6 +1,7 @@
 import { useAsyncReducer } from "@/shared/hooks/useAsyncReducer";
 import axios from "axios";
 import { postReply, postRetweet } from "../services/client/create-tweet.client";
+import { deleteTweet } from "../services/client/delete-tweet";
 
 export const TweetActions = {
   LIKE: "LIKE",
@@ -10,9 +11,12 @@ export const TweetActions = {
   UPDATE: "UPDATE",
   DELETE: "DELETE",
   LOAD_REPLIES: "LOAD_REPLIES",
+  SUCCESS: "SUCCESS",
+  ERROR: "ERROR",
 };
 
 const tweetReducer = (state, action) => {
+  if(action.error) return state
   switch (action.type) {
     case TweetActions.RETWEET:
       return { ...state, totalRetweets: state.totalRetweets + 1 };
@@ -24,70 +28,93 @@ const tweetReducer = (state, action) => {
       return { ...state, totalLikes: state.totalLikes - 1, isLiked: false };
 
     case TweetActions.REPLY:
-      return { ...state, totalReplies: state.totalReplies + 1, replies: [action.payload,...state.replies] };
+      return {
+        ...state,
+        totalReplies: state.totalReplies + 1,
+        replies: [action.payload, ...state.replies],
+      };
 
     case TweetActions.UPDATE:
-      return { ...state,...action.payload };
+      return { ...state, ...action.payload };
 
     case TweetActions.LOAD_REPLIES:
-      return {...state, replyPageIndex:state.replyPageIndex+1,replies:[...state.replies,...action.payload]}
-     
+      return {
+        ...state,
+        replyPageIndex: state.replyPageIndex + 1,
+        replies: [...state.replies, ...action.payload],
+      };
+
+    case TweetActions.SUCCESS:
+      return { ...state, success: action.payload };
+
+    case TweetActions.ERROR:
+      return { ...state, error: action.payload };
+
     default:
       return state;
   }
 };
 
-export const TweetActionMiddleWares = {
-  LIKE: async (state) => {
-     axios.post("/api/like", { tweetId: state.id });
-  },
+export const tweetMiddleware = async (state, action, dispatch) => {
+  switch (action.type) {
+    case TweetActions.LIKE:
+      axios.post("/api/like", { tweetId: state.id });
+      return action.payload;
 
-  UNLIKE: async (state) => {
-     axios.delete(`/api/like?tweetId=${state.id}`);
-  },
+    case TweetActions.UNLIKE:
+      axios.delete(`/api/like?tweetId=${state.id}`);
+      return action.payload;
 
-  REPLY: async (state,action) => {
-    const newReply = await postReply({
-      text:action.payload.text,
-      image:action.payload.image,
-      tweetId:state.id
-    })
-    return newReply
-  },
+    case TweetActions.REPLY:
+      try {
+        const newReply = await postReply({
+          text: action.payload.text,
+          image: action.payload.image,
+          tweetId: state.id,
+        });
+        dispatch({ type: TweetActions.SUCCESS, payload: {message:"replied successfully"} });
+        return newReply;
+      } catch (err) {
+        dispatch({ type: TweetActions.ERROR, payload:{message:"something went"}});
+        throw err;
+      }
 
-  RETWEET: async (state,action) => {
-    const newTweet =  postRetweet({ tweetId: state.id });
-    return true
-  },
+    case TweetActions.RETWEET:
+      const newTweet = postRetweet({ tweetId: state.id });
+      return true;
 
-  UPDATE: async (state,action) => {
-    const formData = new FormData();
-    formData.append("content", action.payload.text);
-    formData.append("image", action.payload.image?.file);
-    formData.append("imageUrl", action.payload.image?.src);
-    const newPostRes = await fetch("/api/tweet/" + state.id, {
-      method: "PATCH",
-      body: formData,
-    });
-    const newPost = await newPostRes.json();
-    return newPost
-  },
+    case TweetActions.UPDATE:
+      const formData = new FormData();
+      formData.append("content", action.payload.text);
+      formData.append("image", action.payload.image?.file);
+      formData.append("imageUrl", action.payload.image?.src);
+      const newPostRes = await fetch("/api/tweet/" + state.id, {
+        method: "PATCH",
+        body: formData,
+      });
+      const newPost = await newPostRes.json();
+      return newPost;
 
-  DELETE: async () => {
-     const deleteResult = await deleteTweet(state.id);
-     return deleteResult
-  },
+    case TweetActions.DELETE:
+      const deleteResult = await deleteTweet(action.payload);
+      return deleteResult;
 
-  LOAD_REPLIES: async (state) => {
-    const { data } = await axios.get(
-      `/api/reply?pageIndex=${state.replyPageIndex}&pageSize=10&tweetId=${state.id}`
-    );
-    return data.data
-  },
+    case TweetActions.LOAD_REPLIES:
+      const { data } = await axios.get(
+        `/api/reply?pageIndex=${state.replyPageIndex}&pageSize=10&tweetId=${state.id}`
+      );
+      return data.data;
 
+    default:
+      return action.payload;
+  }
 };
 
 export function useTweetReducer(initialState) {
-  const [state, dispatch] = useAsyncReducer(tweetReducer, initialState);
+  const [state, dispatch] = useAsyncReducer(
+    tweetReducer,
+    initialState,
+    tweetMiddleware
+  );
   return [state, dispatch];
 }

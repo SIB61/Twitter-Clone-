@@ -1,73 +1,62 @@
-import axios from "axios";
 import styles from "./TweetView.module.css";
-import { useState } from "react";
-import { useRouter } from "next/router";
-import { PostDetailedItem } from "@/shared/components/post-detailed-item/PostDetailedItem";
 import { useSession } from "next-auth/react";
 import { PostListItem } from "@/shared/components/post-list-item/PostListItem";
 import { useModal } from "@/shared/hooks/useModal";
 import { CreatePost } from "@/shared/components/create-post/CreatePost";
 import { Confirmation } from "@/shared/components/confirmation/Confirmation";
-import { deleteRetweet, deleteTweet } from "../../services/client/delete-tweet";
 import { useCustomState } from "@/shared/hooks/useCustomState";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
-import {
-  postReply,
-  postRetweet,
-} from "../../services/client/create-tweet.client";
-import { useListState } from "@/shared/hooks/useListState";
 import { useToast } from "@/shared/hooks/useToast";
 import { RetweetIcon } from "@/shared/components/icons/RetweetIcon";
 import { CgMore } from "react-icons/cg";
 import Link from "next/link";
 import { Dropdown } from "@/shared/components/dropdown/Dropdown";
 import { AsyncButton } from "@/shared/components/async-button/AsyncButton";
-import {
-  TweetActionMiddleWares,
-  TweetActions,
-  useTweetReducer,
-} from "../../actions/tweet.action";
+import { TweetActions, useTweetReducer } from "../../actions/tweet.action";
+import { useEffect } from "react";
 export function TweetView({
   tweet = {},
-  detailed = false,
   onDelete = () => {},
-  onComment = () => {},
   parentType = "",
 }) {
   const { data: session, status } = useSession();
-
   const [tweetState, dispatch] = useTweetReducer(
-    tweet.type === "retweet" ?({ ...tweet.parent,replyPageIndex:1 }):({...tweet,replyPageIndex:1})
+    tweet.type === "retweet"
+      ? { ...tweet.parent, replyPageIndex: 1 }
+      : { ...tweet, replyPageIndex: 1 }
   );
-
-  // const [tweetState, setTweetState] = useState(
-  //   tweet.type === "retweet" ? tweet.parent : tweet
-  // );
-
   const expanded = useCustomState(false);
-  // const replies = useListState(tweetState?.replies);
   const [repliesRef] = useAutoAnimate();
-  const createReplyLoading = useCustomState(false);
-  // const createToast = useToast();
   const [parent] = useAutoAnimate();
   const modal = useModal();
-  // const replyPageIndex = useCustomState(1)
+  const createToast = useToast();
+
+  useEffect(()=>{
+     if(tweetState.success?.message){
+       createToast({text:tweetState.success.message})
+     }
+  },[tweetState.success])
+
+  useEffect(()=>{
+     if(tweetState.error){
+       createToast({text:tweetState.error.message})
+     }
+  },[tweetState.error])
 
   const like = async () => {
     if (tweetState.isLiked) {
-      dispatch({ type: TweetActions.UNLIKE }, TweetActionMiddleWares.UNLIKE);
+      dispatch({ type: TweetActions.UNLIKE });
     } else {
-      dispatch({ type: TweetActions.LIKE }, TweetActionMiddleWares.LIKE);
+      dispatch({ type: TweetActions.LIKE });
     }
   };
 
   const sendComment = async ({ text, image }) => {
     if (text || image) {
-      await dispatch(
-        { type: TweetActions.REPLY, payload: { text, image: image?.file } },
-        TweetActionMiddleWares.REPLY
-      );
+      await dispatch({
+        type: TweetActions.REPLY,
+        payload: { text, image: image?.file },
+      });
     }
   };
 
@@ -78,10 +67,10 @@ export function TweetView({
         image={tweetState.content?.image}
         submitButton="save"
         onSubmit={async ({ text, image }) => {
-          await dispatch(
-            { type: TweetActions.UPDATE, payload: { text, image } },
-            TweetActionMiddleWares.UPDATE
-          );
+          await dispatch({
+            type: TweetActions.UPDATE,
+            payload: { text, image },
+          });
           modal.close();
         }}
       />
@@ -93,26 +82,21 @@ export function TweetView({
       <Confirmation
         subtitle="Do you really want to delete it?"
         onConfirm={async () => {
-          modal.startLoading();
           await dispatch({
             type: TweetActions.DELETE,
+            payload: tweetState.id,
           });
-          modal.close()
+          onDelete(tweet);
+          modal.close();
+          createToast({ text: "tweet deleted" });
         }}
       />
     );
   };
 
   const retweet = async () => {
-    dispatch({ type: TweetActions.RETWEET },TweetActionMiddleWares.RETWEET);
-  };
-
-  const loadMoreComments = async () => {
-    const { data: newReplies } = await axios.get(
-      `/api/reply?pageIndex=${replyPageIndex.value}&pageSize=10&tweetId=${tweetState.id}`
-    );
-    replies.set((state) => [...state, ...newReplies.data]);
-    replyPageIndex.set((state) => state + 1);
+    await dispatch({ type: TweetActions.RETWEET });
+    createToast({ text: "tweet retweeted" });
   };
 
   const onActionClick = (event) => {
@@ -126,7 +110,7 @@ export function TweetView({
           tweetState.totalReplies !== 0 &&
           !expanded.value
         ) {
-          dispatch({type:TweetActions.LOAD_REPLIES},TweetActionMiddleWares.LOAD_REPLIES)
+          dispatch({ type: TweetActions.LOAD_REPLIES });
         }
       } else if (event === "edit") {
         edit();
@@ -144,15 +128,10 @@ export function TweetView({
         <Confirmation
           subtitle="You want to delete this retweet."
           onConfirm={async () => {
-            modal.startLoading();
-            const deleteResult = await deleteRetweet(tweet.id);
-            await modal.close();
-            if (deleteResult) {
-              onDelete(tweet);
-              createToast({ text: "Deleted successfully" });
-            } else {
-              createToast({ text: "Something went wrong" });
-            }
+            await dispatch({ type: TweetActions.DELETE, payload: tweet.id });
+            modal.close();
+            onDelete(tweet);
+            createToast({ text: "retweet deleted" });
           }}
           onReject={modal.close}
         />
@@ -181,7 +160,7 @@ export function TweetView({
           )}
         </div>
       )}
-      {tweetState ? (
+      {tweetState.id ? (
         <>
           <PostListItem
             post={tweetState}
@@ -195,19 +174,26 @@ export function TweetView({
                   <CreatePost
                     onSubmit={sendComment}
                     placeholder="Write your reply"
-                    isLoading={createReplyLoading.value}
                     submitButton="reply"
                   />
                 </div>
                 <div ref={repliesRef}>
                   {tweetState.replies.map((reply) => (
-                    <TweetView key={reply.id} tweet={reply}></TweetView>
+                    <TweetView
+                      key={reply.id}
+                      tweet={reply}
+                      parentType={tweetState.type}
+                    ></TweetView>
                   ))}
                 </div>
                 {tweetState.replies.length < tweetState.totalReplies &&
                   tweetState.replies.length != 0 && (
                     <div className={styles.seeMoreComments}>
-                      <AsyncButton onClickAsync={loadMoreComments}>
+                      <AsyncButton
+                        onClickAsync={() => {
+                          dispatch({ type: TweetActions.LOAD_REPLIES });
+                        }}
+                      >
                         See more replies
                       </AsyncButton>
                     </div>
