@@ -1,5 +1,4 @@
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
-import { useLoading } from "@/shared/hooks/useLoading";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -8,29 +7,22 @@ import styles from "./ProfileLayout.module.css";
 import { EditProfile } from "../edit-profile/EditProfile";
 import { useModal } from "@/shared/hooks/useModal";
 import { AsyncButton } from "@/shared/components/async-button/AsyncButton";
-import { userActions, useUserReducer } from "../../actions/user.action";
+import { useActionDispatcher } from "@/shared/hooks/useAction";
+import { UserActions } from "../../actions/user.action";
 export function ProfileLayout({ user, children }) {
-  const [userState, dispatch] = useUserReducer(user);
+  const [userState, dispatch] = useActionDispatcher(user);
   const { data: session, status } = useSession();
   const modal = useModal();
   const router = useRouter();
   const { page } = router.query;
-  const loading = useLoading();
-  const sendFollow = async () => {
-    await dispatch({ type: userActions.TOGGLE_FOLLOW });
-  };
 
-  const editProfile = async () => {
-    modal.open(<EditProfile user={userState} dispatch={dispatch} />);
-  };
-
+        // <div className={styles.loading}>
+        //   // <LoadingBar loading={loading.loading} />
+        // </div>
   return (
     <div>
       <div className="center-container">
         <div className="appbar">{userState?.name}</div>
-        <div className={styles.loading}>
-          <LoadingBar loading={loading.loading} />
-        </div>
         <div className="col">
           <div className={styles.cover}>
             <img src={userState?.cover} />
@@ -42,7 +34,11 @@ export function ProfileLayout({ user, children }) {
             {status === "authenticated" &&
               (userState?.id === session.user.id ? (
                 <button
-                  onClick={editProfile}
+                  onClick={() => {
+                    modal.open(
+                      <EditProfile user={userState} dispatch={dispatch} />
+                    );
+                  }}
                   className="btn btn-ghost btn-bordered"
                 >
                   edit profile
@@ -50,7 +46,9 @@ export function ProfileLayout({ user, children }) {
               ) : (
                 <AsyncButton
                   className="btn btn-ghost btn-bordered"
-                  onClickAsync={sendFollow}
+                  onClickAsync={async () => {
+                    await dispatch(UserActions.TOGGLE_FOLLOW);
+                  }}
                 >
                   {userState?.isFollowing ? "unfollow" : "follow"}
                 </AsyncButton>

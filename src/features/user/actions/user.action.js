@@ -1,68 +1,54 @@
-import { useAsyncReducer } from "@/shared/hooks/useAsyncReducer";
-import { follow, unfollow } from "../services/client/follow.client";
 import { signIn } from "next-auth/react";
+import { follow, unfollow } from "../services/client/follow.client";
+export const UserActions = {
 
-export const userActions = {
-  UPDATE: "UPDATE",
-  TOGGLE_FOLLOW: "TOGGLE_FOLLOW",
-  FOLLOW: "FOLLOW",
-  UNFOLLOW: "UNFOLLOW",
-};
+  REGISTER: async (state, payload, dispatch) => {
+    try {
+      dispatch(UserActions.LOADING)
+      const user = await axios.post("/api/user", payload);
+      return { success: {message:"email verification link sent."} };
+    } catch (err) {
+      return { error: {message:"something went wrong."} };
+    }
+  },
 
-function userReducer(state, action) {
-  switch (action.type) {
-    case userActions.UPDATE:
-      return action.payload;
-    case userActions.TOGGLE_FOLLOW:
-      return action.payload
-        ? {
-            ...state,
-            totalFollowers: state.isFollowing
-              ? state.totalFollowers - 1
-              : state.totalFollowers + 1,
-            isFollowing: !state.isFollowing,
-          }
-        : state;
 
-    default:
-      return state;
-  }
-}
+  LOADING:()=>{
+     return {loading:true} 
+  },
 
-async function userReducerMiddleware(state, action, dispatch) {
-  switch (action.type) {
-    case userActions.TOGGLE_FOLLOW:
-      const success = state.isFollowing
-        ? await unfollow(state.id)
-        : await follow(state.id);
-      return success;
 
-    case userActions.UPDATE:
-      try {
-        const formData = new FormData();
-        formData.append("name", action.payload.name);
-        formData.append("dateOfBirth", action.payload.dateOfBirth);
-        formData.append("email", action.payload.email);
-        if (action.payload.profile) {
-          formData.append("image", action.payload.profile);
-        }
-        if (action.payload.cover)
-          formData.append("cover", action.payload.cover);
-        const newUserRes = await fetch("/api/user/" + state.id, {
-          method: "PATCH",
-          body: formData,
-        });
-        const newUser = await newUserRes.json();
-        await signIn("credentials");
-        return newUser;
-      } catch (err) {
-        return state;
+  TOGGLE_FOLLOW: async (state) => {
+    const toggleFollow = state.isFollowing
+      ? await unfollow(state.id)
+      : await follow(state.id);
+    if (!toggleFollow) {
+      state.error = { message: "something went wrong" };
+      return { ...state };
+    }
+    state.isFollowing = !state.isFollowing;
+    return { ...state };
+  },
+
+  UPDATE: async (state, payload) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", payload.name);
+      formData.append("dateOfBirth", payload.dateOfBirth);
+      formData.append("email", payload.email);
+      if (payload.profile) {
+        formData.append("image", payload.profile);
       }
-    default:
-      return action.payload;
-  }
-}
-
-export function useUserReducer(initialState) {
-  return useAsyncReducer(userReducer, initialState, userReducerMiddleware);
-}
+      if (payload.cover) formData.append("cover", payload.cover);
+      const newUserRes = await fetch("/api/user/" + state.id, {
+        method: "PATCH",
+        body: formData,
+      });
+      const newUser = await newUserRes.json();
+      await signIn("credentials");
+      return newUser;
+    } catch (err) {
+      return state;
+    }
+  },
+};

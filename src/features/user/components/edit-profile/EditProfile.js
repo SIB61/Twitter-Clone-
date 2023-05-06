@@ -9,8 +9,8 @@ import { useMemo, useState } from "react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { getDateFormatString } from "@/shared/utils/getDateString";
-import { userActions } from "../../actions/user.action";
 import { useToast } from "@/shared/hooks/useToast";
+import { UserActions } from "../../actions/user.action";
 export function EditProfile({user,onComplete=()=>{},dispatch}) {
   const dateOfBirth =  user.dateOfBirth && getDateFormatString(user.dateOfBirth)
   const {
@@ -30,7 +30,7 @@ export function EditProfile({user,onComplete=()=>{},dispatch}) {
   const [cover, setCover] = useState(user?.cover);
   const onSubmit = async (data) => {
       loading.start()
-      await dispatch({type:userActions.UPDATE,payload:{...data,profile:profile?.file,cover:cover?.file}})
+      await dispatch(UserActions.UPDATE, {...data,profile:profile?.file,cover:cover?.file})
       loading.complete()
   };
 
