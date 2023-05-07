@@ -14,9 +14,11 @@ export function SocketProvider({children}){
         setSocket(socketClient);
       }
     };
-    socketInitializer();
+    if(session){
+     socketInitializer();
+    }
     return () => socket?.removeAllListeners();
-  }, [socket]);
+  }, [socket,session]);
 
   useEffect(() => {
     if (session && session.user) socket?.emit(JOIN, session.user.id);

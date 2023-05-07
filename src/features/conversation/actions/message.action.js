@@ -1,38 +1,47 @@
-import { useAsyncReducer } from "@/shared/hooks/useAsyncReducer";
-const MessageActions = {
-  SEND_MESSAGE: "SEND_MESSAGE",
-  ADD_MESSAGE: "ADD_MESSAGE",
-  SEE_MESSAGE: "SEE_MESSAGE",
-  ADD_MESSAGE_NOTIFICATION: "ADD_MESSAGE_NOTIFICATION",
+import { NEW_MESSAGE } from "@/constants";
+import { getSocket } from "@/core/utils/getSocket";
+import axios from "axios";
+
+export const MessageActions = {
+
+  ADD_MESSAGE: (state, message) => {
+    const room =
+      state.user && state.user.id === message.receiver
+        ? message.sender
+        : message.receiver;
+    if (!state.message[room]) state.messages[room] = [];
+    {
+      state.messages[room].unshift(message);
+    }
+    return { ...state };
+  },
+
+  SEND_MESSAGE: async (state, payload) => {
+    const socket = await getSocket();
+    socket.emit(NEW_MESSAGE, payload);
+    return state;
+  },
+
+  MESSAGE_SEEN: async (state, userId) => {
+    const messages = state.messages[userId];
+    if (messages && messages.length > 0) {
+      for (let i = 0; i < messages.length; i++) {
+        if (messages[i].seen) {
+          break;
+        }
+        messages[i].seen = true;
+      }
+    }
+    return { ...state };
+  },
+
+  FETCH_MESSAGE_NOTIFICATION: async (state) => {
+    let { data: notifications } = await axios.get(
+      "/api/notification?type=message"
+    );
+    notifications = new Set(notifications);
+    state.messageNotifications = notifications;
+    return { ...state };
+  },
+
 };
-
-function messageReducer(state, action) {
-  switch (action.type) {
-    case MessageActions.ADD_MESSAGE:
-      if (!state.messages[action.payload.room]) {
-        state.messages[action.payload.room] = [];
-      }
-      state.messages[action.payload.room].unshift(action.payload.message);
-      return { ...state };
-
-    case MessageActions.ADD_MESSAGE_NOTIFICATION:
-      if(!state.messageNotifications)
-      {
-        state.messageNotifications = new Set()
-      }
-      state.messageNotifications.add(action.payload);
-      return { ...state };
-
-    default:
-      return state;
-  }
-}
-
-function messageMiddleware(state, action, dispatch) {
-  switch (action.type) {
-  }
-}
-
-export function useMessageReducer(initialState) {
-  return useAsyncReducer(messageReducer, initialState, messageMiddleware);
-}

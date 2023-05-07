@@ -1,5 +1,6 @@
 import { signIn } from "next-auth/react";
 import { follow, unfollow } from "../services/client/follow.client";
+import axios from "axios";
 export const UserActions = {
 
   REGISTER: async (state, payload, dispatch) => {
@@ -8,6 +9,7 @@ export const UserActions = {
       const user = await axios.post("/api/user", payload);
       return { success: {message:"email verification link sent."} };
     } catch (err) {
+      console.log(err)
       return { error: {message:"something went wrong."} };
     }
   },

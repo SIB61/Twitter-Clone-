@@ -6,9 +6,9 @@ export function handleRequest({ GET, POST, DELETE, PATCH, PUT }) {
   return async (req, res) => {
     await dbConnect();
     const session = await getServerSession(req,res,createOptions(req))
-    if(!session && req.method !== "GET"){
-       return res.status(401).json({error:"you must be logged in to perform this request"})  
-    }
+    // if(!session && req.method !== "GET"){
+    //    return res.status(401).json({error:"you must be logged in to perform this request"})  
+    // }
     let handler
     switch (req.method) {
       case "GET": 

@@ -16,9 +16,6 @@ export function ProfileLayout({ user, children }) {
   const router = useRouter();
   const { page } = router.query;
 
-        // <div className={styles.loading}>
-        //   // <LoadingBar loading={loading.loading} />
-        // </div>
   return (
     <div>
       <div className="center-container">

@@ -3,6 +3,7 @@ import TweetModel from "@/core/schemas/tweet.schema";
 import { getServerSession } from "next-auth";
 import {  createOptions } from "../auth/[...nextauth]";
 export default handleRequest({
+
   async POST(req, res) {
     const { tweetId } = req.body;
     console.log(tweetId)
@@ -10,6 +11,7 @@ export default handleRequest({
     await TweetModel.updateOne({_id:tweetId},{$push:{likes:user.id},$inc:{totalLikes:1}})
     return res.json({message:"liked successfully"})
   },
+
   async DELETE(req,res) {
     try{
     const { tweetId } = req.query 
