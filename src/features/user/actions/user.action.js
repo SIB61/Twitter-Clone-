@@ -3,7 +3,7 @@ import { follow, unfollow } from "../services/client/follow.client";
 import axios from "axios";
 export const UserActions = {
 
-  REGISTER: async (state, payload, dispatch) => {
+  REGISTER: async (_, payload, dispatch) => {
     try {
       dispatch(UserActions.LOADING)
       const user = await axios.post("/api/user", payload);

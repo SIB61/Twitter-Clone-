@@ -32,8 +32,8 @@ async function createSocketConnection(userId, res) {
           receiver: receiver,
           text: content.text,
         });
-        socket.to(receiver).emit(NEW_MESSAGE, newMessage);
         io.to(socket.id).emit(NEW_MESSAGE, newMessage);
+        socket.to(receiver).emit(NEW_MESSAGE, newMessage);
       });
 
       socket.on(JOIN, (room) => {
@@ -58,7 +58,7 @@ async function createSocketConnection(userId, res) {
       socket.on(SEE_MESSAGE, async (message) => {
         console.log("socket seen", message.id);
         seeMessage({ messageIds: [new mongoose.Types.ObjectId(message.id)] });
-        socket.to(message.sender).emit(MESSAGE_SEEN, message.receiver);
+        socket.to(message.sender).emit(MESSAGE_SEEN, {userId:message.receiver});
       });
     });
     res.socket.server.io = io;

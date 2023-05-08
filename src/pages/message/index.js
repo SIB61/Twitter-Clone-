@@ -24,6 +24,7 @@ import { getAllConversationsByUser } from "@/features/conversation/services/serv
 import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
 import { CONNECTION, MESSAGE_SEEN, SEE_MESSAGE } from "@/constants";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { MessageActions } from "@/features/conversation/actions/message.action";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -62,7 +63,7 @@ export async function getServerSideProps(ctx) {
 
   const io = ctx.res.socket.server.io
   if(io && receiver){
-    io.to(room).emit(MESSAGE_SEEN,receiver.id)
+    io.to(room).emit(MESSAGE_SEEN,{userId:user.id})
   }
 
   return {
@@ -82,72 +83,32 @@ export default function Page({ users, previousMessages, receiver }) {
   const { data: session } = useSession();
   const userList = useCustomState(users);
   const [animationParent] = useAutoAnimate()
-  const { messages, newMessage, messageNotifications, sendMessage } =
+  const { messages, messageNotifications,  dispatch } =
     useMessages();
-  const socket = useSocket();
 
-  useEffect(() => {
-    if (newMessage.value && newMessage.value.sender === room) {
-      socket?.emit(SEE_MESSAGE, newMessage.value);
-    }
-  }, [newMessage.value]);
-
-  const pageIndex = useCustomState(2);
-  const isLastPage = useCustomState(false);
   const loaderRef = useRef();
   const isLoaderOnScreen = !!useIntersectionObserver(loaderRef, {})
     ?.isIntersecting;
 
   useEffect(() => {
-    if (isLoaderOnScreen && !isLastPage.value) {
-      const fetchMoreMessages = async () => {
-        try {
-          console.log(session?.user.id + " " + receiver.id);
-          const { data: newPage } = await axios.post(
-            `/api/conversation/?pageIndex=${pageIndex.value}&pageSize=${50}`,
-            {
-              userId: session?.user.id,
-              receiverID: receiver.id,
-            }
-          );
-          if (newPage && newPage.length < 50) {
-            isLastPage.set(true);
-          } else {
-            const newMessages = [...messages?.value[room], ...newPage];
-            messages.set((value) => ({ ...value, [room]: newMessages }));
-            pageIndex.set((value) => value + 1);
-          }
-          console.log(newPage);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      fetchMoreMessages();
+    if (isLoaderOnScreen && !messages[room].isLastPage) {
+      dispatch(MessageActions.FETCH_USER_MESSAGES,{userId:receiver.id})
     }
   }, [isLoaderOnScreen]);
 
   useEffect(() => {
     if (receiver?.id) {
-      messages.set((curr) => {
-        if (!curr[receiver.id]) {
-          curr[receiver.id] = previousMessages;
-        }
-        return { ...curr };
-      });
-    }
-    if(previousMessages.length < 50){
-      isLastPage.set(true)
+      dispatch(MessageActions.SET_USER_MESSAGES,{userId:receiver.id,messages:previousMessages})
     }
   }, []);
 
   const postMessage = (message) => {
     if (message) {
-      const newMessage = {
+      dispatch(MessageActions.SEND_MESSAGE,{
         content: { text: message },
         sender: session.user.id,
         receiver: room,
-      };
-      sendMessage(newMessage);
+      })
     }
   };
 
@@ -195,7 +156,7 @@ export default function Page({ users, previousMessages, receiver }) {
                 href={{ pathname: "/message", query: { room: user.id } }}
               >
                 <MiniProfile user={user} />{" "}
-                {messageNotifications.value.has(user.id) && (
+                {messageNotifications.has(user.id) && (
                   <span className="notification-badge"></span>
                 )}
               </Link>
@@ -209,12 +170,11 @@ export default function Page({ users, previousMessages, receiver }) {
               <MiniProfile user={receiver} />
             </Link>
             <div ref={animationParent}>
-               
-              {messages?.value[room]?.map((msg, idx) => (
+              {messages[room]?.data.map((msg, idx) => (
                 <MessageBubble key={msg?.id} message={msg} />
               ))}
               <div className={styles.pageLoader}>
-              {!isLastPage.value && <div ref={loaderRef} className="loader"></div>}
+              {!messages[room]?.isLastPage && <div ref={loaderRef} className="loader"></div>}
               </div>
             </div>
             <div className={styles.sendMsg}>

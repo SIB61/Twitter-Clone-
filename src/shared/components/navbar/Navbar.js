@@ -3,7 +3,11 @@ import { CgMore, CgMoreO } from "react-icons/cg";
 import styles from "./Navbar.module.css";
 import { RiHashtag, RiMessage2Line } from "react-icons/ri";
 import { GrInbox, GrLogout, GrNotification } from "react-icons/gr";
-import { BiHomeCircle, BiMessageSquare, BiMessageSquareDetail } from "react-icons/bi";
+import {
+  BiHomeCircle,
+  BiMessageSquare,
+  BiMessageSquareDetail,
+} from "react-icons/bi";
 import Link from "next/link";
 import TwitterLogo from "public/images/Twitter-logo.png";
 import Image from "next/image";
@@ -64,7 +68,8 @@ export function Navbar({ onNewTweet }) {
   const options =
     status === "authenticated" ? authenticatedOptions : unAuthenticatedOptions;
   console.log(status);
-  const modal = useModal(); const { messageNotifications } = useMessages();
+  const modal = useModal();
+  const { messageNotifications } = useMessages();
 
   const showCreateTweet = () => {
     modal.open(
@@ -92,11 +97,12 @@ export function Navbar({ onNewTweet }) {
                 className={styles.navOptions}
               >
                 <div className={styles.navItem} style={{ fontWeight: "500" }}>
-                  <div style={{position:"relative"}}>
-                  {<v.icon className={styles.navIcon} />}
-                  {
-                    v.title === "Messages" && messageNotifications.value.size !== 0 && <span className="notification-badge"></span>
-                  }
+                  <div style={{ position: "relative" }}>
+                    {<v.icon className={styles.navIcon} />}
+                    {v.title === "Messages" &&
+                      messageNotifications.size !== 0 && (
+                        <span className="notification-badge"></span>
+                      )}
                   </div>
                   <span className={styles.navText}>{v.title}</span>
                 </div>
