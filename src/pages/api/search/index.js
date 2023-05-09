@@ -7,9 +7,13 @@ export default handleRequest({
     if (user) {
       try {
         const users = await searchUser(user);
-        return res.json(users);
+        return res.json({ success: true, error: null, data: users });
       } catch (err) {
-        return res.status(500).send()
+        return res.status(err.status || 500).json({
+          success: false,
+          error: err.error || "something went wrong",
+          data: {},
+        });
       }
     }
     return res.end();

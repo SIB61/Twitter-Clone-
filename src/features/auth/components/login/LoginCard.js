@@ -10,7 +10,6 @@ import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { useToast } from "@/shared/hooks/useToast";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { AsyncButton } from "@/shared/components/async-button/AsyncButton";
 
 export function LoginCard() {

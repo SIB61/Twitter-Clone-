@@ -7,7 +7,7 @@ import { MessageActions } from "../actions/message.action";
 import { MESSAGE_SEEN, NEW_MESSAGE } from "@/constants";
 export const MessageContext = createContext();
 export function MessageProvider({ children }) {
-  const socket = useSocket();
+  const {socket} = useSocket();
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
@@ -55,12 +55,8 @@ export function MessageProvider({ children }) {
     }
   }, [socket]);
 
-  const sendMessage = (message) => {
-    dispatch(MessageActions.SEND_MESSAGE, message);
-  };
-
   return (
-    <MessageContext.Provider value={{ ...state, sendMessage, dispatch }}>
+    <MessageContext.Provider value={{ ...state, dispatch }}>
       {children}
     </MessageContext.Provider>
   );

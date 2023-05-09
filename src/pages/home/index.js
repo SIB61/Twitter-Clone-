@@ -62,9 +62,10 @@ function Page({ tweetsPage, users }) {
     if (isLoaderOnScreen && !isLastPage.value) {
       const fetchNewPost = async () => {
         try {
-          const { data: newPage } = await axios.get(
-            `/api/tweet/?pageIndex=${pageIndex.value}&pageSize=${tweetsPage.pageSize}`
+          const { data: response } = await axios.get(
+            `/api/feed/?pageIndex=${pageIndex.value}&pageSize=${tweetsPage.pageSize}`
           );
+          const newPage = response.data
           if (newPage?.data?.length === 0) {
             isLastPage.set(true);
           } else tweetList.set((state) => [...state, ...newPage?.data]);

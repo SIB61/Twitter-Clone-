@@ -1,4 +1,4 @@
-import { SEE_MESSAGE, SEND_MESSAGE, SEND_NOTIFICATION } from "@/constants";
+import { SEE_MESSAGE, SEND_MESSAGE } from "@/constants";
 import axios from "axios";
 
 export const MessageActions = {
@@ -29,9 +29,8 @@ export const MessageActions = {
 
     if (state.room === room) {
       state.socket?.emit(SEE_MESSAGE, message);
-    }else {
-      state.socket?.emit(SEND_NOTIFICATION,message)
-      state.messageNotifications.unshift(room)
+    } else {
+      state.messageNotifications.add(room);
     }
 
     if (!state.messages[room]) {
@@ -42,8 +41,11 @@ export const MessageActions = {
   },
 
   FETCH_USER_MESSAGES: async (state, { userId, pageSize = 50 }, dispatch) => {
+    if (state.messages[userId].isLastPage) {
+      return state;
+    }
     try {
-      const { data: newPage } = await axios.post(
+      const { data: response } = await axios.post(
         `/api/conversation/?pageIndex=${
           state.messages[userId].pageIndex + 1
         }&pageSize=${pageSize}`,
@@ -53,7 +55,7 @@ export const MessageActions = {
         }
       );
       state = await dispatch(MessageActions.ADD_USER_MESSAGES, {
-        messages: newPage,
+        messages: response.data,
         userId,
       });
       if (newPage && newPage.length < 50) {
@@ -72,14 +74,34 @@ export const MessageActions = {
     return { ...state };
   },
 
-  SEND_MESSAGE: (state, message) => {
-    state.socket?.emit(SEND_MESSAGE, message);
-    return state;
+  SEND_MESSAGE: async (state, message, dispatch) => {
+    // state.socket?.emit(SEND_MESSAGE, message);
+    const customId = Math.random();
+    state = await dispatch(MessageActions.ADD_MESSAGE, {
+      ...message,
+      id: customId,
+    });
+    const { data: response } = await axios.post("/api/message", {
+      ...message,
+      customId,
+    });
+    state = await dispatch(MessageActions.MESSAGE_DELIVERED, response.data);
+    return { ...state };
+  },
+
+  MESSAGE_DELIVERED: (state, { message, customId }) => {
+    const messages = state.messages[message.receiver].data;
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].id === customId) {
+        messages[i].id = customId;
+        break;
+      }
+    }
+    return { ...state };
   },
 
   MESSAGE_SEEN: async (state, userId) => {
     const messages = state.messages[userId]?.data;
-    console.log("message seen",userId)
     if (messages && messages.length > 0) {
       for (let i = 0; i < messages.length; i++) {
         if (messages[i].seen) {
@@ -95,8 +117,7 @@ export const MessageActions = {
     let { data: notifications } = await axios.get(
       "/api/notification?type=message"
     );
-    console.log(notifications)
-    state.messageNotifications = new Set(notifications);
+    state.messageNotifications = new Set(notifications.data);
     return { ...state };
   },
 
@@ -116,13 +137,11 @@ export const MessageActions = {
   },
 
   SET_USER_MESSAGES: (state, { userId, messages }) => {
-    if (!state.messages[userId]) {
-      state.messages[userId] = {
-        data: messages,
-        isLastPage: false,
-        pageIndex: 1,
-      };
-    }
+    state.messages[userId] = {
+      data: messages,
+      isLastPage: false,
+      pageIndex: 1,
+    };
     return { ...state };
   },
 

@@ -6,7 +6,7 @@ export const UserActions = {
   REGISTER: async (_, payload, dispatch) => {
     try {
       dispatch(UserActions.LOADING)
-      const user = await axios.post("/api/user", payload);
+      await axios.post("/api/user", payload);
       return { success: {message:"email verification link sent."} };
     } catch (err) {
       console.log(err)

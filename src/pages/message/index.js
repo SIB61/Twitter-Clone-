@@ -19,7 +19,6 @@ import axios from "axios";
 import { useCustomState } from "@/shared/hooks/useCustomState";
 import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
 import { useMessages } from "@/features/conversation/hooks/useMessages";
-import { useSocket } from "@/core/Providers/SocketProvider";
 import { getAllConversationsByUser } from "@/features/conversation/services/server/get-conversation.server";
 import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
 import { CONNECTION, MESSAGE_SEEN, SEE_MESSAGE } from "@/constants";
@@ -51,26 +50,26 @@ export async function getServerSideProps(ctx) {
       userId: user.id,
       notificationSenderId: receiverId,
     });
-    messages =  getAllConversationsByUser({
+    messages = getAllConversationsByUser({
       userId: user.id,
       receiverID: receiverId,
       pageIndex: 1,
-      pageSize:50
+      pageSize: 50,
     });
   }
 
-  const [usersResult,messagesResult] = await Promise.all([users,messages])
+  const [usersResult, messagesResult] = await Promise.all([users, messages]);
 
-  const io = ctx.res.socket.server.io
-  if(io && receiver){
-    io.to(room).emit(MESSAGE_SEEN,{userId:user.id})
+  const io = ctx.res.socket.server.io;
+  if (io && receiver) {
+    io.to(room).emit(MESSAGE_SEEN, { userId: user.id });
   }
 
   return {
     props: JSON.parse(
       JSON.stringify({
-        users:  usersResult,
-        previousMessages:  messagesResult,
+        users: usersResult,
+        previousMessages: messagesResult,
         receiver: receiver,
       })
     ),
@@ -82,40 +81,41 @@ export default function Page({ users, previousMessages, receiver }) {
   const { room } = router.query;
   const { data: session } = useSession();
   const userList = useCustomState(users);
-  const [animationParent] = useAutoAnimate()
-  const { messages, messageNotifications,  dispatch } =
-    useMessages();
-
+  const [animationParent] = useAutoAnimate();
+  const { messages, messageNotifications, dispatch } = useMessages();
   const loaderRef = useRef();
   const isLoaderOnScreen = !!useIntersectionObserver(loaderRef, {})
     ?.isIntersecting;
 
   useEffect(() => {
-    if (isLoaderOnScreen && !messages[room].isLastPage) {
-      dispatch(MessageActions.FETCH_USER_MESSAGES,{userId:receiver.id})
+    if (isLoaderOnScreen) {
+      dispatch(MessageActions.FETCH_USER_MESSAGES, { userId: receiver.id });
     }
   }, [isLoaderOnScreen]);
 
   useEffect(() => {
     if (receiver?.id) {
-      dispatch(MessageActions.SET_USER_MESSAGES,{userId:receiver.id,messages:previousMessages})
+      dispatch(MessageActions.SET_USER_MESSAGES, {
+        userId: receiver.id,
+        messages: previousMessages,
+      });
     }
   }, []);
 
-  const postMessage = (message) => {
-    if (message) {
-      dispatch(MessageActions.SEND_MESSAGE,{
-        content: { text: message },
+  const postMessage = ({text}) => {
+    if (text) {
+      dispatch(MessageActions.SEND_MESSAGE, {
+        content: { text },
         sender: session.user.id,
         receiver: room,
-      })
+      });
     }
   };
 
   const onUserSearch = useCallback((e) => {
     let text = e.target.value.trim();
     const search = async () => {
-      const { data } = await axios.post("/api/search",{user:text});
+      const { data } = await axios.post("/api/search", { user: text });
       userList.set(data);
     };
     if (text.length === 0) {
@@ -169,19 +169,21 @@ export default function Page({ users, previousMessages, receiver }) {
             <Link href={`/profile/${receiver?.id}`} className={styles.receiver}>
               <MiniProfile user={receiver} />
             </Link>
-            <div ref={animationParent}>
+            <div>
               {messages[room]?.data.map((msg, idx) => (
                 <MessageBubble key={msg?.id} message={msg} />
               ))}
               <div className={styles.pageLoader}>
-              {!messages[room]?.isLastPage && <div ref={loaderRef} className="loader"></div>}
+                {!messages[room]?.isLastPage && (
+                  <div ref={loaderRef} className="loader"></div>
+                )}
               </div>
             </div>
             <div className={styles.sendMsg}>
               <CreatePost
                 submitButton="send"
                 placeholder="write your message"
-                onSubmit={(e) => postMessage(e.text)}
+                onSubmit={postMessage}
               />
             </div>
           </div>

@@ -3,13 +3,23 @@ import { getServerSession } from "next-auth"
 import { createOptions } from "../auth/[...nextauth]";
 import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
 export default handleRequest({
-  
   DELETE:async(req,res)=>{
+    try{
       const { user } = await getServerSession(req, res, createOptions(req));
       const {type,id} = req.query
       if(type==='message'){
         await deleteMessageNotification({userId:user.id,notificationSenderId:id})
       } 
+      return {success:true,error:null,data:{}}
+    }
+    catch(err){
+      return res
+        .status(err.status || 500)
+        .json({
+          success: false,
+          error: err.error || "something went wrong",
+          data: {},
+        });
+    }
   }
-
 })

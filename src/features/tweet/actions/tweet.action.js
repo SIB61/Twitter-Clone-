@@ -16,7 +16,7 @@ export const TweetActions = {
 };
 
 const tweetReducer = (state, action) => {
-  if(action.error) return state
+  if (action.error) return state;
   switch (action.type) {
     case TweetActions.RETWEET:
       return { ...state, totalRetweets: state.totalRetweets + 1 };
@@ -35,7 +35,7 @@ const tweetReducer = (state, action) => {
       };
 
     case TweetActions.UPDATE:
-      return { ...state, ...action.payload };
+      return { ...action.payload };
 
     case TweetActions.LOAD_REPLIES:
       return {
@@ -72,10 +72,16 @@ export const tweetMiddleware = async (state, action, dispatch) => {
           image: action.payload.image,
           tweetId: state.id,
         });
-        dispatch({ type: TweetActions.SUCCESS, payload: {message:"replied successfully"} });
+        dispatch({
+          type: TweetActions.SUCCESS,
+          payload: { message: "replied successfully" },
+        });
         return newReply;
       } catch (err) {
-        dispatch({ type: TweetActions.ERROR, payload:{message:"something went"}});
+        dispatch({
+          type: TweetActions.ERROR,
+          payload: { message: "something went" },
+        });
         throw err;
       }
 
@@ -93,7 +99,8 @@ export const tweetMiddleware = async (state, action, dispatch) => {
         body: formData,
       });
       const newPost = await newPostRes.json();
-      return newPost;
+      console.log(newPost)
+      return newPost.data;
 
     case TweetActions.DELETE:
       const deleteResult = await deleteTweet(action.payload);
