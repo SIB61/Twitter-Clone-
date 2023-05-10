@@ -21,6 +21,7 @@ import { getAllConversationsByUser } from "@/features/conversation/services/serv
 import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
 import { CONNECTION, MESSAGE_SEEN, SEE_MESSAGE } from "@/constants";
 import { MessageActions } from "@/features/conversation/actions/message.action";
+import { useSocket } from "@/core/Providers/SocketProvider";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(
@@ -78,6 +79,7 @@ export default function Page({ users, previousMessages, receiver }) {
   const { room } = router.query;
   const { data: session } = useSession();
   const { messages, messageNotifications, chatUsers, dispatch } = useMessages();
+  const {socket} = useSocket()
   const loaderRef = useRef();
   const isLoaderOnScreen = !!useIntersectionObserver(loaderRef, {})
     ?.isIntersecting;
@@ -98,12 +100,13 @@ export default function Page({ users, previousMessages, receiver }) {
     dispatch(MessageActions.SET_USERS, users);
   }, []);
 
-  const postMessage = ({ text }) => {
+  const postMessage = async ({ text }) => {
     if (text) {
-      dispatch(MessageActions.SEND_MESSAGE, {
+      await dispatch(MessageActions.SEND_MESSAGE, {
         content: { text },
         sender: session.user.id,
         receiver: room,
+        type:"myMsg"
       });
     }
   };

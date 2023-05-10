@@ -20,6 +20,7 @@ export default handleRequest({
   GET: async (req, res) => {
     const session = await getServerSession(req, res, createOptions(req));
     if (session) {
+      console.log("session",session.user.id)
       await createSocketConnection(res);
     }
     res.json({ success: true });
@@ -31,6 +32,10 @@ export async function createSocketConnection(res) {
   if (!io) {
     const io = new Server(res.socket.server);
     io.on(CONNECTION, async (socket) => {
+      // io.to(socket.id).emit("JOIN_REQUEST",{})
+      // socket.join(session.user?.id)
+      // console.log("join", session.user?.id)
+
       // socket.on(SEND_MESSAGE, async ({ content, sender, receiver }) => {
       //   const newMessage = await createMessage({
       //     sender: sender,
@@ -47,9 +52,7 @@ export async function createSocketConnection(res) {
 
       socket.on(JOIN, (room) => {
         console.log("room is ", room);
-        if (!socket.rooms.has(room)) {
-          socket.join(room);
-        }
+        socket.join(room);
       });
 
       socket.on(LEAVE, (room) => {

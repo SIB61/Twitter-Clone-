@@ -18,17 +18,18 @@ export function SocketProvider({ children }) {
     return () => socket?.removeAllListeners();
   }, [session]);
 
-
   useEffect(() => {
     if (session && session.user) socket?.emit(JOIN, session.user.id);
   }, [session, socket]);
 
   return (
-    <SocketContext.Provider value={{socket,setSocket:socketInitializer}}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, setSocket: socketInitializer }}>
+      {children}
+    </SocketContext.Provider>
   );
 }
 
 export function useSocket() {
-  const {socket,setSocket} = useContext(SocketContext);
-  return {socket,setSocket};
+  const { socket, setSocket } = useContext(SocketContext);
+  return { socket, setSocket };
 }

@@ -2,47 +2,53 @@ import { NEW_MESSAGE, SEE_MESSAGE, SEND_MESSAGE } from "@/constants";
 import { generateVerificationToken } from "@/shared/utils/generateVerificationToken";
 import axios from "axios";
 
+
 export const MessageActions = {
-  SET_SOCKET: (state, socket) => {
-    state.socket = socket;
-    return { ...state };
+
+  SET_SESSION:(state,session)=>{
+    const newState = {...state}
+    newState.session = session
+    return newState
   },
 
-  SET_USER: (state, user) => {
-    state.user = user;
-    return { ...state };
+  SET_ROOM:(state,room)=>{
+    const newState = {...state}
+    newState.room = room
+    return newState
   },
 
-  SET_ROOM: (state, room) => {
-    state.room = room;
-    return { ...state };
+  SET_SOCKET:(state,socket)=>{
+    const newState = {...state}
+    newState.socket = socket
+    return newState
   },
 
   ADD_MESSAGE: (state, message) => {
     let room;
+    let newState = { ...state };
+    console.log(message,state.session)
 
-    if (state.user && state.user.id === message.sender) {
+    if(message.type = "myMsg"){
       room = message.receiver;
-    } else {
+    }else{
       room = message.sender;
       message.seen = true;
     }
 
-    if (state.room === room) {
+    if (newState.room === room) {
       state.socket?.emit(SEE_MESSAGE, message);
     } else {
-      state.messageNotifications.add(room);
+      newState.messageNotifications.add(room);
     }
-
-    if (!state.messages[room]) {
-      state.messages[room] = { data: [], isLastPage: false, pageIndex: 1 };
+    if (!newState.messages[room]) {
+      newState.messages[room] = { data: [], isLastPage: false, pageIndex: 1 };
     }
-    state.messages[room].data.unshift(message);
-    return { ...state };
+    newState.messages[room].data.unshift(message);
+    return newState;
   },
 
   FETCH_USER_MESSAGES: async (state, { userId, pageSize = 50 }, dispatch) => {
-    if (state.messages[userId].isLastPage) {
+    if (state.messages[userId]?.isLastPage) {
       return state;
     }
     try {
@@ -51,7 +57,7 @@ export const MessageActions = {
           state.messages[userId].pageIndex + 1
         }&pageSize=${pageSize}`,
         {
-          userId: state.user?.id,
+          userId: state.session.user?.id,
           receiverID: userId,
         }
       );
@@ -59,7 +65,7 @@ export const MessageActions = {
         messages: response.data,
         userId,
       });
-      if (newPage && newPage.length < 50) {
+      if (response.data && response.data.length < 50) {
         state.messages[userId].isLastPage = true;
       }
       state.messages[userId].pageIndex++;
@@ -71,14 +77,15 @@ export const MessageActions = {
   },
 
   CLEAR_USER_NOTIFICATION: (state, userId) => {
-    state.messageNotifications.delete(userId);
-    return { ...state };
+    const newState = { ...state };
+    newState.messageNotifications.delete(userId);
+    return newState;
   },
 
   SEND_MESSAGE: async (state, message, dispatch) => {
     // state.socket?.emit(SEND_MESSAGE, message);
     const customId = generateVerificationToken(8);
-    state = await dispatch(MessageActions.ADD_MESSAGE, {
+    let newState = await dispatch(MessageActions.ADD_MESSAGE, {
       ...message,
       id: customId,
     });
@@ -87,13 +94,13 @@ export const MessageActions = {
       ...message,
       customId,
     });
-
-    state = await dispatch(MessageActions.MESSAGE_DELIVERED, response.data);
-    return { ...state };
+    newState = await dispatch(MessageActions.MESSAGE_DELIVERED, response.data);
+    return newState;
   },
 
   MESSAGE_DELIVERED: (state, { message, customId }) => {
-    const messages = state.messages[message.receiver]?.data;
+    const newState = { ...state };
+    const messages = newState.messages[message.receiver]?.data;
     if (messages) {
       for (let i = 0; i < messages.length; i++) {
         if (messages[i].id === customId) {
@@ -102,11 +109,12 @@ export const MessageActions = {
         }
       }
     }
-    return { ...state };
+    return newState;
   },
 
   MESSAGE_SEEN: async (state, userId) => {
-    const messages = state.messages[userId]?.data;
+    const newState = { ...state };
+    const messages = newState.messages[userId]?.data;
     if (messages && messages.length > 0) {
       for (let i = 0; i < messages.length; i++) {
         if (messages[i].seen) {
@@ -115,62 +123,69 @@ export const MessageActions = {
         messages[i].seen = true;
       }
     }
-    return { ...state };
+    return newState;
   },
 
   FETCH_MESSAGE_NOTIFICATION: async (state) => {
     let { data: notifications } = await axios.get(
       "/api/notification?type=message"
     );
-    state.messageNotifications = new Set(notifications.data);
-    return { ...state };
+    return { ...state, messageNotifications: new Set(notifications.data) };
   },
 
-  ADD_MESSAGE_NOTIFICATION: (state, userId) => {
-    if (state.room && state.room != userId && userId !== state.user?.id) {
-      state.messageNotifications.add(userId);
-    }
-    return { ...state };
-  },
+  // ADD_MESSAGE_NOTIFICATION: (state, {userId,currentRoom}) => {
+  //   if (userId !== currentRoom) {
+  //     state.messageNotifications.add(userId);
+  //   }
+  //   return { ...state };
+  // },
 
   ADD_USER_MESSAGES: (state, { userId, messages }) => {
-    if (!state.messages[userId]) {
-      state.messages[userId] = { data: [], isLastPage: false, pageIndex: 1 };
+    const newState = { ...state };
+    if (!newState.messages[userId]) {
+      newState.messages[userId] = { data: [], isLastPage: false, pageIndex: 1 };
     }
-    state.messages[userId].data = [...state.messages[userId].data, ...messages];
-    return { ...state };
+    newState.messages[userId].data = [
+      ...newState.messages[userId].data,
+      ...messages,
+    ];
+    return newState;
   },
 
   SET_USER_MESSAGES: (state, { userId, messages }) => {
-    state.messages[userId] = {
+    let newState = { ...state };
+    newState.messages[userId] = {
       data: messages,
       isLastPage: false,
       pageIndex: 1,
     };
-    return { ...state };
+    return newState;
   },
 
   SET_LAST_PAGE: (state, { userId }) => {
-    state.messages[userId].isLastPage = true;
-    return { ...state };
+    const newState = { ...state };
+    newState.messages[userId].isLastPage = true;
+    return newState;
   },
 
   SEARCH_USER: async (state, searchText) => {
     let text = searchText.trim();
+    let newState = { ...state };
     if (text.length === 0) {
-      state.chatUsers = state.users;
+      newState.chatUsers = newState.users;
     } else {
       const { data: response } = await axios.post("/api/search", {
         user: text,
       });
-      state.chatUsers = response.data;
+      newState.chatUsers = response.data;
     }
-    return { ...state };
+    return newState;
   },
 
   SET_USERS: (state, users) => {
-    state.users = users;
-    state.chatUsers = users;
-    return { ...state };
+    let newState = { ...state };
+    newState.users = users;
+    newState.chatUsers = users;
+    return newState;
   },
 };

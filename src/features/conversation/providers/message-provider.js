@@ -7,18 +7,19 @@ import { MessageActions } from "../actions/message.action";
 import { MESSAGE_SEEN, NEW_MESSAGE } from "@/constants";
 export const MessageContext = createContext();
 export function MessageProvider({ children }) {
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
   const [state, dispatch] = useActionDispatcher({
     messages: {},
     messageNotifications: new Set(),
-    socket: socket,
-    user: session?.user,
-    users:[],
-    chatUsers:[]
+    users: [],
+    chatUsers: [],
+    room:room,
+    socket:socket
   });
+
   const [newMessage, setNewMessage] = useState();
   const [messageSeen, setMessageSeen] = useState();
 
@@ -30,28 +31,39 @@ export function MessageProvider({ children }) {
 
   useEffect(() => {
     if (newMessage) {
-      dispatch(MessageActions.ADD_MESSAGE, newMessage);
+      dispatch(MessageActions.ADD_MESSAGE,newMessage);
     }
   }, [newMessage]);
+  //
+  // useEffect(() => {
+  //   if (session) {
+  //     console.log("session changes");
+  //     dispatch(MessageActions.SET_SESSION, session);
+  //   }
+  // }, [session]);
+  //
+  // useEffect(() => {
+  //     dispatch(MessageActions.SET_ROOM, room);
+  // }, [room]);
 
   useEffect(() => {
-    if (session) {
-      dispatch(MessageActions.SET_USER, session.user);
-      dispatch(MessageActions.FETCH_MESSAGE_NOTIFICATION, session.user);
-    }
-  }, [session]);
+      dispatch(MessageActions.SET_SOCKET, socket);
+  }, [socket]);
+
+  useEffect(() => {
+    dispatch(MessageActions.FETCH_MESSAGE_NOTIFICATION);
+  }, []);
 
   useEffect(() => {
     if (room) {
-      dispatch(MessageActions.CLEAR_USER_NOTIFICATION, room);
       dispatch(MessageActions.SET_ROOM, room);
+      dispatch(MessageActions.CLEAR_USER_NOTIFICATION, room);
     }
   }, [room]);
 
   useEffect(() => {
     if (socket) {
-      dispatch(MessageActions.SET_SOCKET, socket)
-        .then(() => {
+      dispatch(MessageActions.SET_SOCKET, socket).then(() => {
         socket.on(NEW_MESSAGE, setNewMessage);
         socket.on(MESSAGE_SEEN, setMessageSeen);
       });
