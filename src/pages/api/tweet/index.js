@@ -10,7 +10,6 @@ export const config = {
 };
 export default handleRequest({
   POST: async (req, res) => {
-    try {
       const { fields, files } = await parseForm(req);
       const image = files.image
         ? "http://localhost:3000/uploads/" + files.image?.newFilename
@@ -21,13 +20,5 @@ export default handleRequest({
       return res
         .status(201)
         .json({ success: true, data: tweet, error: null });
-    } catch (err) {
-      console.log(err);
-      return res.status(err.status || 500).json({
-        success: false,
-        error: err.error || "something went wrong",
-        data: {},
-      });
-    }
   },
 });

@@ -5,7 +5,6 @@ import UserModel from "@/core/schemas/user.schema";
 
 export default handleRequest({
   GET: async (req, res) => {
-    try {
       const session = await getServerSession(req, res, createOptions(req));
       if(!session){
         return res.status(401).json({error:"you must be logged in to perform this action"})
@@ -20,14 +19,5 @@ export default handleRequest({
         return res.status(200).json({success:true,error:null,data:messageNotifications});
       }
       else return res.json([])
-    } catch (error) {
-      return res
-        .status(err.status || 500)
-        .json({
-          success: false,
-          error: err.error || "something went wrong",
-          data: {},
-        });
-    }
   },
 });

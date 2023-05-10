@@ -5,15 +5,16 @@ export function handleRequest({ GET, POST, DELETE, PATCH, PUT }) {
   const unknownHandler = (_, res) => res.status(404).send("method not found");
   return async (req, res) => {
     await dbConnect();
-    // const session = await getServerSession(req,res,createOptions(req))
-    // console.log(req.url)
-    // const UserPost = req.url === '/api/user' && req.method === 'POST'
-    // if(!session && req.method !== "GET" && !UserPost ){
-    //    return res.status(401).json({error:"you must be logged in to perform this request"})  
-    // }
-    let handler
+    const session = await getServerSession(req, res, createOptions(req));
+    const UserPost = req.url === "/api/user" && req.method === "POST";
+    if (!session && req.method !== "GET" && !UserPost) {
+      return res
+        .status(401)
+        .json({ error: "you must be logged in to perform this request" });
+    }
+    let handler;
     switch (req.method) {
-      case "GET": 
+      case "GET":
         handler = GET || unknownHandler;
         break;
       case "POST":
@@ -31,6 +32,16 @@ export function handleRequest({ GET, POST, DELETE, PATCH, PUT }) {
       default:
         handler = unknownHandler;
     }
-    return handler(req, res);
+    try {
+      await handler(req, res);
+    } catch (err) {
+      res
+        .status(err.status || 500)
+        .json({
+          success: false,
+          error: err.error || "something went wrong",
+          data: err.data || {},
+        });
+    }
   };
 }

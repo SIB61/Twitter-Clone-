@@ -8,7 +8,6 @@ import { createOptions } from "../auth/[...nextauth]";
 
 export default handleRequest({
   POST: async (req, res) => {
-    try {
       const { user: follower } = await getServerSession(
         req,
         res,
@@ -17,13 +16,9 @@ export default handleRequest({
       const { id: followingId } = req.query;
       await follow({ followerId: follower.id, followingId: followingId });
       return res.json({ success: true, error: null, data: {} });
-    } catch (err) {
-      return res.status(err.status||500).json({ success: false, error: err.error || "something went wrong", data: {} });
-    }
   },
 
   DELETE: async (req, res) => {
-    try {
       const { user: follower } = await getServerSession(
         req,
         res,
@@ -32,8 +27,5 @@ export default handleRequest({
       const { id: followingId } = req.query;
       await unfollow({ followerId: follower.id, followingId: followingId });
       return res.json({ success: true, error: null, data: {} });
-    } catch (err) {
-      return res.status(err.status||500).json({ success: false, error: err.error || "something went wrong", data: {} });
-    }
   },
 });

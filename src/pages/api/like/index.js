@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
 export default handleRequest({
   async POST(req, res) {
-    try {
       const { tweetId } = req.body;
       console.log(tweetId);
       const { user } = await getServerSession(req, res, createOptions(req));
@@ -17,19 +16,9 @@ export default handleRequest({
         error: null,
         data: { message: "liked successfully" },
       });
-    } catch (err) {
-      return res
-        .status(err.status || 500)
-        .json({
-          success: false,
-          error: err.error || "something went wrong",
-          data: {},
-        });
-    }
   },
 
   async DELETE(req, res) {
-    try {
       const { tweetId } = req.query;
       const { user } = await getServerSession(req, res, createOptions(req));
       await TweetModel.updateOne(
@@ -38,15 +27,5 @@ export default handleRequest({
         { new: true }
       );
       return res.json({ success: true, error: null, data: {} });
-    } catch (err) {
-      console.log(err);
-      return res
-        .status(err.status || 500)
-        .json({
-          success: false,
-          error: err.error || "something went wrong",
-          data: {},
-        });
-    }
   },
 });

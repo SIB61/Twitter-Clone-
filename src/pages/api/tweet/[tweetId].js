@@ -14,7 +14,6 @@ export const config = {
 
 export default handleRequest({
   PATCH: async (req, res) => {
-    try {
       const { tweetId } = req.query;
       const { fields, files } = await parseForm(req);
       const image = files.image
@@ -31,28 +30,12 @@ export default handleRequest({
       return res
         .status(200)
         .json({ success: true, error: null, data: newTweet });
-    } catch (err) {
-      console.log(err);
-      return res.status(err.status || 500).json({
-        success: false,
-        error: err.error || "something went wrong",
-        data: {},
-      });
-    }
   },
 
   DELETE: async (req, res) => {
-    try {
       const { tweetId } = req.query;
       const { user } = await getServerSession(req, res, createOptions(req));
       await deleteTweet({ tweetId, userId: user.id });
       return res.json({ success: true, error: null, data: {} });
-    } catch (err) {
-      return res.status(err.status || 500).json({
-        success: false,
-        error: err.error || "something went wrong",
-        data: {},
-      });
-    }
   },
 });

@@ -14,7 +14,6 @@ export const config = {
 
 export default handleRequest({
   PATCH: async (req, res) => {
-    try {
       const { files, fields } = await parseForm(req);
       const { userId } = req.query;
       const { user: myUser } = await getServerSession(
@@ -57,12 +56,5 @@ export default handleRequest({
         error: null,
         data: updatedUserWithoutPass,
       });
-    } catch (err) {
-      return res.status(err.status || 500).json({
-        success: false,
-        error: err.error || "something went wrong",
-        data: {},
-      });
-    }
   },
 });

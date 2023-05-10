@@ -5,7 +5,6 @@ import { createOptions } from "../auth/[...nextauth]";
 
 export default handleRequest({
   GET: async (req, res) => {
-    try {
       const { pageIndex, pageSize } = req.query;
       const session = await getServerSession(req, res, createOptions(req));
       const feed = await getUserFeed({
@@ -14,8 +13,5 @@ export default handleRequest({
         userId: session.user.id,
       });
       return res.json({success:true,error:null,data:feed});
-    } catch (err) {
-      res.status(err.status||500).json({ success: false, error: err.error || "something went wrong", data: {} });
-    }
   },
 });

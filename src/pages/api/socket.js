@@ -18,19 +18,11 @@ import mongoose from "mongoose";
 
 export default handleRequest({
   GET: async (req, res) => {
-    try {
       const session = await getServerSession(req, res, createOptions(req));
       if (session) {
         await createSocketConnection(res);
       }
       res.json({ success: true });
-    } catch (err) {
-      return res.status(err.status || 500).json({
-        success: false,
-        error: err.error || "something went wrong",
-        data: {},
-      });
-    }
   },
 });
 
