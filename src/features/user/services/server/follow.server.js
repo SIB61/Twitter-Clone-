@@ -8,7 +8,7 @@ export async function follow({followerId,followingId}){
   return true
   }catch(err){
   console.log(err)
-  return false
+  throw err
   }
 }
 
@@ -20,6 +20,6 @@ export async function unfollow({followerId,followingId}){
   return true
   }catch(err){
   console.log(err)
-  return false
+  throw err
   }
 }

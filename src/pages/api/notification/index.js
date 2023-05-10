@@ -17,12 +17,17 @@ export default handleRequest({
         ).select({
           messageNotifications: 1,
         });
-        return res.status(200).json(messageNotifications);
+        return res.status(200).json({success:true,error:null,data:messageNotifications});
       }
-
       else return res.json([])
     } catch (error) {
-      return res.status(404).send();
+      return res
+        .status(err.status || 500)
+        .json({
+          success: false,
+          error: err.error || "something went wrong",
+          data: {},
+        });
     }
   },
 });

@@ -8,7 +8,7 @@ export async function postTweet({text,image}){
   formData.append('image',image)
   const newTweetRes = await fetch('/api/tweet',{body:formData,method:'POST'})
   const newTweet = await newTweetRes.json()
-  return newTweet
+  return newTweet.data
 }
 
 export async function postReply({text,image,tweetId}){
@@ -18,10 +18,10 @@ export async function postReply({text,image,tweetId}){
   formData.append('parent',tweetId)
   const newTweetRes = await fetch('/api/reply',{body:formData,method:'POST'})
   const newTweet = await newTweetRes.json()
-  return newTweet
+  return newTweet.data
 }
 
 export async function postRetweet({tweetId}){
-  const retweet = await axios.post(`/api/retweet`,{tweetId})
+  const {data:retweet} = await axios.post(`/api/retweet`,{tweetId})
   return retweet.data
 }

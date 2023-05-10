@@ -2,8 +2,10 @@ import { useCustomState } from "@/shared/hooks/useCustomState";
 import styles from "./AsyncButton.module.css";
 export function AsyncButton({
   onClickAsync = async () => {},
+  disabled,
   children,
   className,
+  style
 }) {
   const loading = useCustomState(false);
   const onClick = async (e) => {
@@ -12,7 +14,7 @@ export function AsyncButton({
     loading.set(false);
   };
   return (
-    <button onClick={onClick} className={`${className} ${styles.button}`}>
+    <button style={style} disabled={disabled} onClick={onClick} className={`${className} ${styles.button}`}>
       <div className={loading.value ? styles.hide : styles.show}>
         {children}
       </div>

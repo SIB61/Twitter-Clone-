@@ -6,7 +6,11 @@
   border-radius: 1em;
 }
 
-.myMsg .msg{
+.msgBubble{
+  animation: anim 1s ease-in-out;
+}
+
+.myMsg .msg {
   margin-left: auto;
   margin-right: 1rem;
   border-bottom-right-radius: 0.2rem;
@@ -21,18 +25,26 @@
   border-bottom-left-radius: 0.2rem;
 }
 
-.label{
+.label {
   width: fit-content;
   color: var(--grey);
   font-size: 0.7rem;
 }
 
-.otherMsg .label{
+.otherMsg .label {
   margin-left: 1rem;
 }
 
-.myMsg .label{
+.myMsg .label {
   margin-left: auto;
   margin-right: 1rem;
 }
 
+@keyframes anim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

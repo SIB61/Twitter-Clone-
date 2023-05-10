@@ -5,10 +5,12 @@ export function handleRequest({ GET, POST, DELETE, PATCH, PUT }) {
   const unknownHandler = (_, res) => res.status(404).send("method not found");
   return async (req, res) => {
     await dbConnect();
-    const session = await getServerSession(req,res,createOptions(req))
-    if(!session && req.method !== "GET"){
-       return res.status(401).json({error:"you must be logged in to perform this request"})  
-    }
+    // const session = await getServerSession(req,res,createOptions(req))
+    // console.log(req.url)
+    // const UserPost = req.url === '/api/user' && req.method === 'POST'
+    // if(!session && req.method !== "GET" && !UserPost ){
+    //    return res.status(401).json({error:"you must be logged in to perform this request"})  
+    // }
     let handler
     switch (req.method) {
       case "GET": 

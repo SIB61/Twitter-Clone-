@@ -40,47 +40,57 @@ export async function getFeed(user) {
   return tweets;
 }
 
-export async function getUserFeed({ userId, pageIndex=1, pageSize=10 }) {
+export async function getUserFeed({ userId, pageIndex = 1, pageSize = 10 }) {
   let tweets = await TweetModel.find({ type: { $in: ["tweet", "retweet"] } })
-    .select({replies:0})
-    .skip((pageIndex-1)*pageSize)
+    .select({ replies: 0 })
+    .skip((pageIndex - 1) * pageSize)
     .limit(pageSize)
     // .populate({path:'replies', options:{limit:10,sort:{createdAt:-1}}})
-    .populate({path: "parent",select:{replies:0}})
+    .populate({ path: "parent", select: { replies: 0 } })
     .sort({ createdAt: -1 })
     .lean();
-  tweets = tweets.map(tweet=>{
-    if(tweet.parent){
-      tweet.parent = addIsLiked(tweet.parent,userId)
+  tweets = tweets.map((tweet) => {
+    if (tweet.parent) {
+      tweet.parent = addIsLiked(tweet.parent, userId);
+      tweet.parent.replies = [];
     }
-    tweet = addIsLiked(tweet,userId)
-    return tweet
-  })
-  return {pageIndex,pageSize,data:tweets}
+    tweet = addIsLiked(tweet, userId);
+    tweet.replies = [];
+    return tweet;
+  });
+  return { pageIndex, pageSize, data: tweets };
 }
 
-export async function getReplies({parentId,pageIndex=1,pageSize=10,userId}){
-  try{
-  let tweet = await TweetModel.findById(parentId).select("replies").populate(
-    {
-      path:"replies",
-      select:{replies:0},
-      options:{
-        skip:(pageIndex-1)*pageSize,
-        limit:pageSize,
-        sort:{createdAt: -1}
+export async function getReplies({
+  parentId,
+  pageIndex = 1,
+  pageSize = 10,
+  userId,
+}) {
+  try {
+    let tweet = await TweetModel.findById(parentId)
+      .select("replies")
+      .populate({
+        path: "replies",
+        select: { replies: 0, retweets: 0 },
+        options: {
+          skip: (pageIndex - 1) * pageSize,
+          limit: pageSize,
+          sort: { createdAt: -1 },
+        },
+      })
+      .lean();
+    const replies = tweet.replies.map((reply) => {
+      if (reply.parent) {
+        reply.parent = addIsLiked(reply.parent, userId);
+        reply.parent.replies = [];
       }
-    }
-  ).lean();
-  const replies = tweet.replies.map(reply=>{
-    if(reply.parent){
-      reply.parent = addIsLiked(reply.parent,userId)
-    }
-    reply = addIsLiked(reply,userId)
-    return reply
-  })
-  return {pageIndex,pageSize,data:replies}
-  }catch(err){
-  throw {status:500,error:err.message}
+      reply = addIsLiked(reply, userId);
+      reply.replies = [];
+      return reply;
+    });
+    return { pageIndex, pageSize, data: replies };
+  } catch (err) {
+    throw { status: 500, error: err.message };
   }
 }

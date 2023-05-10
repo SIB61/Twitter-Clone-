@@ -8,6 +8,6 @@ export default async function createUser({name,username,email,password,dateOfBir
   return mapId(user._doc)
   } catch(err){
    console.log(err)
-   throw {status:500,error:err.message}
+   throw {status:500,error:"something went wrong"}
   }
 }

@@ -13,7 +13,6 @@ export const config = {
 };
 
 export default handleRequest({
-
   PATCH: async (req, res) => {
     try {
       const { tweetId } = req.query;
@@ -22,23 +21,38 @@ export default handleRequest({
         ? "http://localhost:3000/uploads/" + files.image?.newFilename
         : fields.imageUrl;
       const text = fields.content;
-      const {user} = await getServerSession(req,res,createOptions(req))
-      const newTweet = await updateTweet({ tweetId, text, image ,userId:user.id});
-      return res.status(200).send(JSON.stringify(newTweet));
+      const { user } = await getServerSession(req, res, createOptions(req));
+      const newTweet = await updateTweet({
+        tweetId,
+        text,
+        image,
+        userId: user.id,
+      });
+      return res
+        .status(200)
+        .json({ success: true, error: null, data: newTweet });
     } catch (err) {
       console.log(err);
-      return res.status(err.status).json(err.error);
+      return res.status(err.status || 500).json({
+        success: false,
+        error: err.error || "something went wrong",
+        data: {},
+      });
     }
   },
 
   DELETE: async (req, res) => {
     try {
       const { tweetId } = req.query;
-      const {user} = await getServerSession(req,res,createOptions(req))
-      const tweet = await deleteTweet({tweetId,userId:user.id});
-      return res.json(tweet);
+      const { user } = await getServerSession(req, res, createOptions(req));
+      await deleteTweet({ tweetId, userId: user.id });
+      return res.json({ success: true, error: null, data: {} });
     } catch (err) {
-      return res.status(err.status).send(err.error);
+      return res.status(err.status || 500).json({
+        success: false,
+        error: err.error || "something went wrong",
+        data: {},
+      });
     }
   },
 });
