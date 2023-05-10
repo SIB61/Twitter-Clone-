@@ -15,7 +15,6 @@ export function ProfileLayout({ user,children }) {
   const userState = useCustomState(user) 
   const [isFollowingState ,toggleIsFollowingState]= useToggle(userState.value.isFollowing)
   const { data: session, status } = useSession();
-  const [selected,setSelected] = useState(1)
   const modal = useModal()
   const router = useRouter()
   const {page} = router.query

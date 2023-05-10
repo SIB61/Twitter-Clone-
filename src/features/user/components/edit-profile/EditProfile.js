@@ -5,19 +5,17 @@ import { Input } from "@/shared/components/input/Input";
 import { useForm } from "react-hook-form";
 import { FileInput } from "@/shared/components/file-reader/FileReader";
 import { Avator } from "../avatar/Avatar";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useLoading } from "@/shared/hooks/useLoading";
 import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { getDateFormatString } from "@/shared/utils/getDateString";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 export function EditProfile({ user,onComplete }) {
-
   const dateOfBirth =  user.dateOfBirth && getDateFormatString(user.dateOfBirth)
-  const {data:session,status} = useSession()
   const {
     register,
     handleSubmit,
-    formState: { isValid ,errors},
+    formState: { isValid },
   } = useForm({
     defaultValues: {
       name: user?.name,
