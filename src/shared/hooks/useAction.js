@@ -4,6 +4,7 @@ export function useActionDispatcher(initialState) {
   const dispatch = useCallback(
     async (action, payload) => {
       let newState;
+      console.log(action.name)
       if (!action) {
         return state;
       }
