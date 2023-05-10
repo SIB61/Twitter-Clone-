@@ -1,4 +1,5 @@
-import { SEE_MESSAGE, SEND_MESSAGE } from "@/constants";
+import { NEW_MESSAGE, SEE_MESSAGE, SEND_MESSAGE } from "@/constants";
+import { generateVerificationToken } from "@/shared/utils/generateVerificationToken";
 import axios from "axios";
 
 export const MessageActions = {
@@ -76,25 +77,29 @@ export const MessageActions = {
 
   SEND_MESSAGE: async (state, message, dispatch) => {
     // state.socket?.emit(SEND_MESSAGE, message);
-    const customId = Math.random();
+    const customId = generateVerificationToken(8);
     state = await dispatch(MessageActions.ADD_MESSAGE, {
       ...message,
       id: customId,
     });
+
     const { data: response } = await axios.post("/api/message", {
       ...message,
       customId,
     });
+
     state = await dispatch(MessageActions.MESSAGE_DELIVERED, response.data);
     return { ...state };
   },
 
   MESSAGE_DELIVERED: (state, { message, customId }) => {
-    const messages = state.messages[message.receiver].data;
-    for (let i = 0; i < messages.length; i++) {
-      if (messages[i].id === customId) {
-        messages[i].id = customId;
-        break;
+    const messages = state.messages[message.receiver]?.data;
+    if (messages) {
+      for (let i = 0; i < messages.length; i++) {
+        if (messages[i].id === customId) {
+          messages[i] = message;
+          break;
+        }
       }
     }
     return { ...state };
@@ -147,6 +152,25 @@ export const MessageActions = {
 
   SET_LAST_PAGE: (state, { userId }) => {
     state.messages[userId].isLastPage = true;
+    return { ...state };
+  },
+
+  SEARCH_USER: async (state, searchText) => {
+    let text = searchText.trim();
+    if (text.length === 0) {
+      state.chatUsers = state.users;
+    } else {
+      const { data: response } = await axios.post("/api/search", {
+        user: text,
+      });
+      state.chatUsers = response.data;
+    }
+    return { ...state };
+  },
+
+  SET_USERS: (state, users) => {
+    state.users = users;
+    state.chatUsers = users;
     return { ...state };
   },
 };

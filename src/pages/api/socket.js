@@ -18,11 +18,11 @@ import mongoose from "mongoose";
 
 export default handleRequest({
   GET: async (req, res) => {
-      const session = await getServerSession(req, res, createOptions(req));
-      if (session) {
-        await createSocketConnection(res);
-      }
-      res.json({ success: true });
+    const session = await getServerSession(req, res, createOptions(req));
+    if (session) {
+      await createSocketConnection(res);
+    }
+    res.json({ success: true });
   },
 });
 
@@ -31,19 +31,19 @@ export async function createSocketConnection(res) {
   if (!io) {
     const io = new Server(res.socket.server);
     io.on(CONNECTION, async (socket) => {
-      socket.on(SEND_MESSAGE, async ({ content, sender, receiver }) => {
-        const newMessage = await createMessage({
-          sender: sender,
-          receiver: receiver,
-          text: content.text,
-        });
-        createMessageNotification({
-          userId: receiver,
-          notificationSenderId: sender,
-        });
-        io.to(socket.id).emit(NEW_MESSAGE, newMessage);
-        socket.to(receiver).emit(NEW_MESSAGE, newMessage);
-      });
+      // socket.on(SEND_MESSAGE, async ({ content, sender, receiver }) => {
+      //   const newMessage = await createMessage({
+      //     sender: sender,
+      //     receiver: receiver,
+      //     text: content.text,
+      //   });
+      //   createMessageNotification({
+      //     userId: receiver,
+      //     notificationSenderId: sender,
+      //   });
+      //   io.to(socket.id).emit(NEW_MESSAGE, newMessage);
+      //   socket.to(receiver).emit(NEW_MESSAGE, newMessage);
+      // });
 
       socket.on(JOIN, (room) => {
         console.log("room is ", room);

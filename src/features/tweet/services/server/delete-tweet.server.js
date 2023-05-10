@@ -5,7 +5,6 @@ import { mapId } from "@/shared/utils/mapId";
 export async function deleteTweet({tweetId,userId}) {
   try {
     const tweet = await TweetModel.findById(tweetId)
-
     if(tweet.user.id != userId){
      throw {status:400,error:'do not have access to delete'} 
     }

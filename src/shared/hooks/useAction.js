@@ -5,12 +5,14 @@ export function useActionDispatcher(initialState) {
     async (action, payload) => {
       let newState;
       if (!action) {
-        return;
+        return state;
       }
       if (action.constructor.name === "AsyncFunction") {
         newState = await action(state, payload, dispatch);
-      } else {
+      } else if (action.constructor.name === "Function") {
         newState = action(state, payload, dispatch);
+      } else {
+        return state;
       }
       if (newState !== state) {
         setState(newState);
@@ -21,7 +23,3 @@ export function useActionDispatcher(initialState) {
   );
   return [state, dispatch];
 }
-
-// Promise.resolve(newStateOrPromise).then((value) => {
-//   setState(value);
-// });

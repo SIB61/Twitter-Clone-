@@ -16,6 +16,8 @@ export function MessageProvider({ children }) {
     messageNotifications: new Set(),
     socket: socket,
     user: session?.user,
+    users:[],
+    chatUsers:[]
   });
   const [newMessage, setNewMessage] = useState();
   const [messageSeen, setMessageSeen] = useState();
@@ -48,7 +50,8 @@ export function MessageProvider({ children }) {
 
   useEffect(() => {
     if (socket) {
-      dispatch(MessageActions.SET_SOCKET, socket).then(() => {
+      dispatch(MessageActions.SET_SOCKET, socket)
+        .then(() => {
         socket.on(NEW_MESSAGE, setNewMessage);
         socket.on(MESSAGE_SEEN, setMessageSeen);
       });

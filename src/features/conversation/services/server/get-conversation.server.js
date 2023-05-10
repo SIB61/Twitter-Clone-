@@ -45,7 +45,6 @@ export async function getAllConversationsByUser({
     console.log("unseen", unseenMessages);
 
     return messages;
-
   } catch (error) {
     throw { status: 500, message: error.message };
   }

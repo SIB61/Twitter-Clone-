@@ -1,4 +1,3 @@
-import { createRetweet } from "@/features/tweet/services/server/create-tweet.server";
 import { deleteTweet } from "@/features/tweet/services/server/delete-tweet.server";
 import { updateTweet } from "@/features/tweet/services/server/update-tweet.server";
 import { handleRequest } from "@/shared/middlewares/request-handler";
@@ -14,28 +13,26 @@ export const config = {
 
 export default handleRequest({
   PATCH: async (req, res) => {
-      const { tweetId } = req.query;
-      const { fields, files } = await parseForm(req);
-      const image = files.image
-        ? "http://localhost:3000/uploads/" + files.image?.newFilename
-        : fields.imageUrl;
-      const text = fields.content;
-      const { user } = await getServerSession(req, res, createOptions(req));
-      const newTweet = await updateTweet({
-        tweetId,
-        text,
-        image,
-        userId: user.id,
-      });
-      return res
-        .status(200)
-        .json({ success: true, error: null, data: newTweet });
+    const { tweetId } = req.query;
+    const { fields, files } = await parseForm(req);
+    const image = files.image
+      ? "http://localhost:3000/uploads/" + files.image?.newFilename
+      : fields.imageUrl;
+    const text = fields.content;
+    const { user } = await getServerSession(req, res, createOptions(req));
+    const newTweet = await updateTweet({
+      tweetId,
+      text,
+      image,
+      userId: user.id,
+    });
+    return res.status(200).json({ success: true, error: null, data: newTweet });
   },
 
   DELETE: async (req, res) => {
-      const { tweetId } = req.query;
-      const { user } = await getServerSession(req, res, createOptions(req));
-      await deleteTweet({ tweetId, userId: user.id });
-      return res.json({ success: true, error: null, data: {} });
+    const { tweetId } = req.query;
+    const { user } = await getServerSession(req, res, createOptions(req));
+    await deleteTweet({ tweetId, userId: user.id });
+    return res.json({ success: true, error: null, data: {} });
   },
 });

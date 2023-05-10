@@ -15,14 +15,11 @@ import { MdOutlineForward, MdOutlineForwardToInbox } from "react-icons/md";
 import { Input } from "@/shared/components/input/Input";
 import { MessageBubble } from "@/features/conversation/components/MessageBubble";
 import { debounce } from "@/shared/utils/debounce";
-import axios from "axios";
-import { useCustomState } from "@/shared/hooks/useCustomState";
 import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
 import { useMessages } from "@/features/conversation/hooks/useMessages";
 import { getAllConversationsByUser } from "@/features/conversation/services/server/get-conversation.server";
 import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
 import { CONNECTION, MESSAGE_SEEN, SEE_MESSAGE } from "@/constants";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { MessageActions } from "@/features/conversation/actions/message.action";
 export async function getServerSideProps(ctx) {
   await dbConnect();
@@ -80,9 +77,7 @@ export default function Page({ users, previousMessages, receiver }) {
   const router = useRouter();
   const { room } = router.query;
   const { data: session } = useSession();
-  const userList = useCustomState(users);
-  const [animationParent] = useAutoAnimate();
-  const { messages, messageNotifications, dispatch } = useMessages();
+  const { messages, messageNotifications, chatUsers, dispatch } = useMessages();
   const loaderRef = useRef();
   const isLoaderOnScreen = !!useIntersectionObserver(loaderRef, {})
     ?.isIntersecting;
@@ -100,9 +95,10 @@ export default function Page({ users, previousMessages, receiver }) {
         messages: previousMessages,
       });
     }
+    dispatch(MessageActions.SET_USERS, users);
   }, []);
 
-  const postMessage = ({text}) => {
+  const postMessage = ({ text }) => {
     if (text) {
       dispatch(MessageActions.SEND_MESSAGE, {
         content: { text },
@@ -112,18 +108,9 @@ export default function Page({ users, previousMessages, receiver }) {
     }
   };
 
-  const onUserSearch = useCallback((e) => {
-    let text = e.target.value.trim();
-    const search = async () => {
-      const { data } = await axios.post("/api/search", { user: text });
-      userList.set(data);
-    };
-    if (text.length === 0) {
-      userList.set(users);
-    } else {
-      debounce(search, 300)();
-    }
-  }, []);
+  const onUserSearch = (e) => {
+    debounce(() => dispatch(MessageActions.SEARCH_USER, e.target.value), 300)();
+  };
 
   return (
     <MainLayout>
@@ -143,7 +130,7 @@ export default function Page({ users, previousMessages, receiver }) {
               <Input onChange={onUserSearch} placeHolder={"Search User"} />
             </div>
           </div>
-          {userList.value?.map((user) => (
+          {chatUsers?.map((user) => (
             <div
               className={`${styles.user} ${
                 room === user.id ? styles.selected : ""
