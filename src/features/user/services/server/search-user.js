@@ -4,7 +4,7 @@ import { mapId } from "@/shared/utils/mapId";
 export async function searchUser(name) {
   const users = await UserModel
     .find(
-      { $text: { $search: name } },
+      { $text: { $search: name }, isVerified:true },
       { score: { $meta: "textScore" } }
     )
     .sort({ score: { $meta: "textScore" } })

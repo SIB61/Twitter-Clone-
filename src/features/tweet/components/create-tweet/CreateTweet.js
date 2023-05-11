@@ -8,11 +8,13 @@ import { useAutoResizeTextArea } from "@/shared/hooks/useAutoResizeTextArea";
 import { FileInput } from "@/shared/components/file-reader/FileReader";
 import { RxCross1 } from "react-icons/rx";
 import { postTweet } from "../../services/client/create-tweet.client";
+import { useSession } from "next-auth/react";
 export function CreateTweet({ expanded, onComplete = () => {} }) {
   const [expand, setExpand] = useState(expanded);
   const [post, setPost] = useState();
   const textAreaRef = useAutoResizeTextArea(post);
   const loading = useLoading();
+  const {data:session} = useSession()
   const [image, setImage] = useState();
   const twitPost = async () => {
     if (post || image) {
@@ -35,7 +37,7 @@ export function CreateTweet({ expanded, onComplete = () => {} }) {
 
     <LoadingBar loading={loading.loading}/>
     <div className={styles.createPost}>
-      <Avator size="48" />
+      <Avator size="48" src={session?.user?.image}/>
       <div className={styles.fields}>
         {expand && (
           <select defaultValue="everyone" className={styles.audience}>

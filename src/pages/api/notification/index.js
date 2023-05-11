@@ -7,7 +7,7 @@ export default handleRequest({
   GET: async (req, res) => {
       const session = await getServerSession(req, res, createOptions(req));
       if(!session){
-        return res.status(401).json({error:"you must be logged in to perform this action"})
+        throw {status:401,error:"you must be logged in"}
       }
       const { type } = req.query;
       if (type === "message") {
@@ -16,7 +16,7 @@ export default handleRequest({
         ).select({
           messageNotifications: 1,
         });
-        return res.status(200).json({success:true,error:null,data:messageNotifications});
+        return res.json({success:true,error:null,data:messageNotifications});
       }
       else return res.json([])
   },

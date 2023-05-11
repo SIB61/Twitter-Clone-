@@ -3,7 +3,7 @@ import { follow, unfollow } from "../services/client/follow.client";
 import axios from "axios";
 export const UserActions = {
 
-  REGISTER: async (_, payload, dispatch) => {
+  REGISTER: async ( payload,_,dispatch) => {
     try {
       dispatch(UserActions.LOADING)
       await axios.post("/api/user", payload);
@@ -20,7 +20,7 @@ export const UserActions = {
   },
 
 
-  TOGGLE_FOLLOW: async (state) => {
+  TOGGLE_FOLLOW: async (payload,state) => {
     const toggleFollow = state.isFollowing
       ? await unfollow(state.id)
       : await follow(state.id);
@@ -32,7 +32,7 @@ export const UserActions = {
     return { ...state };
   },
 
-  UPDATE: async (state, payload) => {
+  UPDATE: async (payload, state) => {
     try {
       const formData = new FormData();
       formData.append("name", payload.name);

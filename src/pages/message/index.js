@@ -85,6 +85,7 @@ export default function Page({ users, previousMessages, receiver }) {
 
   useEffect(() => {
     if (isLoaderOnScreen) {
+      console.log("loader on screen")
       dispatch(MessageActions.FETCH_USER_MESSAGES, { userId: receiver.id });
     }
   }, [isLoaderOnScreen]);

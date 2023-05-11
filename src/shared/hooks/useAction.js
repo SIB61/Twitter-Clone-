@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 export function useActionDispatcher(initialState) {
   let [state, setState] = useState(initialState);
-  const getState = useCallback(()=>{return state},[state])
   const dispatch = useCallback(
     async (action, payload) => {
       if (!action) {
@@ -9,15 +8,15 @@ export function useActionDispatcher(initialState) {
       }
       let newState = (currentState) => currentState;
       if (action.constructor.name === "AsyncFunction") {
-        newState = await action(state, payload, dispatch , getState);
+        newState = await action(payload, state, dispatch);
       } else if (action.constructor.name === "Function") {
-        newState = action(state, payload, dispatch);
+        newState = action(payload, state, dispatch);
       }
       setState(newState);
-      console.log(action.name,newState);
+      console.log(action.name, newState);
       return newState;
     },
     [state]
   );
-  return [state, dispatch, getState];
+  return [state, dispatch];
 }

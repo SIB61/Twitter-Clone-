@@ -1,4 +1,5 @@
 import TweetModel from "@/core/schemas/tweet.schema";
+import UserModel from "@/core/schemas/user.schema";
 import { addIsLiked } from "@/shared/utils/addIsLiked";
 import { mapId } from "@/shared/utils/mapId";
 
@@ -15,52 +16,68 @@ export async function getTweetById(id) {
   return mapId(tweet);
 }
 
-export async function getFeed(user) {
-  let tweets = await TweetModel.find({ type: { $in: ["tweet", "retweet"] } })
-    .populate({
-      path: "replies",
-      options: { sort: { createdAt: -1 } },
-      populate: { path: "replies" },
-    })
-    .populate({
-      path: "parent",
-      populate: { path: "replies", populate: "replies" },
-    })
-    .sort({ createdAt: -1 })
-    .lean();
-  tweets = tweets.map((tweet) => {
-    if (tweet.parent && tweet.type === "retweet") {
-      tweet.parent = addIsLiked(tweet.parent, user.id);
-      return mapId(tweet);
-    } else {
-      tweet = addIsLiked(tweet, user.id);
-      return tweet;
-    }
-  });
-  return tweets;
-}
+// export async function getFeed(user) {
+//   let tweets = await TweetModel.find({ type: { $in: ["tweet", "retweet"] } })
+//     .populate({
+//       path: "replies",
+//       options: { sort: { createdAt: -1 } },
+//       populate: { path: "replies" },
+//     })
+//     .populate({
+//       path: "parent",
+//       populate: { path: "replies", populate: "replies" },
+//     })
+//     .sort({ createdAt: -1 })
+//     .lean();
+//   tweets = tweets.map((tweet) => {
+//     if (tweet.parent && tweet.type === "retweet") {
+//       tweet.parent = addIsLiked(tweet.parent, user.id);
+//       return mapId(tweet);
+//     } else {
+//       tweet = addIsLiked(tweet, user.id);
+//       return tweet;
+//     }
+//   });
+//   return tweets;
+// }
 
 export async function getUserFeed({ userId, pageIndex = 1, pageSize = 10 }) {
-  try{
-  let tweets = await TweetModel.find({ type: { $in: ["tweet", "retweet"] } })
-    .select({ replies: 0 })
-    .skip((pageIndex - 1) * pageSize)
-    .limit(pageSize)
-    .populate({ path: "parent", select: { replies: 0 } })
-    .sort({ createdAt: -1 })
-    .lean();
-  tweets = tweets.map((tweet) => {
-    if (tweet.parent) {
-      tweet.parent = addIsLiked(tweet.parent, userId);
-      tweet.parent.replies = [];
-    }
-    tweet = addIsLiked(tweet, userId);
-    tweet.replies = [];
-    return tweet;
-  });
-  return { pageIndex, pageSize, data: tweets };
-  }catch(err){
-    return {status:400,error:err._message}
+  try {
+    let tweetsPromise = await TweetModel.find({
+      type: { $in: ["tweet", "retweet"] },
+    })
+      .select({ replies: 0 })
+      .skip((pageIndex - 1) * pageSize)
+      .limit(pageSize)
+      .populate({ path: "parent", select: { replies: 0 } })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    let userPromise = UserModel.findById(userId).select("followings");
+    let [tweets, user] = await Promise.all([tweetsPromise, userPromise]);
+    let tweetOfFollowers = [];
+    let tweetOfOthers = [];
+    tweets.forEach((tweet) => {
+      if (tweet.parent) {
+        tweet.parent = addIsLiked(tweet.parent, userId);
+        tweet.parent.replies = [];
+      }
+      tweet = addIsLiked(tweet, userId);
+      tweet.replies = [];
+      if (user.followings.includes(tweet.user.id)) {
+        tweetOfFollowers.push(tweet);
+      } else {
+        tweetOfOthers.push(tweet);
+      }
+    });
+
+    return {
+      pageIndex,
+      pageSize,
+      data: [...tweetOfFollowers, ...tweetOfOthers],
+    };
+  } catch (err) {
+    return { status: 400, error: err._message };
   }
 }
 
