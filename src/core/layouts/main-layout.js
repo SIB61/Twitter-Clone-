@@ -2,15 +2,12 @@ import styles from "./main-layout.module.css";
 import localFont from "next/font/local";
 import { Navbar } from "@/shared/components/navbar/Navbar";
 import { Modal } from "@/shared/components/modal/Modal";
-import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
 import { AuthBottomBar } from "@/features/auth/components/auth-bottom-bar/AuthBottomBar";
 import { useRouter } from "next/router";
 import { LoginCard } from "@/features/auth/components/login/LoginCard";
 import { SignupCard } from "@/features/user/components/signup/SignupCard";
 import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
 import { useSession } from "next-auth/react";
-import { useCustomState } from "@/shared/hooks/useCustomState";
-import { cloneElement } from "react";
 
 const chirp = localFont({
   src: [

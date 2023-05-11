@@ -12,16 +12,17 @@
   * [Delete A Retweet](#3-delete-a-retweet)
   * [Delete A Tweet](#4-delete-a-tweet)
   * [Follow An User](#5-follow-an-user)
-  * [Get Paginated Conversation](#6-get-paginated-conversation)
-  * [Get Replies of A Specific Tweet Or Comment](#7-get-replies-of-a-specific-tweet-or-comment)
-  * [Get Tweet Feed](#8-get-tweet-feed)
-  * [Like A Tweet](#9-like-a-tweet)
-  * [Register User](#10-register-user)
-  * [Reply To A Tweet Or Comment](#11-reply-to-a-tweet-or-comment)
-  * [Retweet A Specific Tweet](#12-retweet-a-specific-tweet)
-  * [Search An User By Name and Email](#13-search-an-user-by-name-and-email)
-  * [Send Message To An User](#14-send-message-to-an-user)
-  * [Update A Tweet](#15-update-a-tweet)
+  * [Get Message Notification](#6-get-message-notification)
+  * [Get Paginated Conversation](#7-get-paginated-conversation)
+  * [Get Replies of A Specific Tweet Or Comment](#8-get-replies-of-a-specific-tweet-or-comment)
+  * [Get Tweet Feed](#9-get-tweet-feed)
+  * [Like A Tweet](#10-like-a-tweet)
+  * [Register User](#11-register-user)
+  * [Reply To A Tweet Or Comment](#12-reply-to-a-tweet-or-comment)
+  * [Retweet A Specific Tweet](#13-retweet-a-specific-tweet)
+  * [Search An User By Name and Email](#14-search-an-user-by-name-and-email)
+  * [Send Message To An User](#15-send-message-to-an-user)
+  * [Update A Tweet](#16-update-a-tweet)
 
 
 --------
@@ -274,7 +275,60 @@ URL: http://localhost:3000/api/follow/643657302b30ef35ad11c622
 
 
 
-### 6. Get Paginated Conversation
+### 6. Get Message Notification
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: http://localhost:3000/api/notification
+```
+
+
+
+***Query params:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| type | message |  |
+
+
+
+***More example Requests/Responses:***
+
+
+##### I. Example Request: Get Message Notification
+
+
+
+***Query:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| type | message |  |
+
+
+
+##### I. Example Response: Get Message Notification
+```js
+{
+    "success": true,
+    "error": null,
+    "data": []
+}
+```
+
+
+***Status Code:*** 200
+
+<br>
+
+
+
+### 7. Get Paginated Conversation
 
 
 #### **Api endpoint to get paginated conversation.**
@@ -412,7 +466,7 @@ URL: http://localhost:3000/api/conversation
 
 
 
-### 7. Get Replies of A Specific Tweet Or Comment
+### 8. Get Replies of A Specific Tweet Or Comment
 
 
 #### **Api endpoint to get paginated replies of a tweet.**
@@ -528,7 +582,7 @@ URL: http://localhost:3000/api/reply
 
 
 
-### 8. Get Tweet Feed
+### 9. Get Tweet Feed
 
 
 #### **Api endpoint to get paginated newsfeed.**
@@ -1227,7 +1281,7 @@ URL: http://localhost:3000/api/feed
 
 
 
-### 9. Like A Tweet
+### 10. Like A Tweet
 
 
 #### **Api endpoint to like a tweet , retweet or reply.**
@@ -1288,7 +1342,7 @@ URL: http://localhost:3000/api/like
 
 
 
-### 10. Register User
+### 11. Register User
 
 
 #### **Request to register user in twitter clone app.**
@@ -1416,7 +1470,7 @@ URL: http://localhost:3000/api/user
 
 
 
-### 11. Reply To A Tweet Or Comment
+### 12. Reply To A Tweet Or Comment
 
 
 #### **Api endpoint to reply to a tweet.**
@@ -1529,7 +1583,7 @@ URL: http://localhost:3000/api/reply
 
 
 
-### 12. Retweet A Specific Tweet
+### 13. Retweet A Specific Tweet
 
 
 #### **Api endpoint to retweet an existing tweet.**
@@ -1607,7 +1661,7 @@ URL: http://localhost:3000/api/retweet
 
 
 
-### 13. Search An User By Name and Email
+### 14. Search An User By Name and Email
 
 
 #### **Api endpoint for searching user.**
@@ -1681,7 +1735,7 @@ URL: http://localhost:3000/api/search
 
 
 
-### 14. Send Message To An User
+### 15. Send Message To An User
 
 
 Api endpoint to send message to a user.
@@ -1759,7 +1813,7 @@ URL: http://localhost:3000/api/message
 
 
 
-### 15. Update A Tweet
+### 16. Update A Tweet
 
 
 #### **Api endpoint to update an existing tweet in twitter clone app.**
@@ -1839,4 +1893,4 @@ URL: http://localhost:3000/api/tweet/645a10b3a2930a0311d3b891
 
 ---
 [Back to top](#twitter-clone-project)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2023-05-11 15:18:01 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2023-05-11 18:11:00 by [docgen](https://github.com/thedevsaddam/docgen)
