@@ -62,7 +62,7 @@ export const tweetMiddleware = async (state, action, dispatch) => {
       return action.payload;
 
     case TweetActions.UNLIKE:
-      axios.delete(`/api/like?tweetId=${state.id}`);
+      axios.post("/api/like", { tweetId: state.id });
       return action.payload;
 
     case TweetActions.REPLY:

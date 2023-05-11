@@ -6,8 +6,8 @@ export function handleRequest({ GET, POST, DELETE, PATCH, PUT }) {
   return async (req, res) => {
     await dbConnect();
     const session = await getServerSession(req, res, createOptions(req));
-    const UserPost = req.url === "/api/user" && req.method === "POST";
-    if (!session && req.method !== "GET" && !UserPost) {
+    const isUserRegistration = req.url === "/api/user" && req.method === "POST";
+    if (!session && req.method !== "GET" && !isUserRegistration) {
       return res
         .status(401)
         .json({ error: "you must be logged in to perform this request" });
@@ -35,6 +35,7 @@ export function handleRequest({ GET, POST, DELETE, PATCH, PUT }) {
     try {
       await handler(req, res);
     } catch (err) {
+      console.log(err)
       res
         .status(err.status || 500)
         .json({

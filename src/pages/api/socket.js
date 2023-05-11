@@ -2,19 +2,16 @@ import { handleRequest } from "@/shared/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { Server } from "socket.io";
 import { createOptions } from "./auth/[...nextauth]";
-import { createMessage } from "@/features/conversation/services/server/create-message.server";
 import { seeMessage } from "@/features/conversation/services/server/seeMessage.server";
-import { createMessageNotification } from "@/features/notification/services/server/create-message-notification.server";
 import {
   CONNECTION,
   JOIN,
   LEAVE,
   MESSAGE_SEEN,
-  NEW_MESSAGE,
   SEE_MESSAGE,
-  SEND_MESSAGE,
 } from "@/constants";
 import mongoose from "mongoose";
+import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
 
 export default handleRequest({
   GET: async (req, res) => {
@@ -63,6 +60,7 @@ export async function createSocketConnection(res) {
       socket.on(SEE_MESSAGE, async (message) => {
         console.log("socket seen", message.id);
         seeMessage({ messageIds: [new mongoose.Types.ObjectId(message.id)] });
+        deleteMessageNotification({userId:message.receiver,notificationSenderId:message.sender})
         socket
           .to(message.sender)
           .emit(MESSAGE_SEEN, { userId: message.receiver });

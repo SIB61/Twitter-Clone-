@@ -7,22 +7,21 @@
 
 * [Ungrouped](#ungrouped)
 
-  * [Register](#1-register)
-  * [Reply](#2-reply)
-  * [Reply](#3-reply)
-  * [Tweet](#4-tweet)
-  * [conversation](#5-conversation)
-  * [delete tweet](#6-delete-tweet)
-  * [feed](#7-feed)
-  * [follow](#8-follow)
-  * [like](#9-like)
-  * [message](#10-message)
-  * [retweet](#11-retweet)
-  * [retweet delete](#12-retweet-delete)
-  * [search user](#13-search-user)
-  * [unfollow](#14-unfollow)
-  * [unlike](#15-unlike)
-  * [update tweet](#16-update-tweet)
+  * [Create A Tweet](#1-create-a-tweet)
+  * [Create socket connection](#2-create-socket-connection)
+  * [Delete A Retweet](#3-delete-a-retweet)
+  * [Delete A Tweet](#4-delete-a-tweet)
+  * [Follow An User](#5-follow-an-user)
+  * [Get Paginated Conversation](#6-get-paginated-conversation)
+  * [Get Replies of A Specific Tweet Or Comment](#7-get-replies-of-a-specific-tweet-or-comment)
+  * [Get Tweet Feed](#8-get-tweet-feed)
+  * [Like A Tweet](#9-like-a-tweet)
+  * [Register User](#10-register-user)
+  * [Reply To A Tweet Or Comment](#11-reply-to-a-tweet-or-comment)
+  * [Retweet A Specific Tweet](#12-retweet-a-specific-tweet)
+  * [Search An User By Name and Email](#13-search-an-user-by-name-and-email)
+  * [Send Message To An User](#14-send-message-to-an-user)
+  * [Update A Tweet](#15-update-a-tweet)
 
 
 --------
@@ -32,347 +31,7 @@
 
 
 
-### 1. Register
-
-
-#### **Request to register user in twitter clone app.**
-
-
-***Endpoint:***
-
-```bash
-Method: POST
-Type: RAW
-URL: http://localhost:3000/api/user
-```
-
-
-
-***Body:***
-
-```js        
-{
-    "name":"md sabit islam bhuiya",
-    "email":"sabit663@gmail.com",
-    "password":"12345678",
-    "dateOfBirth":"12-12-2000"
-}
-```
-
-
-
-***More example Requests/Responses:***
-
-
-##### I. Example Request: success
-
-
-
-***Body:***
-
-```js        
-{
-    "name":"md sabit islam bhuiya",
-    "email":"sabit663@gmail.com",
-    "password":"12345678",
-    "dateOfBirth":"12-12-2000"
-}
-```
-
-
-
-##### I. Example Response: success
-```js
-{
-    "success": true
-}
-```
-
-
-***Status Code:*** 201
-
-<br>
-
-
-
-##### II. Example Request: duplicate-email
-
-
-
-***Body:***
-
-```js        
-{
-    "name":"md sabit islam bhuiya",
-    "email":"sabit663@gmail.com",
-    "password":"12345678",
-    "dateOfBirth":"12-12-2000"
-}
-```
-
-
-
-##### II. Example Response: duplicate-email
-```js
-{
-    "error": "user exists"
-}
-```
-
-
-***Status Code:*** 409
-
-<br>
-
-
-
-##### III. Example Request: server-error
-
-
-
-***Body:***
-
-```js        
-{
-    "name":"md sabit islam bhuiya",
-    "email":"sabit6635@gmail.com",
-    "dateOfBirth":"12-12-2000"
-}
-```
-
-
-
-##### III. Example Response: server-error
-```js
-{
-    "error": "something went wrong in server"
-}
-```
-
-
-***Status Code:*** 500
-
-<br>
-
-
-
-### 2. Reply
-
-
-#### **Api endpoint to get paginated replies of a tweet.**
-
-
-***Endpoint:***
-
-```bash
-Method: GET
-Type: 
-URL: http://localhost:3000/api/reply
-```
-
-
-
-***Query params:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| pageIndex | 1 |  |
-| pageSize | 10 |  |
-| tweetId | 645a0578a2930a0311d3b824 |  |
-
-
-
-***More example Requests/Responses:***
-
-
-##### I. Example Request: get replies of specific tweet
-
-
-
-***Query:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| pageIndex | 1 |  |
-| pageSize | 10 |  |
-| tweetId | 645a1c42a2930a0311d3ba4b |  |
-
-
-
-##### I. Example Response: get replies of specific tweet
-```js
-{
-    "pageIndex": "1",
-    "pageSize": "10",
-    "data": [
-        {
-            "content": {
-                "text": "hi there",
-                "image": null
-            },
-            "likes": [],
-            "parent": {
-                "replies": [],
-                "id": "645a1c42a2930a0311d3ba4b"
-            },
-            "user": {
-                "id": "643657302b30ef35ad11c622",
-                "username": "sib.sustswe",
-                "name": "Sabit Islam",
-                "image": "http://localhost:3000/uploads/48a1d8a6c492d7678f62e4d00.jpg"
-            },
-            "type": "reply",
-            "totalLikes": 0,
-            "totalReplies": 0,
-            "totalRetweets": 0,
-            "createdAt": "2023-05-09T10:20:57.705Z",
-            "updatedAt": "2023-05-09T10:20:57.705Z",
-            "isLiked": false,
-            "replies": [],
-            "id": "645a1e89a2930a0311d3ba5b"
-        }
-    ]
-}
-```
-
-
-***Status Code:*** 200
-
-<br>
-
-
-
-### 3. Reply
-
-
-#### **Api endpoint to reply to a tweet.**
-
-
-***Endpoint:***
-
-```bash
-Method: POST
-Type: FORMDATA
-URL: http://localhost:3000/api/reply
-```
-
-
-
-***Body:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| text | hi there |  |
-| image  |  |  |
-| parent | 6459ea7ba2930a0311d3b7fe |  |
-
-
-
-***More example Requests/Responses:***
-
-
-##### I. Example Request: reply
-
-
-
-***Body:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| text | hi there |  |
-| image  |  |  |
-| parent | 645a1c42a2930a0311d3ba4b |  |
-|  |  |  |
-
-
-
-##### I. Example Response: reply
-```js
-{
-    "content": {
-        "text": "hi there"
-    },
-    "likes": [],
-    "replies": [],
-    "retweets": [],
-    "parent": "6459ea7ba2930a0311d3b7fe",
-    "user": {
-        "id": "643657302b30ef35ad11c622",
-        "username": "sib.sustswe",
-        "name": "Sabit Islam",
-        "image": "http://localhost:3000/uploads/48a1d8a6c492d7678f62e4d00.jpg"
-    },
-    "type": "reply",
-    "totalLikes": 0,
-    "totalReplies": 0,
-    "totalRetweets": 0,
-    "createdAt": "2023-05-09T08:22:31.817Z",
-    "updatedAt": "2023-05-09T08:22:31.817Z",
-    "id": "645a02c7a2930a0311d3b820"
-}
-```
-
-
-***Status Code:*** 200
-
-<br>
-
-
-
-##### II. Example Request: Reply
-
-
-
-***Body:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| text | hi there |  |
-| image  |  |  |
-| parent | 645a1c42a2930a0311d3ba4b |  |
-|  |  |  |
-
-
-
-##### II. Example Response: Reply
-```js
-{
-    "success": true,
-    "error": null,
-    "data": {
-        "content": {
-            "text": "hi there",
-            "image": null
-        },
-        "likes": [],
-        "replies": [],
-        "retweets": [],
-        "parent": "645a1c42a2930a0311d3ba4b",
-        "user": {
-            "id": "643657302b30ef35ad11c622",
-            "username": "sib.sustswe",
-            "name": "Sabit Islam",
-            "image": "http://localhost:3000/uploads/48a1d8a6c492d7678f62e4d00.jpg"
-        },
-        "type": "reply",
-        "totalLikes": 0,
-        "totalReplies": 0,
-        "totalRetweets": 0,
-        "createdAt": "2023-05-09T10:20:57.705Z",
-        "updatedAt": "2023-05-09T10:20:57.705Z",
-        "id": "645a1e89a2930a0311d3ba5b"
-    }
-}
-```
-
-
-***Status Code:*** 201
-
-<br>
-
-
-
-### 4. Tweet
+### 1. Create A Tweet
 
 
 #### **Api endpoint to create tweet in twitter clone app.**
@@ -449,7 +108,173 @@ URL: http://localhost:3000/api/tweet
 
 
 
-### 5. conversation
+### 2. Create socket connection
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: http://localhost:3000/api/socket
+```
+
+
+
+***More example Requests/Responses:***
+
+
+##### I. Example Request: Create socket connection
+
+
+
+##### I. Example Response: Create socket connection
+```js
+{
+    "success": true
+}
+```
+
+
+***Status Code:*** 200
+
+<br>
+
+
+
+### 3. Delete A Retweet
+
+
+#### **Api endpoint to delete a retweet.**
+
+
+***Endpoint:***
+
+```bash
+Method: DELETE
+Type: 
+URL: http://localhost:3000/api/retweet
+```
+
+
+
+***Query params:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| tweetId | 645a011fa2930a0311d3b812 |  |
+
+
+
+***More example Requests/Responses:***
+
+
+##### I. Example Request: retweet delete
+
+
+
+***Query:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| tweetId | 645a1de0a2930a0311d3ba53 |  |
+
+
+
+##### I. Example Response: retweet delete
+```js
+{
+    "success": true,
+    "error": null,
+    "data": {}
+}
+```
+
+
+***Status Code:*** 200
+
+<br>
+
+
+
+### 4. Delete A Tweet
+
+
+#### Api endpoint for deleting an existing tweet
+
+
+***Endpoint:***
+
+```bash
+Method: DELETE
+Type: 
+URL: http://localhost:3000/api/tweet/6459ee3aa2930a0311d3b809
+```
+
+
+
+***More example Requests/Responses:***
+
+
+##### I. Example Request: delete tweet
+
+
+
+##### I. Example Response: delete tweet
+```js
+{
+    "success": true
+}
+```
+
+
+***Status Code:*** 200
+
+<br>
+
+
+
+### 5. Follow An User
+
+
+#### **Api endpoint to follow a user in twitter clone project.**
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: 
+URL: http://localhost:3000/api/follow/643657302b30ef35ad11c622
+```
+
+
+
+***More example Requests/Responses:***
+
+
+##### I. Example Request: follow
+
+
+
+##### I. Example Response: follow
+```js
+{
+    "success": true,
+    "error": null,
+    "data": {}
+}
+```
+
+
+***Status Code:*** 200
+
+<br>
+
+
+
+### 6. Get Paginated Conversation
 
 
 #### **Api endpoint to get paginated conversation.**
@@ -487,7 +312,7 @@ URL: http://localhost:3000/api/conversation
 ***More example Requests/Responses:***
 
 
-##### I. Example Request: conversation with pagination
+##### I. Example Request: Get Paginated Conversation
 
 
 
@@ -496,7 +321,7 @@ URL: http://localhost:3000/api/conversation
 | Key | Value | Description |
 | --- | ------|-------------|
 | pageIndex | 1 |  |
-| pageSize | 30 |  |
+| pageSize | 5 |  |
 
 
 
@@ -510,7 +335,7 @@ URL: http://localhost:3000/api/conversation
 
 
 
-##### I. Example Response: conversation with pagination
+##### I. Example Response: Get Paginated Conversation
 ```js
 {
     "success": true,
@@ -518,327 +343,15 @@ URL: http://localhost:3000/api/conversation
     "data": [
         {
             "content": {
-                "text": "hi there"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:41:44.167Z",
-            "id": "645a3178a2930a0311d3bf23"
-        },
-        {
-            "content": {
-                "text": "231"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:16:23.013Z",
-            "id": "645a2b87a2930a0311d3bec5"
-        },
-        {
-            "content": {
-                "text": "7"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:16:19.218Z",
-            "id": "645a2b83a2930a0311d3beaf"
-        },
-        {
-            "content": {
-                "text": "6"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:16:14.098Z",
-            "id": "645a2b7ea2930a0311d3be9a"
-        },
-        {
-            "content": {
-                "text": "5"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:16:08.874Z",
-            "id": "645a2b78a2930a0311d3be86"
-        },
-        {
-            "content": {
-                "text": "4"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:16:04.061Z",
-            "id": "645a2b74a2930a0311d3be73"
-        },
-        {
-            "content": {
                 "text": "3"
             },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:15:59.658Z",
-            "id": "645a2b6fa2930a0311d3be61"
-        },
-        {
-            "content": {
-                "text": "2"
-            },
             "sender": "643cd86513a53c746924c1e6",
             "receiver": "643657302b30ef35ad11c622",
             "senderReact": "none",
             "receiverReact": "none",
             "seen": true,
-            "createdAt": "2023-05-09T11:15:54.745Z",
-            "id": "645a2b6aa2930a0311d3be50"
-        },
-        {
-            "content": {
-                "text": "1"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:15:50.238Z",
-            "id": "645a2b66a2930a0311d3be40"
-        },
-        {
-            "content": {
-                "text": "req"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:15:30.283Z",
-            "id": "645a2b52a2930a0311d3be28"
-        },
-        {
-            "content": {
-                "text": "qwerrrrrrr"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:15:22.282Z",
-            "id": "645a2b4aa2930a0311d3be1c"
-        },
-        {
-            "content": {
-                "text": "wq"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:15:08.664Z",
-            "id": "645a2b3ca2930a0311d3be11"
-        },
-        {
-            "content": {
-                "text": "r21er4e"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:14:53.917Z",
-            "id": "645a2b2da2930a0311d3bdff"
-        },
-        {
-            "content": {
-                "text": "kiufcrt"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:14:45.723Z",
-            "id": "645a2b25a2930a0311d3bdf1"
-        },
-        {
-            "content": {
-                "text": "hkyuttfc"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:14:41.832Z",
-            "id": "645a2b21a2930a0311d3bde8"
-        },
-        {
-            "content": {
-                "text": "ujtr"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:14:33.949Z",
-            "id": "645a2b19a2930a0311d3bde0"
-        },
-        {
-            "content": {
-                "text": "jk"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:14:14.314Z",
-            "id": "645a2b06a2930a0311d3bdd5"
-        },
-        {
-            "content": {
-                "text": "fq2dr"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:11:23.897Z",
-            "id": "645a2a5ba2930a0311d3bd96"
-        },
-        {
-            "content": {
-                "text": "rq33ed"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:11:21.747Z",
-            "id": "645a2a59a2930a0311d3bd5e"
-        },
-        {
-            "content": {
-                "text": "feqwr"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:11:13.248Z",
-            "id": "645a2a51a2930a0311d3bd20"
-        },
-        {
-            "content": {
-                "text": "fasf"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:11:10.488Z",
-            "id": "645a2a4ea2930a0311d3bcea"
-        },
-        {
-            "content": {
-                "text": "fgwer"
-            },
-            "sender": "643cd86513a53c746924c1e6",
-            "receiver": "643657302b30ef35ad11c622",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:11:07.737Z",
-            "id": "645a2a4ba2930a0311d3bcb5"
-        },
-        {
-            "content": {
-                "text": "fasd"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:10:53.181Z",
-            "id": "645a2a3da2930a0311d3bc80"
-        },
-        {
-            "content": {
-                "text": "fasd"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:10:09.453Z",
-            "id": "645a2a11a2930a0311d3bc4d"
-        },
-        {
-            "content": {
-                "text": "fsda"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:10:07.096Z",
-            "id": "645a2a0fa2930a0311d3bc1b"
-        },
-        {
-            "content": {
-                "text": "43"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:09:39.862Z",
-            "id": "645a29f3a2930a0311d3bbea"
-        },
-        {
-            "content": {
-                "text": "1232"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": true,
-            "createdAt": "2023-05-09T11:09:34.447Z",
-            "id": "645a29eea2930a0311d3bbba"
+            "createdAt": "2023-05-11T05:14:17.477Z",
+            "id": "645c79a932a534e37ab7ec53"
         },
         {
             "content": {
@@ -849,32 +362,44 @@ URL: http://localhost:3000/api/conversation
             "senderReact": "none",
             "receiverReact": "none",
             "seen": true,
-            "createdAt": "2023-05-09T11:08:12.968Z",
-            "id": "645a299ca2930a0311d3bb83"
+            "createdAt": "2023-05-11T05:14:12.664Z",
+            "id": "645c79a432a534e37ab7ec23"
         },
         {
             "content": {
-                "text": "3"
+                "text": "9"
+            },
+            "sender": "643cd86513a53c746924c1e6",
+            "receiver": "643657302b30ef35ad11c622",
+            "senderReact": "none",
+            "receiverReact": "none",
+            "seen": true,
+            "createdAt": "2023-05-11T05:14:07.748Z",
+            "id": "645c799f32a534e37ab7ebf4"
+        },
+        {
+            "content": {
+                "text": "8"
             },
             "sender": "643657302b30ef35ad11c622",
             "receiver": "643cd86513a53c746924c1e6",
             "senderReact": "none",
             "receiverReact": "none",
             "seen": true,
-            "createdAt": "2023-05-09T11:04:47.342Z",
-            "id": "645a28cfa2930a0311d3bb4d"
+            "createdAt": "2023-05-11T05:14:02.318Z",
+            "id": "645c799a32a534e37ab7ebc6"
         },
         {
             "content": {
-                "text": "1"
+                "text": "7"
             },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "643cd86513a53c746924c1e6",
+            "sender": "643cd86513a53c746924c1e6",
+            "receiver": "643657302b30ef35ad11c622",
             "senderReact": "none",
             "receiverReact": "none",
             "seen": true,
-            "createdAt": "2023-05-09T11:04:44.330Z",
-            "id": "645a28cca2930a0311d3bb20"
+            "createdAt": "2023-05-11T05:13:57.306Z",
+            "id": "645c799532a534e37ab7eb99"
         }
     ]
 }
@@ -887,33 +412,82 @@ URL: http://localhost:3000/api/conversation
 
 
 
-### 6. delete tweet
+### 7. Get Replies of A Specific Tweet Or Comment
 
 
-#### Api endpoint for deleting an existing tweet
+#### **Api endpoint to get paginated replies of a tweet.**
 
 
 ***Endpoint:***
 
 ```bash
-Method: DELETE
+Method: GET
 Type: 
-URL: http://localhost:3000/api/tweet/6459ee3aa2930a0311d3b809
+URL: http://localhost:3000/api/reply
 ```
+
+
+
+***Query params:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| pageIndex | 1 |  |
+| pageSize | 10 |  |
+| tweetId | 645a0578a2930a0311d3b824 |  |
 
 
 
 ***More example Requests/Responses:***
 
 
-##### I. Example Request: delete tweet
+##### I. Example Request: get replies of specific tweet
 
 
 
-##### I. Example Response: delete tweet
+***Query:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| pageIndex | 1 |  |
+| pageSize | 5 |  |
+| tweetId | 645a1c42a2930a0311d3ba4b |  |
+
+
+
+##### I. Example Response: get replies of specific tweet
 ```js
 {
-    "success": true
+    "pageIndex": "1",
+    "pageSize": "10",
+    "data": [
+        {
+            "content": {
+                "text": "hi there",
+                "image": null
+            },
+            "likes": [],
+            "parent": {
+                "replies": [],
+                "id": "645a1c42a2930a0311d3ba4b"
+            },
+            "user": {
+                "id": "643657302b30ef35ad11c622",
+                "username": "sib.sustswe",
+                "name": "Sabit Islam",
+                "image": "http://localhost:3000/uploads/48a1d8a6c492d7678f62e4d00.jpg"
+            },
+            "type": "reply",
+            "totalLikes": 0,
+            "totalReplies": 0,
+            "totalRetweets": 0,
+            "createdAt": "2023-05-09T10:20:57.705Z",
+            "updatedAt": "2023-05-09T10:20:57.705Z",
+            "isLiked": false,
+            "replies": [],
+            "id": "645a1e89a2930a0311d3ba5b"
+        }
+    ]
 }
 ```
 
@@ -924,7 +498,37 @@ URL: http://localhost:3000/api/tweet/6459ee3aa2930a0311d3b809
 
 
 
-### 7. feed
+##### II. Example Request: wrong tweet Id
+
+
+
+***Query:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| pageIndex | 1 |  |
+| pageSize | 5 |  |
+| tweetId | 645a1c42a2930a0311d |  |
+
+
+
+##### II. Example Response: wrong tweet Id
+```js
+{
+    "success": false,
+    "error": "something went wrong",
+    "data": {}
+}
+```
+
+
+***Status Code:*** 500
+
+<br>
+
+
+
+### 8. Get Tweet Feed
 
 
 #### **Api endpoint to get paginated newsfeed.**
@@ -1623,46 +1227,7 @@ URL: http://localhost:3000/api/feed
 
 
 
-### 8. follow
-
-
-#### **Api endpoint to follow a user in twitter clone project.**
-
-
-***Endpoint:***
-
-```bash
-Method: POST
-Type: 
-URL: http://localhost:3000/api/follow/643657302b30ef35ad11c622
-```
-
-
-
-***More example Requests/Responses:***
-
-
-##### I. Example Request: follow
-
-
-
-##### I. Example Response: follow
-```js
-{
-    "success": true,
-    "error": null,
-    "data": {}
-}
-```
-
-
-***Status Code:*** 200
-
-<br>
-
-
-
-### 9. like
+### 9. Like A Tweet
 
 
 #### **Api endpoint to like a tweet , retweet or reply.**
@@ -1723,10 +1288,10 @@ URL: http://localhost:3000/api/like
 
 
 
-### 10. message
+### 10. Register User
 
 
-Api endpoint to send message to a user.
+#### **Request to register user in twitter clone app.**
 
 
 ***Endpoint:***
@@ -1734,7 +1299,7 @@ Api endpoint to send message to a user.
 ```bash
 Method: POST
 Type: RAW
-URL: http://localhost:3000/api/message
+URL: http://localhost:3000/api/user
 ```
 
 
@@ -1743,9 +1308,10 @@ URL: http://localhost:3000/api/message
 
 ```js        
 {
-    "content":{"text":"hi there"},
-    "customId":"0.321",
-    "receiver":"6434e87f9f401dcd4e3621ad"
+    "name":"md sabit islam bhuiya",
+    "email":"sabit663@gmail.com",
+    "password":"12345678",
+    "dateOfBirth":"12-12-2000"
 }
 ```
 
@@ -1754,7 +1320,7 @@ URL: http://localhost:3000/api/message
 ***More example Requests/Responses:***
 
 
-##### I. Example Request: message
+##### I. Example Request: success
 
 
 
@@ -1762,46 +1328,208 @@ URL: http://localhost:3000/api/message
 
 ```js        
 {
-    "content":{"text":"hi there"},
-    "customId":"0.321",
-    "receiver":"6434e87f9f401dcd4e3621ad"
+    "name":"md sabit islam bhuiya",
+    "email":"sabit663@gmail.com",
+    "password":"12345678",
+    "dateOfBirth":"12-12-2000"
 }
 ```
 
 
 
-##### I. Example Response: message
+##### I. Example Response: success
 ```js
 {
-    "success": true,
-    "error": null,
-    "data": {
-        "message": {
-            "content": {
-                "text": "hi there"
-            },
-            "sender": "643657302b30ef35ad11c622",
-            "receiver": "6434e87f9f401dcd4e3621ad",
-            "senderReact": "none",
-            "receiverReact": "none",
-            "seen": false,
-            "originalMessage": {},
-            "createdAt": "2023-05-10T04:33:47.005Z",
-            "id": "645b1eabe2f1c7d3e02e425f"
-        },
-        "customId": "0.321"
-    }
+    "success": true
 }
 ```
 
 
-***Status Code:*** 200
+***Status Code:*** 201
 
 <br>
 
 
 
-### 11. retweet
+##### II. Example Request: Duplicate Email
+
+
+
+***Body:***
+
+```js        
+{
+    "name":"md sabit islam bhuiya",
+    "email":"sabit663@gmail.com",
+    "password":"12345678",
+    "dateOfBirth":"12-12-2000"
+}
+```
+
+
+
+##### II. Example Response: Duplicate Email
+```js
+{
+    "success": false,
+    "error": "user exists",
+    "data": {}
+}
+```
+
+
+***Status Code:*** 409
+
+<br>
+
+
+
+##### III. Example Request: Bad Request
+
+
+
+***Body:***
+
+```js        
+{
+    "name":"md sabit islam bhuiya",
+    "email":"sabit6635@gmail.com",
+    "dateOfBirth":"12-12-2000"
+}
+```
+
+
+
+##### III. Example Response: Bad Request
+```js
+{
+    "success": false,
+    "error": "something went wrong",
+    "data": {}
+}
+```
+
+
+***Status Code:*** 500
+
+<br>
+
+
+
+### 11. Reply To A Tweet Or Comment
+
+
+#### **Api endpoint to reply to a tweet.**
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: FORMDATA
+URL: http://localhost:3000/api/reply
+```
+
+
+
+***Body:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| text | hi there |  |
+| image  |  |  |
+| parent | 6459ea7ba2930a0311d3b7fe |  |
+
+
+
+***More example Requests/Responses:***
+
+
+##### I. Example Request: Reply
+
+
+
+***Body:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| text | hi there |  |
+| image  |  |  |
+| parent | 645a1c42a2930a0311d3 |  |
+|  |  |  |
+
+
+
+##### I. Example Response: Reply
+```js
+{
+    "success": true,
+    "error": null,
+    "data": {
+        "content": {
+            "text": "hi there",
+            "image": null
+        },
+        "likes": [],
+        "replies": [],
+        "retweets": [],
+        "parent": "645a1c42a2930a0311d3ba4b",
+        "user": {
+            "id": "643657302b30ef35ad11c622",
+            "username": "sib.sustswe",
+            "name": "Sabit Islam",
+            "image": "http://localhost:3000/uploads/48a1d8a6c492d7678f62e4d00.jpg"
+        },
+        "type": "reply",
+        "totalLikes": 0,
+        "totalReplies": 0,
+        "totalRetweets": 0,
+        "createdAt": "2023-05-09T10:20:57.705Z",
+        "updatedAt": "2023-05-09T10:20:57.705Z",
+        "id": "645a1e89a2930a0311d3ba5b"
+    }
+}
+```
+
+
+***Status Code:*** 201
+
+<br>
+
+
+
+##### II. Example Request: Wrong tweet id
+
+
+
+***Body:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| text | hi there |  |
+| image  |  |  |
+| parent | 645a1c42a2930a0311d3 |  |
+|  |  |  |
+
+
+
+##### II. Example Response: Wrong tweet id
+```js
+{
+    "success": false,
+    "error": "Tweet validation failed",
+    "data": {}
+}
+```
+
+
+***Status Code:*** 400
+
+<br>
+
+
+
+### 12. Retweet A Specific Tweet
 
 
 #### **Api endpoint to retweet an existing tweet.**
@@ -1879,62 +1607,7 @@ URL: http://localhost:3000/api/retweet
 
 
 
-### 12. retweet delete
-
-
-#### **Api endpoint to delete a retweet.**
-
-
-***Endpoint:***
-
-```bash
-Method: DELETE
-Type: 
-URL: http://localhost:3000/api/retweet
-```
-
-
-
-***Query params:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| tweetId | 645a011fa2930a0311d3b812 |  |
-
-
-
-***More example Requests/Responses:***
-
-
-##### I. Example Request: retweet delete
-
-
-
-***Query:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| tweetId | 645a1de0a2930a0311d3ba53 |  |
-
-
-
-##### I. Example Response: retweet delete
-```js
-{
-    "success": true,
-    "error": null,
-    "data": {}
-}
-```
-
-
-***Status Code:*** 200
-
-<br>
-
-
-
-### 13. search user
+### 13. Search An User By Name and Email
 
 
 #### **Api endpoint for searching user.**
@@ -2008,18 +1681,30 @@ URL: http://localhost:3000/api/search
 
 
 
-### 14. unfollow
+### 14. Send Message To An User
 
 
-#### **Api endpoint to unfollow a user in twitter clone project.**
+Api endpoint to send message to a user.
 
 
 ***Endpoint:***
 
 ```bash
-Method: DELETE
-Type: 
-URL: http://localhost:3000/api/follow/643657302b30ef35ad11c622
+Method: POST
+Type: RAW
+URL: http://localhost:3000/api/message
+```
+
+
+
+***Body:***
+
+```js        
+{
+    "content":{"text":"hi there"},
+    "customId":"0.321",
+    "receiver":"6434e87f9f401dcd4e3621ad"
+}
 ```
 
 
@@ -2027,16 +1712,43 @@ URL: http://localhost:3000/api/follow/643657302b30ef35ad11c622
 ***More example Requests/Responses:***
 
 
-##### I. Example Request: unfollow
+##### I. Example Request: message
 
 
 
-##### I. Example Response: unfollow
+***Body:***
+
+```js        
+{
+    "content":{"text":"hi there"},
+    "customId":"0.321",
+    "receiver":"6434e87f9f401dcd4e3621ad"
+}
+```
+
+
+
+##### I. Example Response: message
 ```js
 {
     "success": true,
     "error": null,
-    "data": {}
+    "data": {
+        "message": {
+            "content": {
+                "text": "hi there"
+            },
+            "sender": "643657302b30ef35ad11c622",
+            "receiver": "6434e87f9f401dcd4e3621ad",
+            "senderReact": "none",
+            "receiverReact": "none",
+            "seen": false,
+            "originalMessage": {},
+            "createdAt": "2023-05-10T04:33:47.005Z",
+            "id": "645b1eabe2f1c7d3e02e425f"
+        },
+        "customId": "0.321"
+    }
 }
 ```
 
@@ -2047,62 +1759,7 @@ URL: http://localhost:3000/api/follow/643657302b30ef35ad11c622
 
 
 
-### 15. unlike
-
-
-#### **Api endpoint to unlike a tweet retweet or reply.**
-
-
-***Endpoint:***
-
-```bash
-Method: DELETE
-Type: 
-URL: http://localhost:3000/api/like
-```
-
-
-
-***Query params:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| tweetId | 6459ea7ba2930a0311d3b7fe |  |
-
-
-
-***More example Requests/Responses:***
-
-
-##### I. Example Request: unlike
-
-
-
-***Query:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| tweetId | 6459ea7ba2930a0311d3b7fe |  |
-
-
-
-##### I. Example Response: unlike
-```js
-{
-    "success": true,
-    "error": null,
-    "data": {}
-}
-```
-
-
-***Status Code:*** 200
-
-<br>
-
-
-
-### 16. update tweet
+### 15. Update A Tweet
 
 
 #### **Api endpoint to update an existing tweet in twitter clone app.**
@@ -2182,4 +1839,4 @@ URL: http://localhost:3000/api/tweet/645a10b3a2930a0311d3b891
 
 ---
 [Back to top](#twitter-clone-project)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2023-05-10 11:54:13 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2023-05-11 15:18:01 by [docgen](https://github.com/thedevsaddam/docgen)

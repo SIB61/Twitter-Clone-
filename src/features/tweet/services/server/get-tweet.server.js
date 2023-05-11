@@ -41,11 +41,11 @@ export async function getFeed(user) {
 }
 
 export async function getUserFeed({ userId, pageIndex = 1, pageSize = 10 }) {
+  try{
   let tweets = await TweetModel.find({ type: { $in: ["tweet", "retweet"] } })
     .select({ replies: 0 })
     .skip((pageIndex - 1) * pageSize)
     .limit(pageSize)
-    // .populate({path:'replies', options:{limit:10,sort:{createdAt:-1}}})
     .populate({ path: "parent", select: { replies: 0 } })
     .sort({ createdAt: -1 })
     .lean();
@@ -59,6 +59,9 @@ export async function getUserFeed({ userId, pageIndex = 1, pageSize = 10 }) {
     return tweet;
   });
   return { pageIndex, pageSize, data: tweets };
+  }catch(err){
+    return {status:400,error:err._message}
+  }
 }
 
 export async function getReplies({
@@ -91,6 +94,6 @@ export async function getReplies({
     });
     return { pageIndex, pageSize, data: replies };
   } catch (err) {
-    throw { status: 500, error: err.message };
+    throw { status: 500, error: err._message };
   }
 }

@@ -7,6 +7,6 @@ export async function follow(followingId){
 
 
 export async function unfollow(followingId){
-  const {data:followRes} = await axios.delete(`/api/follow/${followingId}`) 
+  const {data:followRes} = await axios.post(`/api/follow/${followingId}`) 
   return followRes.data
 }

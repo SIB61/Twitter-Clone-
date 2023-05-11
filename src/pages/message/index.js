@@ -79,7 +79,6 @@ export default function Page({ users, previousMessages, receiver }) {
   const { room } = router.query;
   const { data: session } = useSession();
   const { messages, messageNotifications, chatUsers, dispatch } = useMessages();
-  const {socket} = useSocket()
   const loaderRef = useRef();
   const isLoaderOnScreen = !!useIntersectionObserver(loaderRef, {})
     ?.isIntersecting;
@@ -91,22 +90,26 @@ export default function Page({ users, previousMessages, receiver }) {
   }, [isLoaderOnScreen]);
 
   useEffect(() => {
-    if (receiver?.id) {
-      dispatch(MessageActions.SET_USER_MESSAGES, {
-        userId: receiver.id,
-        messages: previousMessages,
-      });
-    }
-    dispatch(MessageActions.SET_USERS, users);
+    (async () => {
+      if (receiver?.id) {
+        await dispatch(MessageActions.SET_USER_MESSAGES, {
+          userId: receiver.id,
+          messages: previousMessages,
+        });
+      }
+      await dispatch(MessageActions.SET_USERS, users);
+    })();
   }, []);
 
-  const postMessage = async ({ text }) => {
+  const postMessage = ({ text }) => {
     if (text) {
-      await dispatch(MessageActions.SEND_MESSAGE, {
-        content: { text },
-        sender: session.user.id,
-        receiver: room,
-        type:"myMsg"
+      dispatch(MessageActions.SEND_MESSAGE, {
+        message: {
+          content: { text },
+          sender: session.user.id,
+          receiver: room,
+        },
+        room: room,
       });
     }
   };

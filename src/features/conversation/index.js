@@ -1,5 +1,4 @@
 import Conversations from "@/models/Conversations";
-import Users from "@/models/Users";
 import connectMongo from "@/utils/db";
 import { POST } from "@/utils/reqMethods";
 

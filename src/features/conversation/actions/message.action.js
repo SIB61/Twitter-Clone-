@@ -2,49 +2,33 @@ import { NEW_MESSAGE, SEE_MESSAGE, SEND_MESSAGE } from "@/constants";
 import { generateVerificationToken } from "@/shared/utils/generateVerificationToken";
 import axios from "axios";
 
-
 export const MessageActions = {
-
-  SET_SESSION:(state,session)=>{
-    const newState = {...state}
-    newState.session = session
-    return newState
+  SET_SESSION: (_, session) => {
+    return (state) => ({
+      ...state,
+      session,
+    });
   },
 
-  SET_ROOM:(state,room)=>{
-    const newState = {...state}
-    newState.room = room
-    return newState
+  SET_ROOM: (_, room) => {
+    return (state) => ({ ...state, room });
   },
 
-  SET_SOCKET:(state,socket)=>{
-    const newState = {...state}
-    newState.socket = socket
-    return newState
+  SET_SOCKET: (_, socket) => {
+    return (state) => ({ ...state, socket });
   },
 
-  ADD_MESSAGE: (state, message) => {
-    let room;
-    let newState = { ...state };
-    console.log(message,state.session)
-
-    if(message.type = "myMsg"){
-      room = message.receiver;
-    }else{
-      room = message.sender;
-      message.seen = true;
-    }
-
-    if (newState.room === room) {
-      state.socket?.emit(SEE_MESSAGE, message);
-    } else {
-      newState.messageNotifications.add(room);
-    }
-    if (!newState.messages[room]) {
-      newState.messages[room] = { data: [], isLastPage: false, pageIndex: 1 };
-    }
-    newState.messages[room].data.unshift(message);
-    return newState;
+  ADD_MESSAGE: (state, { message, room }) => {
+    let roomMessages = state.messages[room]?.data;
+    if (!roomMessages) roomMessages = [];
+    roomMessages.unshift(message);
+    return (currentState) => {
+      if (!currentState.messages[room]) {
+        currentState.messages[room] = { data: [] };
+      }
+      currentState.messages[room].data = roomMessages;
+      return { ...currentState };
+    };
   },
 
   FETCH_USER_MESSAGES: async (state, { userId, pageSize = 50 }, dispatch) => {
@@ -71,7 +55,6 @@ export const MessageActions = {
       state.messages[userId].pageIndex++;
       return { ...state };
     } catch (error) {
-      console.log(error);
       return state;
     }
   },
@@ -82,20 +65,22 @@ export const MessageActions = {
     return newState;
   },
 
-  SEND_MESSAGE: async (state, message, dispatch) => {
-    // state.socket?.emit(SEND_MESSAGE, message);
+  SEND_MESSAGE: async (_, { message, room }, dispatch) => {
     const customId = generateVerificationToken(8);
-    let newState = await dispatch(MessageActions.ADD_MESSAGE, {
-      ...message,
-      id: customId,
+    await dispatch(MessageActions.ADD_MESSAGE, {
+      message: {
+        ...message,
+        id: customId,
+      },
+      room: room,
     });
 
     const { data: response } = await axios.post("/api/message", {
       ...message,
       customId,
     });
-    newState = await dispatch(MessageActions.MESSAGE_DELIVERED, response.data);
-    return newState;
+    await dispatch(MessageActions.MESSAGE_DELIVERED, response.data);
+    return (state) => state;
   },
 
   MESSAGE_DELIVERED: (state, { message, customId }) => {
@@ -109,7 +94,10 @@ export const MessageActions = {
         }
       }
     }
-    return newState;
+    return state=>{
+       state.messages[message.receiver].data = messages
+       return {...state}
+    };
   },
 
   MESSAGE_SEEN: async (state, userId) => {
@@ -126,19 +114,28 @@ export const MessageActions = {
     return newState;
   },
 
-  FETCH_MESSAGE_NOTIFICATION: async (state) => {
+  FETCH_MESSAGE_NOTIFICATION: async () => {
     let { data: notifications } = await axios.get(
       "/api/notification?type=message"
     );
-    return { ...state, messageNotifications: new Set(notifications.data) };
+    return (state) => ({
+      ...state,
+      messageNotifications: new Set(notifications.data),
+    });
   },
 
-  // ADD_MESSAGE_NOTIFICATION: (state, {userId,currentRoom}) => {
-  //   if (userId !== currentRoom) {
-  //     state.messageNotifications.add(userId);
-  //   }
-  //   return { ...state };
-  // },
+  ADD_MESSAGE_NOTIFICATION: (state, { message, room }) => {
+    const messageNotifications = state.messageNotifications;
+    if (message.sender !== room) {
+      messageNotifications.add(message.sender);
+    } else {
+      state.socket?.emit(SEE_MESSAGE, message);
+    }
+    return (currentState) => {
+      currentState.messageNotifications = messageNotifications;
+      return { ...currentState };
+    };
+  },
 
   ADD_USER_MESSAGES: (state, { userId, messages }) => {
     const newState = { ...state };
@@ -152,14 +149,16 @@ export const MessageActions = {
     return newState;
   },
 
-  SET_USER_MESSAGES: (state, { userId, messages }) => {
-    let newState = { ...state };
-    newState.messages[userId] = {
-      data: messages,
-      isLastPage: false,
-      pageIndex: 1,
+  SET_USER_MESSAGES: (_, { userId, messages }) => {
+    // let newState = { ...state };
+    return (state) => {
+      state.messages[userId] = {
+        data: messages,
+        isLastPage: messages && messages.length < 50,
+        pageIndex: 1,
+      };
+      return { ...state };
     };
-    return newState;
   },
 
   SET_LAST_PAGE: (state, { userId }) => {
@@ -168,24 +167,18 @@ export const MessageActions = {
     return newState;
   },
 
-  SEARCH_USER: async (state, searchText) => {
+  SEARCH_USER: async (_, searchText) => {
     let text = searchText.trim();
-    let newState = { ...state };
     if (text.length === 0) {
-      newState.chatUsers = newState.users;
-    } else {
-      const { data: response } = await axios.post("/api/search", {
-        user: text,
-      });
-      newState.chatUsers = response.data;
+      return (state) => ({ ...state, chatUsers: state.users });
     }
-    return newState;
+    const { data: response } = await axios.post("/api/search", {
+      user: text,
+    });
+    return (state) => ({ ...state, chatUsers: response.data });
   },
 
-  SET_USERS: (state, users) => {
-    let newState = { ...state };
-    newState.users = users;
-    newState.chatUsers = users;
-    return newState;
+  SET_USERS: (_, users) => {
+    return (state) => ({ ...state, users: users, chatUsers: users });
   },
 };

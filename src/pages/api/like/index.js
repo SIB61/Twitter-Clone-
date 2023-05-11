@@ -5,27 +5,20 @@ import { createOptions } from "../auth/[...nextauth]";
 export default handleRequest({
   async POST(req, res) {
     const { tweetId } = req.body;
-    console.log(tweetId);
     const { user } = await getServerSession(req, res, createOptions(req));
-    await TweetModel.updateOne(
-      { _id: tweetId },
-      { $push: { likes: user.id }, $inc: { totalLikes: 1 } }
-    );
+    const tweet = await TweetModel.findById(tweetId).select("likes totalLikes")
+    if(tweet.likes.includes(user.id)){
+       tweet.likes.pull(user.id)
+       tweet.totalLikes--
+    }else{
+      tweet.likes.push(user.id)
+      tweet.totalLikes++
+    }
+    await tweet.save()
     return res.json({
       success: true,
       error: null,
       data: { message: "liked successfully" },
     });
-  },
-
-  async DELETE(req, res) {
-    const { tweetId } = req.query;
-    const { user } = await getServerSession(req, res, createOptions(req));
-    await TweetModel.updateOne(
-      { _id: tweetId },
-      { $pull: { likes: user.id }, $inc: { totalLikes: -1 } },
-      { new: true }
-    );
-    return res.json({ success: true, error: null, data: {} });
   },
 });

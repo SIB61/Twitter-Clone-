@@ -9,7 +9,7 @@ export async function createTweet({ text, image, user }) {
     return mapId(tweet._doc)
   } catch (err) {
     console.log("error in create tweet method",err);
-    throw { status: 500, error: err.message };
+    throw { status: 500, error: err._message };
   }
 }
 
@@ -19,7 +19,8 @@ export async function createReply({text,image,user,parent}){
     await TweetModel.updateOne({_id:parent},{$push:{replies:reply._id},$inc:{totalReplies:1}})
     return mapId(reply._doc)
   } catch(err){
-    throw {status:500, error:err.message}
+    console.log(err)
+    throw {status:400, error:err._message}
   }
 }
 
@@ -33,6 +34,6 @@ export async function createRetweet({user,tweetId}){
     return retweet
   }catch(err){
     console.log("error in createTweet",err)
-    throw {status:500,error:err}
+    throw {status:500,error:err._message}
   }
 }

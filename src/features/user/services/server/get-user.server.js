@@ -23,7 +23,7 @@ export async function getUser(queryObject) {
 
 export async function getUsers() {
   try {
-    const users = await UserModel.find().limit(8).lean();
+    const users = await UserModel.find({isVerified:true}).lean();
     return users.map((user) => mapId(user));
   } catch (err) {
     console.log("err in getUser", err);

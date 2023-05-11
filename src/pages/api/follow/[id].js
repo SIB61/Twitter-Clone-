@@ -17,15 +17,4 @@ export default handleRequest({
       await follow({ followerId: follower.id, followingId: followingId });
       return res.json({ success: true, error: null, data: {} });
   },
-
-  DELETE: async (req, res) => {
-      const { user: follower } = await getServerSession(
-        req,
-        res,
-        createOptions(req)
-      );
-      const { id: followingId } = req.query;
-      await unfollow({ followerId: follower.id, followingId: followingId });
-      return res.json({ success: true, error: null, data: {} });
-  },
 });
