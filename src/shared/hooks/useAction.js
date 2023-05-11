@@ -7,7 +7,7 @@ export function useActionDispatcher(initialState) {
       if (!action) {
         return state;
       }
-      let newState = state;
+      let newState = (currentState) => currentState;
       if (action.constructor.name === "AsyncFunction") {
         newState = await action(state, payload, dispatch , getState);
       } else if (action.constructor.name === "Function") {
