@@ -1,10 +1,10 @@
-import { createMessage } from "@/features/conversation/services/server/create-message.server";
-import { createMessageNotification } from "@/features/notification/services/server/create-message-notification.server";
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { createSocketConnection } from "../socket";
 import { NEW_MESSAGE } from "@/constants";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
+import { createMessageNotification } from "@/lib/services/notification/create-message-notification.server";
+import { createMessage } from "@/lib/services/conversation/create-message.server";
 
 export default handleRequest({
   POST: async (req, res) => {

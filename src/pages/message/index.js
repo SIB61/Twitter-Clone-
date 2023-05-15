@@ -1,27 +1,26 @@
-import { MainLayout } from "@/core/layouts/main-layout";
-import { dbConnect } from "@/core/utils/db";
-import { getUsers } from "@/features/user/services/server/get-user.server";
-import { CreatePost } from "@/shared/components/create-post/CreatePost";
-import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { use, useCallback, useEffect, useMemo, useRef } from "react";
-import styles from "../../styles/Message.module.css";
+import { dbConnect } from "@/lib/helpers/db";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../api/auth/[...nextauth]";
-import { TbSettings } from "react-icons/tb";
-import { MdOutlineForward, MdOutlineForwardToInbox } from "react-icons/md";
-import { Input } from "@/shared/components/input/Input";
-import { MessageBubble } from "@/features/conversation/components/MessageBubble";
-import { debounce } from "@/shared/utils/debounce";
-import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
-import { useMessages } from "@/features/conversation/hooks/useMessages";
-import { getAllConversationsByUser } from "@/features/conversation/services/server/get-conversation.server";
-import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
-import { CONNECTION, MESSAGE_SEEN, SEE_MESSAGE } from "@/constants";
-import { MessageActions } from "@/features/conversation/actions/message.action";
-import { useSocket } from "@/core/Providers/SocketProvider";
+import { getUsers } from "@/lib/services/user/get-user.server";
+import { deleteMessageNotification } from "@/lib/services/notification/delete-message-notification.server";
+import { getAllConversationsByUser } from "@/lib/services/conversation/get-conversation.server";
+import { MESSAGE_SEEN } from "@/constants";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import { useMessages } from "@/hooks/useMessages";
+import { useEffect, useRef } from "react";
+import {TbSettings} from 'react-icons/tb'
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import { MessageActions } from "@/actions/message.action";
+import { MdOutlineForwardToInbox } from 'react-icons/md'
+import { MiniProfile } from "@/components/common/mini-profile/MiniProfile";
+import { MessageBubble } from "@/components/conversation/MessageBubble";
+import { CreatePost } from "@/components/common/create-post/CreatePost";
+import { MainLayout } from "@/components/layouts/main-layout/main-layout";
+import styles from "../../styles/Message.module.css"
+import { Input } from "@/components/common/input/Input";
+import Link from "next/link";
+import { debounce } from "@/utils/debounce";
 export async function getServerSideProps(ctx) {
   await dbConnect();
   const { user } = await getServerSession(

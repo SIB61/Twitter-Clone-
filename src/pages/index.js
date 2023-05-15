@@ -1,12 +1,12 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import { MainLayout } from "@/core/layouts/main-layout";
-import { TweetList } from "@/features/tweet/components/tweet-list/TweetList";
-import { AuthCard } from "@/features/auth/components/auth-card/AuthCard";
 import { getServerSession } from "next-auth";
-import { dbConnect } from "@/core/utils/db";
-import { getAllTweets } from "@/features/tweet/services/server/get-tweet.server";
 import { createOptions } from "./api/auth/[...nextauth]";
+import { getAllTweets } from "@/lib/services/tweet/get-tweet.server";
+import { MainLayout } from "@/components/layouts/main-layout/main-layout";
+import { TweetList } from "@/components/tweet/tweet-list/TweetList";
+import { AuthCard } from "@/components/auth/auth-card/AuthCard";
+import { dbConnect } from "@/lib/helpers/db";
 
 export async function getServerSideProps(context) {
   await dbConnect();

@@ -1,8 +1,8 @@
-import { sendVerificationMail } from "@/core/utils/sendVerificationMail";
-import createUser from "@/features/user/services/server/create-user.server";
-import { getUserByEmail } from "@/features/user/services/server/get-user.server";
-import { handleRequest } from "@/shared/middlewares/request-handler";
-import { generateVerificationToken } from "@/shared/utils/generateVerificationToken";
+import { sendVerificationMail } from "@/lib/helpers/sendVerificationMail";
+import { handleRequest } from "@/lib/middlewares/request-handler";
+import createUser from "@/lib/services/user/create-user.server";
+import { getUserByEmail } from "@/lib/services/user/get-user.server";
+import { generateVerificationToken } from "@/utils/generateVerificationToken";
 export default handleRequest({
   POST: async (req, res) => {
     const { name, email, password, dateOfBirth } = req.body;

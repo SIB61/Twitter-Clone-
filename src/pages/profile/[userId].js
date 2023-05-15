@@ -1,14 +1,15 @@
-import { MainLayout } from "@/core/layouts/main-layout";
-import { dbConnect } from "@/core/utils/db";
-import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
-import { ProfileLayout } from "@/features/user/components/profile-layout/ProfileLayout";
-import { getProfile } from "@/features/user/services/server/get-profile.server";
-import { MiniProfile } from "@/shared/components/mini-profile/MiniProfile";
-import { useListState } from "@/shared/hooks/useListState";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import { createOptions } from "../api/auth/[...nextauth]";
+import { dbConnect } from "@/lib/helpers/db";
+import { getProfile } from "@/lib/services/user/get-profile.server";
+import { useListState } from "@/hooks/useListState";
+import { MainLayout } from "@/components/layouts/main-layout/main-layout";
+import { ProfileLayout } from "@/components/user/profile-layout/ProfileLayout";
+import { TweetView } from "@/components/tweet/tweet-view/TweetView";
+import { MiniProfile } from "@/components/common/mini-profile/MiniProfile";
+import Link from "next/link";
 
 export async function getServerSideProps(ctx) {
   try {
@@ -70,12 +71,16 @@ function Page({ profile }) {
 
           {page === "followers" &&
             followers.value.map((follower) => (
-              <MiniProfile user={follower} key={follower.id} />
+              <Link className="col" style={{margin:'1rem'}} href={follower.id}  key={follower.id}>
+              <MiniProfile user={follower} />
+              </Link>
             ))}
 
           {page === "followings" &&
             followings.value.map((following) => (
+              <Link className="col" style={{margin:'1rem'}} href={following.id}  key={following.id}>
               <MiniProfile user={following} key={following.id} />
+              </Link>
             ))}
         </div>
       </ProfileLayout>

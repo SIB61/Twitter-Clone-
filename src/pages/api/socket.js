@@ -1,8 +1,7 @@
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { Server } from "socket.io";
 import { createOptions } from "./auth/[...nextauth]";
-import { seeMessage } from "@/features/conversation/services/server/seeMessage.server";
 import {
   CONNECTION,
   JOIN,
@@ -11,7 +10,8 @@ import {
   SEE_MESSAGE,
 } from "@/constants";
 import mongoose from "mongoose";
-import { deleteMessageNotification } from "@/features/notification/services/server/delete-message-notification.server";
+import { seeMessage } from "@/lib/services/conversation/seeMessage.server";
+import { deleteMessageNotification } from "@/lib/services/notification/delete-message-notification.server";
 
 export default handleRequest({
   GET: async (req, res) => {

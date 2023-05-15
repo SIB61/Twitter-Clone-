@@ -1,4 +1,4 @@
-import UserModel from "@/core/schemas/user.schema";
+import UserModel from "@/lib/schemas/user.schema";
 import Link from "next/link";
 
 export async function getServerSideProps(ctx) {

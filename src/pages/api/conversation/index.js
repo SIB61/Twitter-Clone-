@@ -1,7 +1,7 @@
-import { getAllConversationsByUser } from "@/features/conversation/services/server/get-conversation.server";
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
+import { getAllConversationsByUser } from "@/lib/services/conversation/get-conversation.server";
 
 export default handleRequest({
   async POST(req, res) {

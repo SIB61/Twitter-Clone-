@@ -1,11 +1,11 @@
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
-import { parseForm } from "@/shared/utils/parse-form";
 import {
   createReply,
 } from "@/features/tweet/services/server/create-tweet.server";
 import { createOptions } from "../auth/[...nextauth]";
 import { getReplies } from "@/features/tweet/services/server/get-tweet.server";
+import { parseForm } from "@/utils/parse-form";
 export const config = {
   api: {
     bodyParser: false,

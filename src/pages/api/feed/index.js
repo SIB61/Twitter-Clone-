@@ -1,7 +1,7 @@
-import { getUserFeed } from "@/features/tweet/services/server/get-tweet.server";
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
+import { getUserFeed } from "@/lib/services/tweet/get-tweet.server";
 
 export default handleRequest({
   GET: async (req, res) => {

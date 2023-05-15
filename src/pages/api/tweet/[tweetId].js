@@ -1,9 +1,9 @@
-import { deleteTweet } from "@/features/tweet/services/server/delete-tweet.server";
-import { updateTweet } from "@/features/tweet/services/server/update-tweet.server";
-import { handleRequest } from "@/shared/middlewares/request-handler";
-import { parseForm } from "@/shared/utils/parse-form";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
+import { parseForm } from "@/utils/parse-form";
+import { updateTweet } from "@/lib/services/tweet/update-tweet.server";
+import { deleteTweet } from "@/lib/services/tweet/delete-tweet.server";
 
 export const config = {
   api: {

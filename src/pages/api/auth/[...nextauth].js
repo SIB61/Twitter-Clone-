@@ -1,7 +1,7 @@
-import UserModel from "@/core/schemas/user.schema";
-import { dbConnect } from "@/core/utils/db";
-import { getUserByEmail } from "@/features/user/services/server/get-user.server";
-import { login } from "@/features/user/services/server/login.server";
+import { dbConnect } from "@/lib/helpers/db";
+import UserModel from "@/lib/models/user.schema";
+import { getUserByEmail } from "@/lib/services/user/get-user.server";
+import { login } from "@/lib/services/user/login.server";
 import NextAuth from "next-auth";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";

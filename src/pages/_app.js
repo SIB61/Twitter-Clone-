@@ -2,14 +2,14 @@ import "@/styles/globals.css";
 import "@/styles/components.css";
 import "@/styles/utils.css";
 import { SessionProvider } from "next-auth/react";
-import { useLoading } from "@/shared/hooks/useLoading";
-import { LoadingBar } from "@/shared/components/loading-bar/LoadingBar";
 import { useEffect  } from "react";
 import { Router, useRouter } from "next/router";
-import { ModalProvider } from "@/shared/contexts/modalContext";
-import { ToastProvider } from "@/shared/contexts/ToastContext";
-import { SocketProvider } from "@/core/Providers/SocketProvider";
-import { MessageProvider } from "@/features/conversation/providers/message-provider";
+import { ModalProvider } from "@/components/providers/ModalProvider";
+import { ToastProvider } from "@/components/providers/ToastProvider";
+import { SocketProvider } from "@/components/providers/SocketProvider";
+import { MessageProvider } from "@/components/providers/MessageProvider";
+import { LoadingBar } from "@/components/common/loading-bar/LoadingBar";
+import { useLoading } from "@/hooks/useLoading";
 
 export default function App({
   Component,

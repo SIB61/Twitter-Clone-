@@ -1,7 +1,7 @@
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
-import UserModel from "@/core/schemas/user.schema";
+import UserModel from "@/lib/models/user.schema";
 
 export default handleRequest({
   GET: async (req, res) => {

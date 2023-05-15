@@ -1,10 +1,9 @@
-import TweetModel from "@/core/schemas/tweet.schema";
-import UserModel from "@/core/schemas/user.schema";
-import { handleRequest } from "@/shared/middlewares/request-handler";
-import { mapId } from "@/shared/utils/mapId";
-import { parseForm } from "@/shared/utils/parse-form";
+import TweetModel from "@/lib/models/tweet.schema";
+import UserModel from "@/lib/models/user.schema";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { createOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth";
+import { parseForm } from "@/utils/parse-form";
 
 export const config = {
   api: {

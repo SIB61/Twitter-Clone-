@@ -1,5 +1,5 @@
-import { handleRequest } from "@/shared/middlewares/request-handler";
-import TweetModel from "@/core/schemas/tweet.schema";
+import { handleRequest } from "@/lib/middlewares/request-handler";
+import TweetModel from "@/lib/schemas/tweet.schema";
 import { getServerSession } from "next-auth";
 import { createOptions } from "../auth/[...nextauth]";
 export default handleRequest({

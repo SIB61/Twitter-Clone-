@@ -1,32 +1,20 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import { MainLayout } from "@/core/layouts/main-layout";
-import { CreateTweet } from "@/features/tweet/components/create-tweet/CreateTweet";
-import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
-import { YouMayKnow } from "@/features/user/components/you-may-know/YouMayKnow";
-import { TweetView } from "@/features/tweet/components/tweet-view/TweetView";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useListState } from "@/shared/hooks/useListState";
-import {
-  getUser,
-  getUsers,
-} from "@/features/user/services/server/get-user.server";
-import {
-  getAllTweets,
-  getFeed,
-  getUserFeed,
-} from "@/features/tweet/services/server/get-tweet.server";
-import { dbConnect } from "@/core/utils/db";
 import { createOptions } from "../api/auth/[...nextauth]";
 import { useEffect, useReducer, useRef, useState } from "react";
-import useIntersectionObserver from "@/shared/hooks/useIntersectionObserver";
-import { useOnScreen } from "@/shared/hooks/useOnScreen";
-import { useCustomState } from "@/shared/hooks/useCustomState";
-import useSwr from "swr";
-import { fetcher } from "@/shared/utils/fetcher";
 import axios from "axios";
-import { trusted } from "mongoose";
+import { dbConnect } from "@/lib/helpers/db";
+import { getUserFeed } from "@/lib/services/tweet/get-tweet.server";
+import { getUsers } from "@/lib/services/user/get-user.server";
+import { useListState } from "@/hooks/useListState";
+import { CreateTweet } from "@/components/tweet/create-tweet/CreateTweet";
+import { MainLayout } from "@/components/layouts/main-layout/main-layout";
+import { TweetView } from "@/components/tweet/tweet-view/TweetView";
+import { YouMayKnow } from "@/components/user/you-may-know/YouMayKnow";
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
+import { useCustomState } from "@/hooks/useCustomState";
 
 export async function getServerSideProps(ctx) {
   await dbConnect();

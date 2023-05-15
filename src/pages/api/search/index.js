@@ -1,5 +1,5 @@
-import { searchUser } from "@/features/user/services/server/search-user";
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
+import { searchUser } from "@/lib/services/user/search-user";
 
 export default handleRequest({
   POST: async (req, res) => {

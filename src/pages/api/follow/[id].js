@@ -1,10 +1,7 @@
-import { handleRequest } from "@/shared/middlewares/request-handler";
+import { handleRequest } from "@/lib/middlewares/request-handler";
 import { getServerSession } from "next-auth";
-import {
-  follow,
-  unfollow,
-} from "@/features/user/services/server/follow.server";
 import { createOptions } from "../auth/[...nextauth]";
+import { follow } from "@/lib/services/user/follow.server";
 
 export default handleRequest({
   POST: async (req, res) => {
