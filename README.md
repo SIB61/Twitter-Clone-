@@ -3,6 +3,8 @@
 
 ### **This is a full stack twitter clone project with nextjs. both frontend and backend are created in nextjs. The project includes user registration , login , email verification , creating, updating and deleting tweet, retweet a tweet , comment to a tweet, reply to a comment, sending one to one messages to user , message notification , updating user , and logout .**
 
+DEMO VIDEO: https://youtu.be/Vpre5X0EIoA?si=YXSTA_BgIxthVtQk
+
 ## Indices
 
 * [Ungrouped](#ungrouped)
